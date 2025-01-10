@@ -10,6 +10,11 @@ import SwiftUI
 
 @Model
 class Theme: ObservableObject {
+    @Attribute(.unique) var id: UUID
+
+    var title: String
+    var dateCreated: Date
+
     // Palette
     var primary: [Int]
     var secondary: [Int]
@@ -20,24 +25,37 @@ class Theme: ObservableObject {
     var widgetGradient: [ColorGradient]
 
     // Miscellaneous
-    var accentColor: [Int]
     var readingBlur: Double
 
     init(
-        primary: [Int] = [255, 255, 255],
-        secondary: [Int] = [200, 200, 200],
-        contrast: [Int] = [0, 0, 0],
+        primary: [Int] = [124, 45, 18],
+        secondary: [Int] = [194, 65, 12],
+        contrast: [Int] = [255, 247, 237],
         pageGradient: [ColorGradient] = [],
         widgetGradient: [ColorGradient] = [],
-        accentColor: [Int] = [0, 122, 255],
-        readingBlur: Double = 0.0
+        readingBlur: Double = 0.0,
+        title: String = "Default Theme"
     ) {
         self.primary = primary
         self.secondary = secondary
         self.contrast = contrast
         self.pageGradient = pageGradient
         self.widgetGradient = widgetGradient
-        self.accentColor = accentColor
         self.readingBlur = readingBlur
+        self.id = UUID()
+        self.title = title
+        self.dateCreated = Date()
     }
+}
+
+struct ColorGradient: Codable, Hashable {
+    let colors: [[Int]] // RGB values for gradient stops
+    let type: GradientType
+    let angle: Double? // Only for linear gradients
+}
+
+enum GradientType: String, Codable {
+    case linear
+    case radial
+    case conic
 }
