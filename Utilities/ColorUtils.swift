@@ -24,7 +24,7 @@ enum ColorUtils {
                        alpha: 1.0)
     }
 
-    static func generateShadeMap(inputColor: [Int], numShades: Int = 32) -> (index: Int, shadeMap: [[Int]]) {
+    static func generateShadeMap(inputColor: [Int], numShades: Int = 17) -> (index: Int, shadeMap: [[Int]]) {
         // Convert RGB to HSL
         let rgbToHsl: ([Int]) -> (h: Double, s: Double, l: Double) = { rgb in
             let r = Double(rgb[0]) / 255.0

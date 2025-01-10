@@ -18,7 +18,7 @@ class Theme: ObservableObject {
     // Palette
     var primary: [Int]
     var secondary: [Int]
-    var contrast: [Int]
+    var tertiary: [Int]
 
     // Gradients
     var pageGradient: [ColorGradient]
@@ -30,7 +30,7 @@ class Theme: ObservableObject {
     init(
         primary: [Int] = [124, 45, 18],
         secondary: [Int] = [194, 65, 12],
-        contrast: [Int] = [255, 247, 237],
+        tertiary: [Int] = [255, 247, 237],
         pageGradient: [ColorGradient] = [],
         widgetGradient: [ColorGradient] = [],
         readingBlur: Double = 0.0,
@@ -38,7 +38,7 @@ class Theme: ObservableObject {
     ) {
         self.primary = primary
         self.secondary = secondary
-        self.contrast = contrast
+        self.tertiary = tertiary
         self.pageGradient = pageGradient
         self.widgetGradient = widgetGradient
         self.readingBlur = readingBlur
@@ -59,3 +59,47 @@ enum GradientType: String, Codable {
     case radial
     case conic
 }
+
+struct ThemeKey: EnvironmentKey {
+    static let defaultValue: Theme = .init() // Provide a default theme
+}
+
+extension EnvironmentValues {
+    var theme: Theme {
+        get { self[ThemeKey.self] }
+        set { self[ThemeKey.self] = newValue }
+    }
+}
+
+extension Text {
+    func themed(using theme: Theme, in colorScheme: ColorScheme, level: Int = 0) -> some View {
+        // Ensure the level is within bounds
+        let clampedLevel = max(0, min(level, 3))
+
+        // Generate the shade map
+        let shadeMap = ColorUtils.generateShadeMap(inputColor: theme.primary)
+
+        // Choose the index based on the color scheme and level
+        let index = colorScheme == .light
+            ? textIndexMapLight[clampedLevel] ?? 13
+            : textIndexMapDark[clampedLevel] ?? 0
+
+        let textColor = ColorUtils.colorFromRGB(shadeMap.shadeMap[index])
+
+        return self.foregroundColor(textColor)
+    }
+}
+
+let textIndexMapLight: [Int: Int] = [
+    0: 13,
+    1: 10,
+    2: 4,
+    3: 0
+]
+
+let textIndexMapDark: [Int: Int] = [
+    0: 0,
+    1: 3,
+    2: 7,
+    3: 11
+]

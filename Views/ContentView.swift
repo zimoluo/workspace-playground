@@ -2,8 +2,10 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @Query() var themes: [Theme]
     @Environment(\.modelContext) private var modelContext
+    @Query() var themes: [Theme]
+    @Environment(\.theme) private var theme
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         NavigationView {
@@ -17,7 +19,7 @@ struct ContentView: View {
 
                 Section(header: Text("Settings")) {
                     NavigationLink(destination: SettingsView()) {
-                        Text("Settings")
+                        Text("Settings").themed(using: theme, in: colorScheme)
                     }
                 }
             }
