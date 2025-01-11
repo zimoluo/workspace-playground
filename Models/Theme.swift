@@ -71,25 +71,6 @@ extension EnvironmentValues {
     }
 }
 
-extension Text {
-    func themed(using theme: Theme, in colorScheme: ColorScheme, level: Int = 0) -> some View {
-        // Ensure the level is within bounds
-        let clampedLevel = max(0, min(level, 3))
-
-        // Generate the shade map
-        let shadeMap = ColorUtils.generateShadeMap(inputColor: theme.primary)
-
-        // Choose the index based on the color scheme and level
-        let index = colorScheme == .light
-            ? textIndexMapLight[clampedLevel] ?? 13
-            : textIndexMapDark[clampedLevel] ?? 0
-
-        let textColor = ColorUtils.colorFromRGB(shadeMap.shadeMap[index])
-
-        return self.foregroundColor(textColor)
-    }
-}
-
 let textIndexMapLight: [Int: Int] = [
     0: 13,
     1: 10,
@@ -101,5 +82,65 @@ let textIndexMapDark: [Int: Int] = [
     0: 0,
     1: 3,
     2: 7,
-    3: 11
+    3: 14
 ]
+
+func getThemeColor(
+    from theme: Theme,
+    for category: String,
+    in colorScheme: ColorScheme,
+    level: Int,
+    lightMap: [Int: Int] = textIndexMapLight,
+    darkMap: [Int: Int] = textIndexMapDark
+) -> Color {
+    // Clamp the level between 0 and 3
+    let clampedLevel = max(0, min(level, 3))
+
+    // Get the input color based on the category
+    let inputColor: [Int]
+    switch category {
+    case "primary":
+        inputColor = theme.primary
+    case "secondary":
+        inputColor = theme.secondary
+    case "tertiary":
+        inputColor = theme.tertiary
+    default:
+        inputColor = theme.primary // Fallback to primary
+    }
+
+    // Generate the shade map
+    let shadeMap = ColorUtils.generateShadeMap(inputColor: inputColor).shadeMap
+
+    // Get the correct index for the color scheme
+    let index = colorScheme == .light
+        ? lightMap[clampedLevel] ?? 13
+        : darkMap[clampedLevel] ?? 0
+
+    // Return the color from the shade map
+    return ColorUtils.colorFromRGB(shadeMap[index])
+}
+
+extension Text {
+    func themed(using theme: Theme, in colorScheme: ColorScheme, level: Int = 0) -> some View {
+        let textColor = getThemeColor(
+            from: theme,
+            for: "primary", // Using "primary" for text
+            in: colorScheme,
+            level: level
+        )
+        return self.foregroundColor(textColor)
+    }
+}
+
+extension View {
+    func themedBackground(using theme: Theme, in colorScheme: ColorScheme, level: Int, category: String = "secondary") -> some View {
+        let backgroundColor = getThemeColor(
+            from: theme,
+            for: category, // Specify category (e.g., "secondary")
+            in: colorScheme,
+            level: level
+        )
+        return self.background(backgroundColor)
+    }
+}

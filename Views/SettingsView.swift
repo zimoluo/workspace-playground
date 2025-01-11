@@ -19,6 +19,14 @@ struct SettingsView: View {
                     get: { currentSettings.notificationsEnabled },
                     set: { currentSettings.notificationsEnabled = $0 }
                 ))
+
+                ColorPicker("Primary Color", selection: Binding(
+                    get: { ColorUtils.colorFromRGB(currentSettings.theme.primary) },
+                    set: { newColor in
+                        currentSettings.theme.primary = ColorUtils.rgbFromColor(newColor)
+                    }
+                ))
+                .padding()
             }
         }
         .navigationTitle("Settings")

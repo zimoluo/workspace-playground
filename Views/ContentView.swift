@@ -11,8 +11,11 @@ struct ContentView: View {
         NavigationView {
             List {
                 Section(header: Text("Themes")) {
-                    ForEach(themes) { theme in
-                        Text(theme.title)
+                    let backgroundColor = getThemeColor(from: theme, for: "primary", in: colorScheme, level: 3)
+                    let textColor = getThemeColor(from: theme, for: "primary", in: colorScheme, level: 0)
+                    ForEach(themes, id: \.id) { theme in
+                        Text(theme.title).foregroundStyle(textColor)
+                            .listRowBackground(backgroundColor)
                     }
                     .onDelete(perform: deleteThemes)
                 }

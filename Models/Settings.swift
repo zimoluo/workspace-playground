@@ -6,9 +6,10 @@
 //
 
 import SwiftData
+import SwiftUI
 
 @Model
-class Settings {
+class Settings: ObservableObject {
     var theme: Theme
     var notificationsEnabled: Bool
 

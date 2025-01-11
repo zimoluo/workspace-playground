@@ -55,7 +55,6 @@ enum ColorUtils {
         let hsl = rgbToHsl(inputColor)
         let h = hsl.h
         let s = hsl.s
-        let l = hsl.l
 
         var shadesHSL: [(h: Double, s: Double, l: Double)] = []
         for i in 0..<numShades {
