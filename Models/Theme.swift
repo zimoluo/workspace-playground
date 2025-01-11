@@ -48,18 +48,6 @@ class Theme: ObservableObject {
     }
 }
 
-struct ColorGradient: Codable, Hashable {
-    let colors: [[Int]] // RGB values for gradient stops
-    let type: GradientType
-    let angle: Double? // Only for linear gradients
-}
-
-enum GradientType: String, Codable {
-    case linear
-    case radial
-    case conic
-}
-
 struct ThemeKey: EnvironmentKey {
     static let defaultValue: Theme = .init() // Provide a default theme
 }
