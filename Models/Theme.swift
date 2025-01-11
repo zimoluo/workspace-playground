@@ -16,64 +16,34 @@ class Theme: ObservableObject {
     var dateCreated: Date
 
     // Palette
-    var primary: [Int]
-    var secondary: [Int]
-    var tertiary: [Int]
-
-    // Gradients
-    var pageGradient: [ColorGradient]
-    var widgetGradient: [ColorGradient]
+    var primary: RGBAColor
+    var secondary: RGBAColor
+    var tertiary: RGBAColor
 
     // Miscellaneous
     var readingBlur: Double
 
+    var version: Int
+
     init(
-        primary: [Int] = [124, 45, 18],
-        secondary: [Int] = [194, 65, 12],
-        tertiary: [Int] = [255, 247, 237],
-        pageGradient: [ColorGradient] = [],
-        widgetGradient: [ColorGradient] = [],
+        primary: RGBAColor = RGBAColor(red: 0.486, green: 0.176, blue: 0.071),
+        secondary: RGBAColor = RGBAColor(red: 0.761, green: 0.255, blue: 0.047),
+        tertiary: RGBAColor = RGBAColor(red: 1.0, green: 0.969, blue: 0.929),
         readingBlur: Double = 0.0,
         title: String = "Default Theme"
     ) {
         self.primary = primary
         self.secondary = secondary
         self.tertiary = tertiary
-        self.pageGradient = pageGradient
-        self.widgetGradient = widgetGradient
         self.readingBlur = readingBlur
         self.id = UUID()
         self.title = title
         self.dateCreated = Date()
+        self.version = 1
     }
 }
 
-struct ThemeKey: EnvironmentKey {
-    static let defaultValue: Theme = .init() // Provide a default theme
-}
-
-extension EnvironmentValues {
-    var theme: Theme {
-        get { self[ThemeKey.self] }
-        set { self[ThemeKey.self] = newValue }
-    }
-}
-
-let textIndexMapLight: [Int: Int] = [
-    0: 13,
-    1: 10,
-    2: 4,
-    3: 0
-]
-
-let textIndexMapDark: [Int: Int] = [
-    0: 0,
-    1: 3,
-    2: 7,
-    3: 14
-]
-
-func getThemeColor(
+func themeColor(
     from theme: Theme,
     for category: String,
     in colorScheme: ColorScheme,
@@ -81,11 +51,9 @@ func getThemeColor(
     lightMap: [Int: Int] = textIndexMapLight,
     darkMap: [Int: Int] = textIndexMapDark
 ) -> Color {
-    // Clamp the level between 0 and 3
     let clampedLevel = max(0, min(level, 3))
 
-    // Get the input color based on the category
-    let inputColor: [Int]
+    let inputColor: RGBAColor
     switch category {
     case "primary":
         inputColor = theme.primary
@@ -94,26 +62,21 @@ func getThemeColor(
     case "tertiary":
         inputColor = theme.tertiary
     default:
-        inputColor = theme.primary // Fallback to primary
+        inputColor = theme.primary
     }
 
-    // Generate the shade map
-    let shadeMap = ColorUtils.generateShadeMap(inputColor: inputColor).shadeMap
-
-    // Get the correct index for the color scheme
     let index = colorScheme == .light
         ? lightMap[clampedLevel] ?? 13
         : darkMap[clampedLevel] ?? 0
 
-    // Return the color from the shade map
-    return ColorUtils.colorFromRGB(shadeMap[index])
+    return inputColor.shadeMap().shadeMap[index].color
 }
 
 extension Text {
     func themed(using theme: Theme, in colorScheme: ColorScheme, level: Int = 0) -> some View {
-        let textColor = getThemeColor(
+        let textColor = themeColor(
             from: theme,
-            for: "primary", // Using "primary" for text
+            for: "primary",
             in: colorScheme,
             level: level
         )
@@ -123,7 +86,7 @@ extension Text {
 
 extension View {
     func themedBackground(using theme: Theme, in colorScheme: ColorScheme, level: Int, category: String = "secondary") -> some View {
-        let backgroundColor = getThemeColor(
+        let backgroundColor = themeColor(
             from: theme,
             for: category, // Specify category (e.g., "secondary")
             in: colorScheme,

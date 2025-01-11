@@ -7,103 +7,163 @@
 
 import SwiftUI
 
-enum ColorUtils {
-    static func colorFromRGB(_ rgb: [Int]) -> Color {
-        Color(red: Double(rgb[0]) / 255, green: Double(rgb[1]) / 255, blue: Double(rgb[2]) / 255)
+struct RGBAColor: Codable {
+    var red: Double
+    var green: Double
+    var blue: Double
+    var alpha: Double
+
+    var color: Color {
+        Color(red: self.red, green: self.green, blue: self.blue, opacity: self.alpha)
     }
 
-    static func rgbFromColor(_ color: Color) -> [Int] {
-        guard let components = color.cgColor?.components, components.count >= 3 else { return [0, 0, 0] }
-        return components.prefix(3).map { Int($0 * 255) }
+    init(_ color: Color) {
+        let uiColor = UIColor(color)
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+
+        self.red = Double(r)
+        self.green = Double(g)
+        self.blue = Double(b)
+        self.alpha = Double(a)
     }
 
-    static func uiColorFromRGB(_ rgb: [Int]) -> UIColor {
-        return UIColor(red: CGFloat(rgb[0]) / 255.0,
-                       green: CGFloat(rgb[1]) / 255.0,
-                       blue: CGFloat(rgb[2]) / 255.0,
-                       alpha: 1.0)
+    init(red: Double, green: Double, blue: Double, alpha: Double = 1.0) {
+        self.red = red
+        self.green = green
+        self.blue = blue
+        self.alpha = alpha
     }
 
-    static func generateShadeMap(inputColor: [Int], numShades: Int = 17) -> (index: Int, shadeMap: [[Int]]) {
-        // Convert RGB to HSL
-        let rgbToHsl: ([Int]) -> (h: Double, s: Double, l: Double) = { rgb in
-            let r = Double(rgb[0]) / 255.0
-            let g = Double(rgb[1]) / 255.0
-            let b = Double(rgb[2]) / 255.0
+    private func toHSL() -> (h: Double, s: Double, l: Double) {
+        let r = self.red
+        let g = self.green
+        let b = self.blue
 
-            let max = [r, g, b].max()!
-            let min = [r, g, b].min()!
-            let delta = max - min
+        let maxC = max(r, g, b)
+        let minC = min(r, g, b)
+        let delta = maxC - minC
 
-            let l = (max + min) / 2.0
-            let s = l == 0 || l == 1 ? 0 : delta / (1 - abs(2 * l - 1))
-            let h: Double
+        // Lightness
+        let l = (maxC + minC) / 2.0
 
-            if delta == 0 {
-                h = 0
-            } else if max == r {
-                h = ((g - b) / delta).truncatingRemainder(dividingBy: 6.0) * 60.0
-            } else if max == g {
-                h = ((b - r) / delta + 2.0) * 60.0
-            } else {
-                h = ((r - g) / delta + 4.0) * 60.0
-            }
-
-            return (h < 0 ? h + 360 : h, s * 100, l * 100)
+        // Saturation
+        var s: Double = 0
+        if delta != 0 {
+            s = delta / (1 - abs(2 * l - 1))
         }
 
-        let hsl = rgbToHsl(inputColor)
-        let h = hsl.h
-        let s = hsl.s
+        // Hue
+        var h: Double = 0
+        if delta != 0 {
+            switch maxC {
+            case r:
+                h = ((g - b) / delta).truncatingRemainder(dividingBy: 6) * 60
+            case g:
+                h = ((b - r) / delta + 2) * 60
+            case b:
+                h = ((r - g) / delta + 4) * 60
+            default:
+                break
+            }
+        }
 
+        // Normalize hue to [0,360)
+        if h < 0 {
+            h += 360
+        }
+
+        // Convert s, l to percentage [0...100] for consistency with old logic
+        return (h: h, s: s * 100, l: l * 100)
+    }
+
+    private static func fromHSL(h: Double, s: Double, l: Double) -> RGBAColor {
+        let s1 = s / 100.0
+        let l1 = l / 100.0
+
+        let c = (1 - abs(2 * l1 - 1)) * s1
+        let x = c * (1 - abs((h / 60).truncatingRemainder(dividingBy: 2) - 1))
+        let m = l1 - c / 2
+
+        let (r, g, b): (Double, Double, Double)
+        switch h {
+        case 0..<60:
+            (r, g, b) = (c, x, 0)
+        case 60..<120:
+            (r, g, b) = (x, c, 0)
+        case 120..<180:
+            (r, g, b) = (0, c, x)
+        case 180..<240:
+            (r, g, b) = (0, x, c)
+        case 240..<300:
+            (r, g, b) = (x, 0, c)
+        default:
+            (r, g, b) = (c, 0, x)
+        }
+
+        // Convert back to [0...1]
+        return RGBAColor(
+            red: r + m,
+            green: g + m,
+            blue: b + m,
+            alpha: 1.0
+        )
+    }
+
+    func shadeMap(numShades: Int = 17) -> (index: Int, shadeMap: [RGBAColor]) {
+        // 1) Convert this color to HSL
+        let (h, s, _) = self.toHSL()
+
+        // 2) Generate an HSL list with varying lightness (and slightly adjusted saturation)
         var shadesHSL: [(h: Double, s: Double, l: Double)] = []
         for i in 0..<numShades {
+            // Lightness ranges 94 down to ~6 (94 - 88) across numShades
             let newL = 94 - Double(i) * (88 / Double(numShades - 1))
-            let newS = s < 0.01 ? 0 : min(100, max(0, s - 6 + (12 * Double(i)) / Double(numShades - 1)))
+
+            // Slight adjustment of saturation
+            let newS = s < 0.01
+                ? 0
+                : min(100, max(0, s - 6 + (12 * Double(i)) / Double(numShades - 1)))
+
             shadesHSL.append((h: h, s: newS, l: newL))
         }
 
-        // Convert HSL back to RGB
-        let hslToRgb: (Double, Double, Double) -> [Int] = { h, s, l in
-            let s = s / 100.0
-            let l = l / 100.0
-
-            let c = (1 - abs(2 * l - 1)) * s
-            let x = c * (1 - abs((h / 60.0).truncatingRemainder(dividingBy: 2) - 1))
-            let m = l - c / 2.0
-
-            let (r, g, b): (Double, Double, Double)
-            switch h {
-            case 0..<60:
-                (r, g, b) = (c, x, 0)
-            case 60..<120:
-                (r, g, b) = (x, c, 0)
-            case 120..<180:
-                (r, g, b) = (0, c, x)
-            case 180..<240:
-                (r, g, b) = (0, x, c)
-            case 240..<300:
-                (r, g, b) = (x, 0, c)
-            default:
-                (r, g, b) = (c, 0, x)
-            }
-
-            return [Int((r + m) * 255), Int((g + m) * 255), Int((b + m) * 255)]
+        // 3) Convert each HSL shade back to RGBAColor
+        let shadesRGB = shadesHSL.map {
+            RGBAColor.fromHSL(h: $0.h, s: $0.s, l: $0.l)
         }
 
-        let shadesRGB = shadesHSL.map { hslToRgb($0.h, $0.s, $0.l) }
-
-        // Find the closest shade to the input color
+        // 4) Find the shade closest to the original color in RGB space
         var minDistance = Double.infinity
-        var inputIndex = -1
+        var closestIndex = -1
+
         for (index, shade) in shadesRGB.enumerated() {
-            let distance = zip(shade, inputColor).map { pow(Double($0 - $1), 2) }.reduce(0, +)
+            let distance = pow(shade.red - self.red, 2)
+                + pow(shade.green - self.green, 2)
+                + pow(shade.blue - self.blue, 2)
             if distance < minDistance {
                 minDistance = distance
-                inputIndex = index
+                closestIndex = index
             }
         }
 
-        return (index: inputIndex, shadeMap: shadesRGB)
+        return (index: closestIndex, shadeMap: shadesRGB)
     }
 }
+
+let textIndexMapLight: [Int: Int] = [
+    0: 13,
+    1: 10,
+    2: 4,
+    3: 0
+]
+
+let textIndexMapDark: [Int: Int] = [
+    0: 0,
+    1: 3,
+    2: 7,
+    3: 14
+]

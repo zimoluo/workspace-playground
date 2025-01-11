@@ -21,9 +21,9 @@ struct SettingsView: View {
                 ))
 
                 ColorPicker("Primary Color", selection: Binding(
-                    get: { ColorUtils.colorFromRGB(currentSettings.theme.primary) },
+                    get: { currentSettings.theme.primary.color },
                     set: { newColor in
-                        currentSettings.theme.primary = ColorUtils.rgbFromColor(newColor)
+                        currentSettings.theme.primary = RGBAColor(newColor)
                     }
                 ))
                 .padding()

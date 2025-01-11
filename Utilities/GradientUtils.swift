@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ColorGradient {
-    let stops: [Gradient.Stop]
+    let keyColor1: RGBAColor
+    let keyColor2: RGBAColor
     let type: GradientType
     let attributes: GradientAttributes
 }
@@ -27,7 +28,7 @@ enum GradientAttributes {
 
 extension ColorGradient {
     func toGradient() -> AnyView {
-        let gradient = Gradient(stops: stops)
+        let gradient = Gradient(colors: [keyColor1.color, keyColor2.color])
 
         switch attributes {
         case .linear(let startPoint, let endPoint):
