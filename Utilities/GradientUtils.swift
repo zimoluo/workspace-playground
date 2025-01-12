@@ -63,9 +63,9 @@ struct AngularGradientAttributes: Codable {
 struct ColorGradient: Codable {
     var type: GradientType
     var stops: [GradientStop]
-    var linearAttributes: LinearGradientAttributes?
-    var radialAttributes: RadialGradientAttributes?
-    var angularAttributes: AngularGradientAttributes?
+    var linearAttributes: LinearGradientAttributes
+    var radialAttributes: RadialGradientAttributes
+    var angularAttributes: AngularGradientAttributes
 
     init() {
         self.type = .linear
@@ -83,36 +83,46 @@ struct ColorGradient: Codable {
             startPoint: CodableUnitPoint(from: .top),
             endPoint: CodableUnitPoint(from: .bottom)
         )
-        self.radialAttributes = RadialGradientAttributes(center: CodableUnitPoint(from: .center), startRadius: 0, endRadius: 10)
-        self.angularAttributes = AngularGradientAttributes(center: CodableUnitPoint(from: .center), angle: CodableAngle(from: .zero))
+        self.radialAttributes = RadialGradientAttributes(
+            center: CodableUnitPoint(from: .center),
+            startRadius: 0,
+            endRadius: 100
+        )
+        self.angularAttributes = AngularGradientAttributes(
+            center: CodableUnitPoint(from: .center),
+            angle: CodableAngle(from: .zero)
+        )
     }
 
-    func toGradient() -> any ShapeStyle {
+    @ViewBuilder
+    func toGradient() -> some View {
         switch type {
         case .linear:
-            guard let attributes = linearAttributes else { return Color.clear }
-            return LinearGradient(
+            LinearGradient(
                 gradient: Gradient(stops: stops.map { $0.toSwiftUIStop() }),
-                startPoint: attributes.startPoint.asUnitPoint,
-                endPoint: attributes.endPoint.asUnitPoint
+                startPoint: linearAttributes.startPoint.asUnitPoint,
+                endPoint: linearAttributes.endPoint.asUnitPoint
             )
 
         case .radial:
-            guard let attributes = radialAttributes else { return Color.clear }
-            return RadialGradient(
+            RadialGradient(
                 gradient: Gradient(stops: stops.map { $0.toSwiftUIStop() }),
-                center: attributes.center.asUnitPoint,
-                startRadius: attributes.startRadius,
-                endRadius: attributes.endRadius
+                center: radialAttributes.center.asUnitPoint,
+                startRadius: radialAttributes.startRadius,
+                endRadius: radialAttributes.endRadius
             )
 
         case .angular:
-            guard let attributes = angularAttributes else { return Color.clear }
-            return AngularGradient(
+            AngularGradient(
                 gradient: Gradient(stops: stops.map { $0.toSwiftUIStop() }),
-                center: attributes.center.asUnitPoint,
-                angle: attributes.angle.asAngle
+                center: angularAttributes.center.asUnitPoint,
+                angle: angularAttributes.angle.asAngle
             )
         }
+    }
+
+    @ViewBuilder
+    private func fallbackGradient() -> some View {
+        Color.clear
     }
 }

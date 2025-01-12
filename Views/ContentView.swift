@@ -72,7 +72,7 @@ struct ContentView: View {
                     .fontWeight(.bold)
                     .padding()
                 Spacer()
-            }
+            }.background(theme.mainGradient.toGradient())
         }.accentColor(themeColor(from: theme, for: "primary", in: colorScheme, level: 0))
     }
 

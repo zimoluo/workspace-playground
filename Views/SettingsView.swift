@@ -10,6 +10,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.theme) private var theme
     @Query private var settings: [Settings]
 
     var body: some View {
