@@ -25,24 +25,24 @@ struct SettingsView: View {
                     set: { newColor in
                         currentSettings.theme.primary = RGBAColor(newColor)
                     }
-                ))
-                .padding()
+                ), supportsOpacity: false)
+                    .padding()
 
                 ColorPicker("Secondary Color", selection: Binding(
                     get: { currentSettings.theme.secondary.color },
                     set: { newColor in
                         currentSettings.theme.secondary = RGBAColor(newColor)
                     }
-                ))
-                .padding()
+                ), supportsOpacity: false)
+                    .padding()
 
                 ColorPicker("Tertiary Color", selection: Binding(
                     get: { currentSettings.theme.tertiary.color },
                     set: { newColor in
                         currentSettings.theme.tertiary = RGBAColor(newColor)
                     }
-                ))
-                .padding()
+                ), supportsOpacity: false)
+                    .padding()
             }
         }
         .navigationTitle("Settings")

@@ -20,6 +20,8 @@ class Theme: ObservableObject {
     var secondary: RGBAColor
     var tertiary: RGBAColor
 
+    var mainGradient: ColorGradient
+
     // Miscellaneous
     var readingBlur: Double
 
@@ -29,6 +31,7 @@ class Theme: ObservableObject {
         primary: RGBAColor = RGBAColor(red: 0.486, green: 0.176, blue: 0.071),
         secondary: RGBAColor = RGBAColor(red: 0.761, green: 0.255, blue: 0.047),
         tertiary: RGBAColor = RGBAColor(red: 1.0, green: 0.969, blue: 0.929),
+        mainGradient: ColorGradient = ColorGradient(),
         readingBlur: Double = 0.0,
         title: String = "Default Theme"
     ) {
@@ -40,6 +43,7 @@ class Theme: ObservableObject {
         self.title = title
         self.dateCreated = Date()
         self.version = 1
+        self.mainGradient = mainGradient
     }
 }
 
