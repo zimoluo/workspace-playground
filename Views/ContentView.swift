@@ -9,47 +9,61 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView {
-            // Sidebar
             VStack(spacing: 0) {
-                // Custom Navigation Bar
                 HStack {
                     Text("My Notes")
                         .font(.largeTitle)
-                        .fontWeight(.bold)
+                        .fontWeight(.bold).themed(using: theme, in: colorScheme)
                     Spacer()
                     Button(action: addTheme) {
                         Image(systemName: "plus")
-                            .font(.title2)
+                            .font(.title2).foregroundStyle(themeColor(from: theme, for: "primary", in: colorScheme, level: 0))
                     }
                 }
-                .padding()
-                .background(Color.red)
+                .padding().background(themeColor(from: theme, for: "primary", in: colorScheme, level: 5))
 
                 // Custom Scrollable Content
                 ScrollView {
                     LazyVStack(spacing: 10) {
                         // Themes Section
+                        let backgroundColor = themeColor(from: theme, for: "primary", in: colorScheme, level: 3)
+                        let foregroundColor = themeColor(from: theme, for: "primary", in: colorScheme, level: 0)
                         SectionView(header: "Themes") {
                             ForEach(themes, id: \.id) { theme in
                                 Text(theme.title)
                                     .padding()
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .background(
-                                        themeColor(from: theme, for: "primary", in: colorScheme, level: 3)
+                                        backgroundColor
                                     )
                                     .cornerRadius(8)
                                     .foregroundColor(
-                                        themeColor(from: theme, for: "primary", in: colorScheme, level: 0)
+                                        foregroundColor
                                     )
                             }
                             .onDelete(perform: deleteThemes)
                         }
+                        // Settings Section
+                        NavigationLink(destination: SettingsView()) {
+                            HStack {
+                                Image(systemName: "gearshape")
+                                Text("Settings")
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(
+                                themeColor(from: theme, for: "primary", in: colorScheme, level: 3)
+                            )
+                            .cornerRadius(8)
+                            .foregroundColor(
+                                themeColor(from: theme, for: "primary", in: colorScheme, level: 0)
+                            )
+                        }
                     }
                     .padding(.horizontal)
                 }
-                .background(Color.red) // Custom Background for ScrollView
+                .background(LinearGradient(colors: [themeColor(from: theme, for: "primary", in: colorScheme, level: 4), themeColor(from: theme, for: "primary", in: colorScheme, level: 5)], startPoint: .bottom, endPoint: .top))
             }
-            .ignoresSafeArea(edges: .top) // Extend background to the top
         } detail: {
             // Main Content Area
             VStack {
@@ -59,7 +73,7 @@ struct ContentView: View {
                     .padding()
                 Spacer()
             }
-        }
+        }.accentColor(themeColor(from: theme, for: "primary", in: colorScheme, level: 0))
     }
 
     private func addTheme() {

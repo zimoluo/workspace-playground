@@ -113,7 +113,7 @@ struct RGBAColor: Codable {
         )
     }
 
-    func shadeMap(numShades: Int = 17) -> (index: Int, shadeMap: [RGBAColor]) {
+    func shadeMap(numShades: Int = 32) -> (index: Int, shadeMap: [RGBAColor]) {
         // 1) Convert this color to HSL
         let (h, s, _) = self.toHSL()
 
@@ -155,15 +155,48 @@ struct RGBAColor: Codable {
 }
 
 let textIndexMapLight: [Int: Int] = [
-    0: 13,
-    1: 10,
-    2: 4,
-    3: 0
+    0: 28,
+    1: 21,
+    2: 10,
+    3: 3,
+    4: 2,
+    5: 0
 ]
 
 let textIndexMapDark: [Int: Int] = [
     0: 0,
-    1: 3,
-    2: 7,
-    3: 14
+    1: 7,
+    2: 15,
+    3: 21,
+    4: 25,
+    5: 28
 ]
+
+func themeColor(
+    from theme: Theme,
+    for category: String,
+    in colorScheme: ColorScheme,
+    level: Int,
+    lightMap: [Int: Int] = textIndexMapLight,
+    darkMap: [Int: Int] = textIndexMapDark
+) -> Color {
+    let clampedLevel = max(0, min(level, 5))
+
+    let inputColor: RGBAColor
+    switch category {
+    case "primary":
+        inputColor = theme.primary
+    case "secondary":
+        inputColor = theme.secondary
+    case "tertiary":
+        inputColor = theme.tertiary
+    default:
+        inputColor = theme.primary
+    }
+
+    let index = colorScheme == .light
+        ? lightMap[clampedLevel] ?? 13
+        : darkMap[clampedLevel] ?? 0
+
+    return inputColor.shadeMap().shadeMap[index].color
+}

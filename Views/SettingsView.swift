@@ -9,8 +9,8 @@ import SwiftData
 import SwiftUI
 
 struct SettingsView: View {
-    @Query private var settings: [Settings]
     @Environment(\.modelContext) private var modelContext
+    @Query private var settings: [Settings]
 
     var body: some View {
         Form {
@@ -24,6 +24,22 @@ struct SettingsView: View {
                     get: { currentSettings.theme.primary.color },
                     set: { newColor in
                         currentSettings.theme.primary = RGBAColor(newColor)
+                    }
+                ))
+                .padding()
+
+                ColorPicker("Secondary Color", selection: Binding(
+                    get: { currentSettings.theme.secondary.color },
+                    set: { newColor in
+                        currentSettings.theme.secondary = RGBAColor(newColor)
+                    }
+                ))
+                .padding()
+
+                ColorPicker("Tertiary Color", selection: Binding(
+                    get: { currentSettings.theme.tertiary.color },
+                    set: { newColor in
+                        currentSettings.theme.tertiary = RGBAColor(newColor)
                     }
                 ))
                 .padding()

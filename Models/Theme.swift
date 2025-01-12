@@ -43,35 +43,6 @@ class Theme: ObservableObject {
     }
 }
 
-func themeColor(
-    from theme: Theme,
-    for category: String,
-    in colorScheme: ColorScheme,
-    level: Int,
-    lightMap: [Int: Int] = textIndexMapLight,
-    darkMap: [Int: Int] = textIndexMapDark
-) -> Color {
-    let clampedLevel = max(0, min(level, 3))
-
-    let inputColor: RGBAColor
-    switch category {
-    case "primary":
-        inputColor = theme.primary
-    case "secondary":
-        inputColor = theme.secondary
-    case "tertiary":
-        inputColor = theme.tertiary
-    default:
-        inputColor = theme.primary
-    }
-
-    let index = colorScheme == .light
-        ? lightMap[clampedLevel] ?? 13
-        : darkMap[clampedLevel] ?? 0
-
-    return inputColor.shadeMap().shadeMap[index].color
-}
-
 extension Text {
     func themed(using theme: Theme, in colorScheme: ColorScheme, level: Int = 0) -> some View {
         let textColor = themeColor(
@@ -88,7 +59,7 @@ extension View {
     func themedBackground(using theme: Theme, in colorScheme: ColorScheme, level: Int, category: String = "secondary") -> some View {
         let backgroundColor = themeColor(
             from: theme,
-            for: category, // Specify category (e.g., "secondary")
+            for: category,
             in: colorScheme,
             level: level
         )
