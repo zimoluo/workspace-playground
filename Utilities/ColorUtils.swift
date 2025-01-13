@@ -51,6 +51,63 @@ struct RGBAColor: Codable {
         self.alpha = alpha
     }
 
+    static func randomBright() -> RGBAColor {
+        let hue = Double.random(in: 0...1)
+        let brightness = Double.random(in: 0.5...0.7)
+        let saturation = Double.random(in: 0.6...0.95)
+        let uiColor = UIColor(hue: CGFloat(hue), saturation: CGFloat(saturation), brightness: CGFloat(brightness), alpha: 1.0)
+        let color = RGBAColor(Color(uiColor))
+        return color
+    }
+
+    func secondaryColor() -> RGBAColor {
+        let hueComplement = (hue + 0.5).truncatingRemainder(dividingBy: 1.0) // Complementary hue
+        let saturationAdjusted = max(0.4, min(0.9, saturation * 0.8)) // Adjust saturation slightly for harmony
+        let brightnessAdjusted = max(0.6, brightness * 0.9) // Slightly adjust brightness for contrast
+        return RGBAColor.fromHSB(hue: hueComplement, saturation: saturationAdjusted, brightness: brightnessAdjusted)
+    }
+
+    /// Calculates the tertiary key color as a balance between primary and secondary.
+    func tertiaryColor() -> RGBAColor {
+        let hueAnalogous = (hue + 0.08).truncatingRemainder(dividingBy: 1.0) // Analogous hue offset
+        let saturationAdjusted = max(0.5, saturation * 0.7) // Further adjust saturation for subtlety
+        let brightnessAdjusted = max(0.5, brightness * 0.8) // Slight dimming for harmony
+        return RGBAColor.fromHSB(hue: hueAnalogous, saturation: saturationAdjusted, brightness: brightnessAdjusted)
+    }
+
+    /// Helper to create an RGBAColor from HSB values.
+    static func fromHSB(hue: Double, saturation: Double, brightness: Double, alpha: Double = 1.0) -> RGBAColor {
+        let uiColor = UIColor(
+            hue: CGFloat(hue),
+            saturation: CGFloat(saturation),
+            brightness: CGFloat(brightness),
+            alpha: CGFloat(alpha)
+        )
+        return RGBAColor(Color(uiColor))
+    }
+
+    /// Decomposes the color to HSB for manipulation.
+    private var hue: Double {
+        let uiColor = UIColor(Color(red: red, green: green, blue: blue, opacity: alpha))
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        uiColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return Double(h)
+    }
+
+    private var saturation: Double {
+        let uiColor = UIColor(Color(red: red, green: green, blue: blue, opacity: alpha))
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        uiColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return Double(s)
+    }
+
+    private var brightness: Double {
+        let uiColor = UIColor(Color(red: red, green: green, blue: blue, opacity: alpha))
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        uiColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return Double(b)
+    }
+
     private func toHSL() -> (h: Double, s: Double, l: Double) {
         let r = self.red
         let g = self.green
@@ -74,50 +131,45 @@ struct RGBAColor: Codable {
         if delta != 0 {
             switch maxC {
             case r:
-                h = ((g - b) / delta).truncatingRemainder(dividingBy: 6) * 60
+                h = ((g - b) / delta).truncatingRemainder(dividingBy: 6) / 6.0
             case g:
-                h = ((b - r) / delta + 2) * 60
+                h = ((b - r) / delta + 2) / 6.0
             case b:
-                h = ((r - g) / delta + 4) * 60
+                h = ((r - g) / delta + 4) / 6.0
             default:
                 break
             }
         }
 
-        // Normalize hue to [0,360)
+        // Normalize hue to [0, 1)
         if h < 0 {
-            h += 360
+            h += 1.0
         }
 
-        // Convert s, l to percentage [0...100] for consistency with old logic
-        return (h: h, s: s * 100, l: l * 100)
+        return (h: h, s: s, l: l)
     }
 
     private static func fromHSL(h: Double, s: Double, l: Double) -> RGBAColor {
-        let s1 = s / 100.0
-        let l1 = l / 100.0
-
-        let c = (1 - abs(2 * l1 - 1)) * s1
-        let x = c * (1 - abs((h / 60).truncatingRemainder(dividingBy: 2) - 1))
-        let m = l1 - c / 2
+        let c = (1 - abs(2 * l - 1)) * s
+        let x = c * (1 - abs((h * 6).truncatingRemainder(dividingBy: 2) - 1))
+        let m = l - c / 2
 
         let (r, g, b): (Double, Double, Double)
         switch h {
-        case 0..<60:
+        case 0..<1 / 6:
             (r, g, b) = (c, x, 0)
-        case 60..<120:
+        case 1 / 6..<2 / 6:
             (r, g, b) = (x, c, 0)
-        case 120..<180:
+        case 2 / 6..<3 / 6:
             (r, g, b) = (0, c, x)
-        case 180..<240:
+        case 3 / 6..<4 / 6:
             (r, g, b) = (0, x, c)
-        case 240..<300:
+        case 4 / 6..<5 / 6:
             (r, g, b) = (x, 0, c)
         default:
             (r, g, b) = (c, 0, x)
         }
 
-        // Convert back to [0...1]
         return RGBAColor(
             red: r + m,
             green: g + m,
@@ -126,30 +178,25 @@ struct RGBAColor: Codable {
         )
     }
 
-    func shadeMap(numShades: Int = 32) -> (index: Int, shadeMap: [RGBAColor]) {
-        // 1) Convert this color to HSL
+    func shadeMap(numShades: Int = 32, saturationMultiplier: Double = 1.0) -> (index: Int, shadeMap: [RGBAColor]) {
+        // Convert this color to HSL
         let (h, s, _) = self.toHSL()
+        let modifiedS = s * saturationMultiplier
 
-        // 2) Generate an HSL list with varying lightness (and slightly adjusted saturation)
         var shadesHSL: [(h: Double, s: Double, l: Double)] = []
         for i in 0..<numShades {
-            // Lightness ranges 94 down to ~6 (94 - 88) across numShades
-            let newL = 94 - Double(i) * (88 / Double(numShades - 1))
-
-            // Slight adjustment of saturation
-            let newS = s < 0.01
+            let newL = 0.94 - Double(i) * (0.88 / Double(numShades - 1))
+            let newS = modifiedS < 0.0005
                 ? 0
-                : min(100, max(0, s - 6 + (12 * Double(i)) / Double(numShades - 1)))
+                : min(1.0, max(0.0, modifiedS - 0.06 + (0.12 * Double(i)) / Double(numShades - 1)))
 
             shadesHSL.append((h: h, s: newS, l: newL))
         }
 
-        // 3) Convert each HSL shade back to RGBAColor
         let shadesRGB = shadesHSL.map {
             RGBAColor.fromHSL(h: $0.h, s: $0.s, l: $0.l)
         }
 
-        // 4) Find the shade closest to the original color in RGB space
         var minDistance = Double.infinity
         var closestIndex = -1
 
@@ -194,20 +241,26 @@ func themeColor(
     darkMap: [Int: Int] = shadeIndexMapDark
 ) -> Color {
     let clampedLevel = max(0, min(level, 5))
+    var saturationMultiplier = 1.0
 
     let inputColor: RGBAColor
     switch category {
     case .primary:
         inputColor = theme.primary
+        saturationMultiplier *= 0.85
     case .secondary:
         inputColor = theme.secondary
     case .tertiary:
         inputColor = theme.tertiary
     }
 
+    if colorScheme == .dark {
+        saturationMultiplier *= 0.6
+    }
+
     let index = colorScheme == .light
         ? lightMap[clampedLevel] ?? 13
         : darkMap[clampedLevel] ?? 0
 
-    return inputColor.shadeMap().shadeMap[index].color
+    return inputColor.shadeMap(saturationMultiplier: saturationMultiplier).shadeMap[index].color
 }

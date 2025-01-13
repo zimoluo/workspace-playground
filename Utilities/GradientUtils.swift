@@ -101,7 +101,7 @@ struct ColorGradient: Codable {
     }
 
     @ViewBuilder
-    func toGradient() -> some View {
+    func toGradient(in colorScheme: ColorScheme = .light) -> some View {
         switch type {
         case .linear:
             LinearGradient(

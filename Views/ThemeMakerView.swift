@@ -29,7 +29,7 @@ struct ThemeMakerView: View {
                             Spacer()
                         }
 
-                        HStack(spacing: 16) {
+                        HStack(spacing: 12) {
                             VStack(spacing: 4) {
                                 ColorPicker("",
                                             selection: Binding(
@@ -110,7 +110,7 @@ struct ThemeMakerView: View {
                             .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                             .cornerRadius(16)
                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
-                        }.padding(16)
+                        }.padding(12)
                             .frame(maxWidth: .infinity)
                             .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 4))
                             .cornerRadius(16).shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
@@ -140,13 +140,15 @@ struct ThemeMakerView: View {
                             // Small strip rectangle with buttons
                             VStack(spacing: 8) {
                                 Button(action: {
-                                    // Magic star button action
+                                    theme.tertiary = RGBAColor.randomBright()
                                 }) {
                                     Image(systemName: "wand.and.sparkles")
                                         .font(.title)
                                 }
                                 Button(action: {
-                                    // Die button action
+                                    theme.primary = RGBAColor.randomBright()
+                                    theme.secondary = RGBAColor.randomBright()
+                                    theme.tertiary = RGBAColor.randomBright()
                                 }) {
                                     Image(systemName: "bubbles.and.sparkles")
                                         .font(.title)
