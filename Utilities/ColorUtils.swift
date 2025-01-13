@@ -178,10 +178,15 @@ struct RGBAColor: Codable {
         )
     }
 
-    func shadeMap(numShades: Int = 32, saturationMultiplier: Double = 1.0) -> (index: Int, shadeMap: [RGBAColor]) {
+    func shadeMap(numShades: Int = 32, hueMultiplier: Double = 1.0, saturationMultiplier: Double = 1.0) -> (index: Int, shadeMap: [RGBAColor]) {
         // Convert this color to HSL
         let (h, s, _) = self.toHSL()
         let modifiedS = s * saturationMultiplier
+        var modifiedH = h * hueMultiplier
+        modifiedH = modifiedH.truncatingRemainder(dividingBy: 1.0)
+        if modifiedH < 0 {
+            modifiedH += 1.0
+        }
 
         var shadesHSL: [(h: Double, s: Double, l: Double)] = []
         for i in 0..<numShades {
@@ -190,7 +195,7 @@ struct RGBAColor: Codable {
                 ? 0
                 : min(1.0, max(0.0, modifiedS - 0.06 + (0.12 * Double(i)) / Double(numShades - 1)))
 
-            shadesHSL.append((h: h, s: newS, l: newL))
+            shadesHSL.append((h: modifiedH, s: newS, l: newL))
         }
 
         let shadesRGB = shadesHSL.map {

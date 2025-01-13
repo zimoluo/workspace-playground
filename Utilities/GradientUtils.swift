@@ -31,8 +31,8 @@ struct GradientStop: Codable {
     let color: RGBAColor
     let position: Double
 
-    func toSwiftUIStop() -> Gradient.Stop {
-        Gradient.Stop(color: color.color, location: position)
+    func toSwiftUIStop(in colorScheme: ColorScheme = .light) -> Gradient.Stop {
+        Gradient.Stop(color: color.shadeMap(numShades: 28, saturationMultiplier: colorScheme == .light ? 0.92 : 0.6).shadeMap[colorScheme == .light ? 1 : 25].color, location: position)
     }
 }
 
@@ -105,14 +105,14 @@ struct ColorGradient: Codable {
         switch type {
         case .linear:
             LinearGradient(
-                gradient: Gradient(stops: stops.map { $0.toSwiftUIStop() }),
+                gradient: Gradient(stops: stops.map { $0.toSwiftUIStop(in: colorScheme) }),
                 startPoint: linearAttributes.startPoint.asUnitPoint,
                 endPoint: linearAttributes.endPoint.asUnitPoint
             )
 
         case .radial:
             RadialGradient(
-                gradient: Gradient(stops: stops.map { $0.toSwiftUIStop() }),
+                gradient: Gradient(stops: stops.map { $0.toSwiftUIStop(in: colorScheme) }),
                 center: radialAttributes.center.asUnitPoint,
                 startRadius: radialAttributes.startRadius,
                 endRadius: radialAttributes.endRadius
@@ -120,7 +120,7 @@ struct ColorGradient: Codable {
 
         case .angular:
             AngularGradient(
-                gradient: Gradient(stops: stops.map { $0.toSwiftUIStop() }),
+                gradient: Gradient(stops: stops.map { $0.toSwiftUIStop(in: colorScheme) }),
                 center: angularAttributes.center.asUnitPoint,
                 angle: angularAttributes.angle.asAngle
             )
