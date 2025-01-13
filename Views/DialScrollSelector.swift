@@ -7,44 +7,57 @@ struct VerticalSnapSelector: View {
 
     var body: some View {
         GeometryReader { outerGeometry in
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 20) {
-                    ForEach(items.indices, id: \.self) { index in
-                        GeometryReader { innerGeometry in
-                            let centerY = outerGeometry.size.height / 2
-                            let itemY = innerGeometry.frame(in: .global).midY
-                            let distance = abs(itemY - centerY)
-                            let transform = calculateTransform(distance: distance, maxDistance: maxDistance, translationMultiplier: itemY > centerY ? -1 : 1)
+            ScrollViewReader { scrollViewProxy in
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 20) {
+                        ForEach(items.indices, id: \.self) { index in
+                            GeometryReader { innerGeometry in
+                                let centerY = outerGeometry.size.height / 2
+                                let itemY = innerGeometry.frame(in: .global).midY
+                                let distance = abs(itemY - centerY)
+                                let transform = calculateTransform(distance: distance, maxDistance: maxDistance, translationMultiplier: itemY > centerY ? -1 : 1)
 
-                            Image(systemName: items[index])
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 85, height: 85)
-                                .scaleEffect(transform.scale)
-                                .opacity(transform.opacity)
-                                .offset(y: transform.translation * maxDistance)
-                                .onAppear {
-                                    if distance < 1 {
-                                        withAnimation {
-                                            selectedIndex = index
+                                Image(systemName: items[index])
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 85, height: 85)
+                                    .scaleEffect(transform.scale)
+                                    .opacity(transform.opacity)
+                                    .offset(y: transform.translation * maxDistance)
+                                    .onAppear {
+                                        if distance < 1 {
+                                            withAnimation {
+                                                selectedIndex = index
+                                            }
                                         }
                                     }
-                                }
+                                    .onTapGesture {
+                                        if transform.opacity > 0.3 {
+                                            withAnimation {
+                                                selectedIndex = index
+                                                scrollViewProxy.scrollTo(index, anchor: .center)
+                                            }
+                                        }
+                                    }.foregroundStyle(selectedIndex == index ? Color.red : Color.black)
+                            }
+                            .frame(height: 100)
+                            .id(index)
                         }
-                        .frame(height: 100)
                     }
+                    .padding(.vertical, outerGeometry.size.height / 2 - 50)
                 }
-                .padding(.vertical, outerGeometry.size.height / 2 - 50)
-            }
-            .gesture(
-                DragGesture()
-                    .onEnded { _ in
-                        let snapIndex = round(Double(selectedIndex))
-                        withAnimation {
+                .gesture(
+                    DragGesture()
+                        .onEnded { _ in
+                            let snapIndex = round(Double(selectedIndex))
                             selectedIndex = Int(snapIndex)
+
+                            withAnimation {
+                                scrollViewProxy.scrollTo(selectedIndex, anchor: .center)
+                            }
                         }
-                    }
-            )
+                )
+            }
         }
     }
 
