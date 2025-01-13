@@ -67,9 +67,9 @@ struct ColorGradient: Codable {
     var radialAttributes: RadialGradientAttributes
     var angularAttributes: AngularGradientAttributes
 
-    init() {
-        self.type = .linear
-        self.stops = [
+    init(
+        type: GradientType = .linear,
+        stops: [GradientStop] = [
             GradientStop(
                 color: RGBAColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0),
                 position: 0.0
@@ -78,20 +78,26 @@ struct ColorGradient: Codable {
                 color: RGBAColor(red: 0.0, green: 0.0, blue: 1.0, alpha: 1.0),
                 position: 1.0
             )
-        ]
-        self.linearAttributes = LinearGradientAttributes(
+        ],
+        linearAttributes: LinearGradientAttributes = LinearGradientAttributes(
             startPoint: CodableUnitPoint(from: .top),
             endPoint: CodableUnitPoint(from: .bottom)
-        )
-        self.radialAttributes = RadialGradientAttributes(
+        ),
+        radialAttributes: RadialGradientAttributes = RadialGradientAttributes(
             center: CodableUnitPoint(from: .center),
             startRadius: 0,
             endRadius: 100
-        )
-        self.angularAttributes = AngularGradientAttributes(
+        ),
+        angularAttributes: AngularGradientAttributes = AngularGradientAttributes(
             center: CodableUnitPoint(from: .center),
             angle: CodableAngle(from: .zero)
         )
+    ) {
+        self.type = type
+        self.stops = stops
+        self.linearAttributes = linearAttributes
+        self.radialAttributes = radialAttributes
+        self.angularAttributes = angularAttributes
     }
 
     @ViewBuilder

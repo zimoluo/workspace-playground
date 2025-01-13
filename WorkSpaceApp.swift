@@ -8,7 +8,7 @@ struct WorkSpaceApp: App {
             SettingsProvider { theme in
                 ContentView()
                     .environment(\.theme, theme)
-            }.modelContainer(for: [Theme.self, Settings.self])
+            }.modelContainer(for: [Theme.self, Settings.self, Note.self])
         }
     }
 }

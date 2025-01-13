@@ -14,7 +14,20 @@ struct RGBAColor: Codable {
     var alpha: Double
 
     var color: Color {
-        Color(red: self.red, green: self.green, blue: self.blue, opacity: self.alpha)
+        self.toColor()
+    }
+
+    func toColor(opacity: Double? = nil) -> Color {
+        Color(
+            red: self.red,
+            green: self.green,
+            blue: self.blue,
+            opacity: opacity ?? self.alpha
+        )
+    }
+
+    func toShadow(opacityMultiplier: Double = 1) -> Color {
+        self.shadeMap(numShades: 16).shadeMap[12].toColor(opacity: 0.18 * opacityMultiplier)
     }
 
     init(_ color: Color) {
@@ -154,7 +167,7 @@ struct RGBAColor: Codable {
     }
 }
 
-let textIndexMapLight: [Int: Int] = [
+let shadeIndexMapLight: [Int: Int] = [
     0: 28,
     1: 21,
     2: 10,
@@ -163,7 +176,7 @@ let textIndexMapLight: [Int: Int] = [
     5: 0
 ]
 
-let textIndexMapDark: [Int: Int] = [
+let shadeIndexMapDark: [Int: Int] = [
     0: 0,
     1: 7,
     2: 15,
@@ -177,8 +190,8 @@ func themeColor(
     for category: String,
     in colorScheme: ColorScheme,
     level: Int,
-    lightMap: [Int: Int] = textIndexMapLight,
-    darkMap: [Int: Int] = textIndexMapDark
+    lightMap: [Int: Int] = shadeIndexMapLight,
+    darkMap: [Int: Int] = shadeIndexMapDark
 ) -> Color {
     let clampedLevel = max(0, min(level, 5))
 

@@ -59,6 +59,22 @@ struct ContentView: View {
                                 themeColor(from: theme, for: "primary", in: colorScheme, level: 0)
                             )
                         }
+
+                        NavigationLink(destination: ThemeMakerView()) {
+                            HStack {
+                                Image(systemName: "gearshape")
+                                Text("Theme Maker")
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(
+                                themeColor(from: theme, for: "primary", in: colorScheme, level: 3)
+                            )
+                            .cornerRadius(8)
+                            .foregroundColor(
+                                themeColor(from: theme, for: "primary", in: colorScheme, level: 0)
+                            )
+                        }
                     }
                     .padding(.horizontal)
                 }

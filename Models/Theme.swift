@@ -31,7 +31,9 @@ class Theme: ObservableObject {
         primary: RGBAColor = RGBAColor(red: 0.486, green: 0.176, blue: 0.071),
         secondary: RGBAColor = RGBAColor(red: 0.761, green: 0.255, blue: 0.047),
         tertiary: RGBAColor = RGBAColor(red: 1.0, green: 0.969, blue: 0.929),
-        mainGradient: ColorGradient = ColorGradient(),
+        mainGradient: ColorGradient = ColorGradient(type: .linear, stops: [
+            GradientStop(color: RGBAColor(red: 1, green: 0.929, blue: 0.898), position: 0), GradientStop(color: RGBAColor(red: 1, green: 0.984, blue: 0.894), position: 1)
+        ], linearAttributes: LinearGradientAttributes(startPoint: CodableUnitPoint(from: .bottomLeading), endPoint: CodableUnitPoint(from: .topTrailing))),
         readingBlur: Double = 0.0,
         title: String = "Default Theme"
     ) {
@@ -47,7 +49,7 @@ class Theme: ObservableObject {
     }
 }
 
-extension Text {
+extension View {
     func themed(using theme: Theme, in colorScheme: ColorScheme, level: Int = 0) -> some View {
         let textColor = themeColor(
             from: theme,
@@ -57,9 +59,7 @@ extension Text {
         )
         return self.foregroundColor(textColor)
     }
-}
 
-extension View {
     func themedBackground(using theme: Theme, in colorScheme: ColorScheme, level: Int, category: String = "secondary") -> some View {
         let backgroundColor = themeColor(
             from: theme,
