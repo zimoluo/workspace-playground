@@ -49,18 +49,24 @@ class Theme: ObservableObject {
     }
 }
 
+enum PaletteCategory: String {
+    case primary
+    case secondary
+    case tertiary
+}
+
 extension View {
-    func themed(using theme: Theme, in colorScheme: ColorScheme, level: Int = 0) -> some View {
-        let textColor = themeColor(
+    func themedForeground(using theme: Theme, in colorScheme: ColorScheme, level: Int = 0, category: PaletteCategory = .primary) -> some View {
+        let foregroundColor = themeColor(
             from: theme,
-            for: "primary",
+            for: category,
             in: colorScheme,
             level: level
         )
-        return self.foregroundColor(textColor)
+        return self.foregroundColor(foregroundColor)
     }
 
-    func themedBackground(using theme: Theme, in colorScheme: ColorScheme, level: Int, category: String = "secondary") -> some View {
+    func themedBackground(using theme: Theme, in colorScheme: ColorScheme, level: Int, category: PaletteCategory = .primary) -> some View {
         let backgroundColor = themeColor(
             from: theme,
             for: category,

@@ -178,18 +178,18 @@ let shadeIndexMapLight: [Int: Int] = [
 
 let shadeIndexMapDark: [Int: Int] = [
     0: 0,
-    1: 7,
-    2: 15,
-    3: 21,
-    4: 25,
-    5: 28
+    1: 6,
+    2: 14,
+    3: 19,
+    4: 26,
+    5: 29
 ]
 
 func themeColor(
     from theme: Theme,
-    for category: String,
+    for category: PaletteCategory = .primary,
     in colorScheme: ColorScheme,
-    level: Int,
+    level: Int = 0,
     lightMap: [Int: Int] = shadeIndexMapLight,
     darkMap: [Int: Int] = shadeIndexMapDark
 ) -> Color {
@@ -197,14 +197,12 @@ func themeColor(
 
     let inputColor: RGBAColor
     switch category {
-    case "primary":
+    case .primary:
         inputColor = theme.primary
-    case "secondary":
+    case .secondary:
         inputColor = theme.secondary
-    case "tertiary":
+    case .tertiary:
         inputColor = theme.tertiary
-    default:
-        inputColor = theme.primary
     }
 
     let index = colorScheme == .light

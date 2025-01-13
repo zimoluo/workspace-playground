@@ -25,7 +25,7 @@ struct ThemeMakerView: View {
                                 .fontWeight(.semibold)
                                 .opacity(0.8)
                                 .padding(.horizontal, 6)
-                                .foregroundStyle(themeColor(from: theme, for: "secondary", in: colorScheme, level: 0))
+                                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
                             Spacer()
                         }
 
@@ -57,7 +57,7 @@ struct ThemeMakerView: View {
                                     .labelsHidden()
                                     .padding(12)
                             }
-                            .background(themeColor(from: theme, for: "secondary", in: colorScheme, level: 5))
+                            .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                             .cornerRadius(16)
                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
 
@@ -65,7 +65,7 @@ struct ThemeMakerView: View {
                                 GridRow {
                                     ForEach((0...5).reversed(), id: \.self) { level in
                                         Rectangle()
-                                            .fill(themeColor(from: theme, for: "primary", in: colorScheme, level: level))
+                                            .fill(themeColor(from: theme, for: .primary, in: colorScheme, level: level))
                                             .cornerRadius(8)
                                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
                                     }
@@ -73,7 +73,7 @@ struct ThemeMakerView: View {
                                 GridRow {
                                     ForEach((0...5).reversed(), id: \.self) { level in
                                         Rectangle()
-                                            .fill(themeColor(from: theme, for: "secondary", in: colorScheme, level: level))
+                                            .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: level))
                                             .cornerRadius(8)
                                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
                                     }
@@ -81,7 +81,7 @@ struct ThemeMakerView: View {
                                 GridRow {
                                     ForEach((0...5).reversed(), id: \.self) { level in
                                         Rectangle()
-                                            .fill(themeColor(from: theme, for: "tertiary", in: colorScheme, level: level))
+                                            .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: level))
                                             .cornerRadius(8)
                                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
                                     }
@@ -89,7 +89,7 @@ struct ThemeMakerView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .padding(12)
-                            .background(themeColor(from: theme, for: "secondary", in: colorScheme, level: 5))
+                            .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                             .cornerRadius(16)
                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
 
@@ -97,22 +97,22 @@ struct ThemeMakerView: View {
                                 Button(action: {}) {
                                     Image(systemName: "wand.and.sparkles")
                                         .font(.title)
-                                        .foregroundStyle(themeColor(from: theme, for: "secondary", in: colorScheme, level: 0))
+                                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
                                 }
                                 Button(action: {}) {
                                     Image(systemName: "bubbles.and.sparkles")
                                         .font(.title)
-                                        .foregroundStyle(themeColor(from: theme, for: "secondary", in: colorScheme, level: 0))
+                                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
                                 }
                                 Spacer()
                             }
                             .padding(8)
-                            .background(themeColor(from: theme, for: "secondary", in: colorScheme, level: 5))
+                            .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                             .cornerRadius(16)
                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                         }.padding(16)
                             .frame(maxWidth: .infinity)
-                            .background(themeColor(from: theme, for: "secondary", in: colorScheme, level: 4))
+                            .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 4))
                             .cornerRadius(16).shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
                     }
 
@@ -124,7 +124,7 @@ struct ThemeMakerView: View {
                                 .fontWeight(.semibold)
                                 .opacity(0.75)
                                 .padding(.horizontal, 8)
-                                .themed(using: theme, in: colorScheme)
+                                .themedForeground(using: theme, in: colorScheme)
                             Spacer()
                         }
                         // Content
@@ -169,7 +169,7 @@ struct ThemeMakerView: View {
                 Text("Theme Maker")
                     .font(.title)
                     .fontWeight(.bold)
-                    .foregroundStyle(themeColor(from: theme, for: "secondary", in: colorScheme, level: 0))
+                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
                     .frame(alignment: .leading)
                     .padding(.horizontal, 4)
             }

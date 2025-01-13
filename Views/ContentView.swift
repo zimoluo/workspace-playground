@@ -13,21 +13,21 @@ struct ContentView: View {
                 HStack {
                     Text("My Notes")
                         .font(.largeTitle)
-                        .fontWeight(.bold).themed(using: theme, in: colorScheme)
+                        .fontWeight(.bold).themedForeground(using: theme, in: colorScheme)
                     Spacer()
                     Button(action: addTheme) {
                         Image(systemName: "plus")
-                            .font(.title2).foregroundStyle(themeColor(from: theme, for: "primary", in: colorScheme, level: 0))
+                            .font(.title2).foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
                     }
                 }
-                .padding().background(themeColor(from: theme, for: "primary", in: colorScheme, level: 5))
+                .padding().background(themeColor(from: theme, for: .primary, in: colorScheme, level: 5))
 
                 // Custom Scrollable Content
                 ScrollView {
                     LazyVStack(spacing: 10) {
                         // Themes Section
-                        let backgroundColor = themeColor(from: theme, for: "primary", in: colorScheme, level: 3)
-                        let foregroundColor = themeColor(from: theme, for: "primary", in: colorScheme, level: 0)
+                        let backgroundColor = themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
+                        let foregroundColor = themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                         SectionView(header: "Themes") {
                             ForEach(themes, id: \.id) { theme in
                                 Text(theme.title)
@@ -52,11 +52,11 @@ struct ContentView: View {
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(
-                                themeColor(from: theme, for: "primary", in: colorScheme, level: 3)
+                                themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
                             )
                             .cornerRadius(8)
                             .foregroundColor(
-                                themeColor(from: theme, for: "primary", in: colorScheme, level: 0)
+                                themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                             )
                         }
 
@@ -68,17 +68,17 @@ struct ContentView: View {
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(
-                                themeColor(from: theme, for: "primary", in: colorScheme, level: 3)
+                                themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
                             )
                             .cornerRadius(8)
                             .foregroundColor(
-                                themeColor(from: theme, for: "primary", in: colorScheme, level: 0)
+                                themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                             )
                         }
                     }
                     .padding(.horizontal)
                 }
-                .background(LinearGradient(colors: [themeColor(from: theme, for: "primary", in: colorScheme, level: 4), themeColor(from: theme, for: "primary", in: colorScheme, level: 5)], startPoint: .bottom, endPoint: .top))
+                .background(LinearGradient(colors: [themeColor(from: theme, for: .primary, in: colorScheme, level: 4), themeColor(from: theme, for: .primary, in: colorScheme, level: 5)], startPoint: .bottom, endPoint: .top))
             }
         } detail: {
             // Main Content Area
@@ -89,7 +89,7 @@ struct ContentView: View {
                     .padding()
                 Spacer()
             }.background(theme.mainGradient.toGradient())
-        }.accentColor(themeColor(from: theme, for: "primary", in: colorScheme, level: 0))
+        }.accentColor(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
     }
 
     private func addTheme() {
