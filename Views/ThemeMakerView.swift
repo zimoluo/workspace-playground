@@ -23,96 +23,83 @@ struct ThemeMakerView: View {
                             Text("Interface")
                                 .font(.title2)
                                 .fontWeight(.semibold)
-                                .opacity(0.75)
+                                .opacity(0.8)
                                 .padding(.horizontal, 6)
-                                .themed(using: theme, in: colorScheme)
+                                .foregroundStyle(themeColor(from: theme, for: "secondary", in: colorScheme, level: 0))
                             Spacer()
                         }
 
                         HStack(spacing: 16) {
                             VStack(spacing: 4) {
-                                ColorPicker("Primary color", selection: Binding(
-                                    get: { theme.primary.color },
-                                    set: { newColor in
-                                        theme.primary = RGBAColor(newColor)
-                                    }
-                                ), supportsOpacity: false).labelsHidden().padding(12)
-                                ColorPicker("Secondary color", selection: Binding(
-                                    get: { theme.secondary.color },
-                                    set: { newColor in
-                                        theme.secondary = RGBAColor(newColor)
-                                    }
-                                ), supportsOpacity: false).labelsHidden()
-                                ColorPicker("Tertiary color", selection: Binding(
-                                    get: { theme.tertiary.color },
-                                    set: { newColor in
-                                        theme.tertiary = RGBAColor(newColor)
-                                    }
-                                ), supportsOpacity: false).labelsHidden().padding(12)
+                                ColorPicker("",
+                                            selection: Binding(
+                                                get: { theme.primary.color },
+                                                set: { theme.primary = RGBAColor($0) }
+                                            ),
+                                            supportsOpacity: false)
+                                    .labelsHidden()
+                                    .padding(12)
+
+                                ColorPicker("",
+                                            selection: Binding(
+                                                get: { theme.secondary.color },
+                                                set: { theme.secondary = RGBAColor($0) }
+                                            ),
+                                            supportsOpacity: false)
+                                    .labelsHidden()
+
+                                ColorPicker("",
+                                            selection: Binding(
+                                                get: { theme.tertiary.color },
+                                                set: { theme.tertiary = RGBAColor($0) }
+                                            ),
+                                            supportsOpacity: false)
+                                    .labelsHidden()
+                                    .padding(12)
                             }
-                            .background(themeColor(from: theme, for: "secondary", in: colorScheme, level: 5)).cornerRadius(16)
+                            .background(themeColor(from: theme, for: "secondary", in: colorScheme, level: 5))
+                            .cornerRadius(16)
                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
 
                             Grid(horizontalSpacing: 10, verticalSpacing: 16) {
                                 GridRow {
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "primary", in: colorScheme, level: 5)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "primary", in: colorScheme, level: 4)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "primary", in: colorScheme, level: 3)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "primary", in: colorScheme, level: 2)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "primary", in: colorScheme, level: 1)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "primary", in: colorScheme, level: 0)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                                    ForEach((0...5).reversed(), id: \.self) { level in
+                                        Rectangle()
+                                            .fill(themeColor(from: theme, for: "primary", in: colorScheme, level: level))
+                                            .cornerRadius(8)
+                                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                                    }
                                 }
                                 GridRow {
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "secondary", in: colorScheme, level: 5)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "secondary", in: colorScheme, level: 4)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "secondary", in: colorScheme, level: 3)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "secondary", in: colorScheme, level: 2)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "secondary", in: colorScheme, level: 1)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "secondary", in: colorScheme, level: 0)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                                    ForEach((0...5).reversed(), id: \.self) { level in
+                                        Rectangle()
+                                            .fill(themeColor(from: theme, for: "secondary", in: colorScheme, level: level))
+                                            .cornerRadius(8)
+                                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                                    }
                                 }
                                 GridRow {
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "tertiary", in: colorScheme, level: 5)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "tertiary", in: colorScheme, level: 4)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "tertiary", in: colorScheme, level: 3)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "tertiary", in: colorScheme, level: 2)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "tertiary", in: colorScheme, level: 1)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
-                                    Rectangle()
-                                        .fill(themeColor(from: theme, for: "tertiary", in: colorScheme, level: 0)).cornerRadius(8).shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                                    ForEach((0...5).reversed(), id: \.self) { level in
+                                        Rectangle()
+                                            .fill(themeColor(from: theme, for: "tertiary", in: colorScheme, level: level))
+                                            .cornerRadius(8)
+                                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                                    }
                                 }
-                            }.frame(maxWidth: .infinity)
-                                .padding(12)
-                                .background(themeColor(from: theme, for: "secondary", in: colorScheme, level: 5))
-                                .cornerRadius(16)
-                                .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(12)
+                            .background(themeColor(from: theme, for: "secondary", in: colorScheme, level: 5))
+                            .cornerRadius(16)
+                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
 
-                            // Small strip rectangle with buttons
                             VStack(spacing: 8) {
-                                Button(action: {
-                                    // Magic star button action
-                                }) {
+                                Button(action: {}) {
                                     Image(systemName: "wand.and.sparkles")
-                                        .font(.title).foregroundStyle(themeColor(from: theme, for: "secondary", in: colorScheme, level: 0))
+                                        .font(.title)
+                                        .foregroundStyle(themeColor(from: theme, for: "secondary", in: colorScheme, level: 0))
                                 }
-                                Button(action: {
-                                    // Die button action
-                                }) {
+                                Button(action: {}) {
                                     Image(systemName: "bubbles.and.sparkles")
                                         .font(.title)
                                         .foregroundStyle(themeColor(from: theme, for: "secondary", in: colorScheme, level: 0))
@@ -120,7 +107,8 @@ struct ThemeMakerView: View {
                                 Spacer()
                             }
                             .padding(8)
-                            .background(themeColor(from: theme, for: "secondary", in: colorScheme, level: 5)).cornerRadius(16)
+                            .background(themeColor(from: theme, for: "secondary", in: colorScheme, level: 5))
+                            .cornerRadius(16)
                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                         }.padding(16)
                             .frame(maxWidth: .infinity)
@@ -177,12 +165,13 @@ struct ThemeMakerView: View {
                 .padding(32)
             }
         }.toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            ToolbarItem(placement: .navigation) {
                 Text("Theme Maker")
                     .font(.title)
                     .fontWeight(.bold)
-                    .themed(using: theme, in: colorScheme)
-                    .frame(maxWidth: .infinity, alignment: .leading) // Ensures it aligns left
+                    .foregroundStyle(themeColor(from: theme, for: "secondary", in: colorScheme, level: 0))
+                    .frame(alignment: .leading)
+                    .padding(.horizontal, 4)
             }
         }
     }
