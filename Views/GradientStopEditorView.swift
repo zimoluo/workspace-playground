@@ -1,167 +1,217 @@
-//
-//  GradientStopEditor.swift
-//  workspace-playground
-//
-//  Created by Zimo Luo on 1/13/25.
-//
-
-
 import SwiftUI
 
-struct GradientStopEditor: View {
-    @State private var stops: [GradientStop]
-    @State private var selectedStopIndex: Int?
-    @State private var isDragging = false
-    
-    init(initialStops: [GradientStop] = [
-        GradientStop(color: RGBAColor(red: 0, green: 0, blue: 1, alpha: 1), position: 0),
-        GradientStop(color: RGBAColor(red: 1, green: 0, blue: 1, alpha: 1), position: 1)
-    ]) {
-        _stops = State(initialValue: initialStops)
-    }
-    
+struct GradientStopEditorView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var stops: [GradientStop] = [
+        GradientStop(color: RGBAColor(red: 0.0, green: 0.0, blue: 1.0), position: 0.0),
+        GradientStop(color: RGBAColor(red: 1.0, green: 0.0, blue: 1.0), position: 1.0)
+    ]
+    @State private var selectedStop: Int? = nil
+
     var body: some View {
-        VStack(spacing: 12) {
-            // Top bar with position indicator
+        VStack(spacing: 10) {
             HStack {
-                Text("At")
-                    .foregroundColor(.brown)
-                
-                Text(String(format: "%.1f", selectedStopIndex.map { stops[$0].position * 100 } ?? 0))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color(.systemBackground))
-                    .cornerRadius(8)
-                
+                ColorPicker("", selection: Binding(
+                    get: {
+                        guard let selectedStop else { return .clear }
+                        let stopColor = stops[selectedStop].color
+                        return stopColor.color
+                    },
+                    set: { newColor in
+                        guard let selectedStop else { return }
+                        if let components = newColor.cgColor?.components {
+                            stops[selectedStop].color = RGBAColor(
+                                red: components[0],
+                                green: components[1],
+                                blue: components[2]
+                            )
+                        }
+                    }
+                ))
+                .frame(width: 24, height: 24)
+                .transition(.scale.combined(with: .opacity)) // Scale and fade-in effect
+                .opacity((selectedStop != nil) ? 1 : 0) // Adjust opacity
+                .scaleEffect((selectedStop != nil) ? 0.8 : 0.7) // Scale effect
+                .blur(radius: (selectedStop != nil) ? 0 : 5) // Blur effect
+                .animation(.easeInOut(duration: 0.3), value: selectedStop)
+
                 Spacer()
-                
+
                 Button(action: {
-                    // Add new stop at middle position
-                    let newPosition = 0.5
-                    let newColor = interpolateColor(position: newPosition)
-                    let newStop = GradientStop(color: newColor, position: newPosition)
-                    stops.append(newStop)
-                    stops.sort { $0.position < $1.position }
+                    if let selectedIndex = selectedStop {
+                        removeStop(at: selectedIndex)
+                    }
                 }) {
-                    Image(systemName: "plus.square")
+                    Image(systemName: "minus.circle")
+                        .font(.title2)
+                        .opacity((selectedStop != nil && stops.count > 2) ? 1 : 0) // Adjust opacity
+                        .scaleEffect((selectedStop != nil && stops.count > 2) ? 1 : 0.8) // Scale effect
+                        .blur(radius: (selectedStop != nil && stops.count > 2) ? 0 : 5) // Blur effect
+                }
+                .disabled(!(selectedStop != nil && stops.count > 2)) // Disable the button when conditions are not met
+                .animation(.easeInOut(duration: 0.3), value: selectedStop)
+
+                Button(action: {
+                    if let selectedIndex = selectedStop {
+                        let newPosition = stops[selectedIndex].position + 0.05
+                        addStop(at: newPosition > 1 ? stops[selectedIndex].position - 0.05 : newPosition)
+                    } else {
+                        addStop(at: 0.5)
+                    }
+                }) {
+                    Image(systemName: "plus.circle")
+                        .font(.title2)
+                }
+
+                Button(action: {
+                    reverseStops()
+                }) {
+                    Image(systemName: "arrow.uturn.left.circle")
                         .font(.title2)
                 }
             }
-            
-            // Gradient bar with stops
-            ZStack(alignment: .leading) {
-                // Gradient background
-                LinearGradient(
-                    gradient: Gradient(stops: stops.map { Gradient.Stop(color: $0.color.toColor(), location: $0.position) }),
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-                .frame(height: 12)
-                .cornerRadius(6)
-                
-                // Clickable area for adding new stops
-                Color.clear
-                    .contentShape(Rectangle())
-                    .onTapGesture { location in
-                        let position = location.x
-                        let newColor = interpolateColor(position: position)
-                        let newStop = GradientStop(color: newColor, position: position)
-                        stops.append(newStop)
-                        stops.sort { $0.position < $1.position }
+
+            ZStack {
+                GeometryReader { geometry in
+                    let width = geometry.size.width
+                    let gradient = LinearGradient(
+                        gradient: Gradient(stops: stops
+                            .sorted { $0.position < $1.position }
+                            .map { $0.toSwiftUIStop(in: colorScheme) }),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+
+                    Rectangle()
+                        .fill(gradient)
+                        .frame(height: 32)
+                        .cornerRadius(12)
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onEnded { value in
+                                    let tapLocation = value.location.x
+                                    let position = Double(tapLocation / width)
+                                    addStop(at: position.clamped(to: 0.0...1.0))
+                                }
+                        )
+
+                    ForEach(0 ..< stops.count, id: \..self) { index in
+                        let stop = stops[index]
+
+                        ZStack {
+                            // Pin shape
+                            Path { path in
+                                path.move(to: CGPoint(x: 10, y: 0))
+                                path.addLine(to: CGPoint(x: 20, y: 10))
+                                path.addLine(to: CGPoint(x: 20, y: 30))
+                                path.addLine(to: CGPoint(x: 0, y: 30))
+                                path.addLine(to: CGPoint(x: 0, y: 10))
+                                path.closeSubpath()
+                            }
+                            .fill(stop.color.color)
+                            .frame(width: 20, height: 30)
+                            .cornerRadius(5)
+
+                            // Selection indicator
+                            if selectedStop == index {
+                                Circle()
+                                    .fill(Color.white)
+                                    .frame(width: 9, height: 9)
+                                    .offset(y: 3)
+                            }
+                        }
+                        .frame(width: 20, height: 20)
+                        .position(x: CGFloat(stop.position) * width, y: 50)
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    updateStopPosition(index: index, newPosition: Double(value.location.x / width))
+                                    if selectedStop != index {
+                                        selectedStop = index
+                                    }
+                                }
+                        )
+                        .onTapGesture {
+                            selectedStop = index
+                        }
                     }
-                
-                // Stop pins
-                ForEach(Array(stops.enumerated()), id: \.element.position) { index, stop in
-                    StopPin(
-                        isSelected: selectedStopIndex == index,
-                        color: stop.color.toColor()
-                    )
-                    .position(x: stop.position * UIScreen.main.bounds.width, y: 6)
-                    .gesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { value in
-                                isDragging = true
-                                selectedStopIndex = index
-                                
-                                // Update stop position
-                                let newPosition = max(0, min(1, value.location.x / UIScreen.main.bounds.width))
-                                var updatedStops = stops
-                                updatedStops[index] = GradientStop(color: stop.color, position: newPosition)
-                                updatedStops.sort { $0.position < $1.position }
-                                stops = updatedStops
-                            }
-                            .onEnded { _ in
-                                isDragging = false
-                            }
-                    )
                 }
             }
+            .frame(height: 60)
         }
-        .padding()
+        .padding(8)
     }
-    
-    private func interpolateColor(position: Double) -> RGBAColor {
-        // Find surrounding stops
+
+    private func addStop(at position: Double) {
+        let clampedPosition = position.clamped(to: 0.0...1.0)
+
+        // Find the stops on the left and right
         let sortedStops = stops.sorted { $0.position < $1.position }
-        guard let firstStop = sortedStops.first,
-              let lastStop = sortedStops.last else {
-            return RGBAColor(red: 0, green: 0, blue: 0, alpha: 1)
+        let leftStop = sortedStops.last { $0.position <= clampedPosition }
+        let rightStop = sortedStops.first { $0.position >= clampedPosition }
+
+        // Determine the new color
+        let newColor: RGBAColor
+        if let left = leftStop, let right = rightStop {
+            if left.position == right.position {
+                // If both stops have the same position, use that color
+                newColor = left.color
+            } else {
+                // Blend the colors based on the relative position
+                let relativePosition = (clampedPosition - left.position) / (right.position - left.position)
+                newColor = blendColors(color1: left.color, color2: right.color, ratio: relativePosition)
+            }
+        } else if let left = leftStop {
+            // No stop on the right, use the left stop's color
+            newColor = left.color
+        } else if let right = rightStop {
+            // No stop on the left, use the right stop's color
+            newColor = right.color
+        } else {
+            // Default color if no stops exist (shouldn't happen in this case)
+            newColor = RGBAColor(red: 0.5, green: 0.5, blue: 0.5)
         }
-        
-        guard let (leftStop, rightStop) = findSurroundingStops(position: position) else {
-            if position <= firstStop.position { return firstStop.color }
-            if position >= lastStop.position { return lastStop.color }
-            return RGBAColor(red: 0, green: 0, blue: 0, alpha: 1)
-        }
-        
-        // Interpolate color
-        let t = (position - leftStop.position) / (rightStop.position - leftStop.position)
+
+        // Add the new stop
+        let newStop = GradientStop(color: newColor, position: clampedPosition)
+        stops.append(newStop)
+        selectedStop = stops.count - 1
+    }
+
+    private func blendColors(color1: RGBAColor, color2: RGBAColor, ratio: Double) -> RGBAColor {
+        let inverseRatio = 1.0 - ratio
         return RGBAColor(
-            red: leftStop.color.red + (rightStop.color.red - leftStop.color.red) * t,
-            green: leftStop.color.green + (rightStop.color.green - leftStop.color.green) * t,
-            blue: leftStop.color.blue + (rightStop.color.blue - leftStop.color.blue) * t,
-            alpha: leftStop.color.alpha + (rightStop.color.alpha - leftStop.color.alpha) * t
+            red: color1.red * inverseRatio + color2.red * ratio,
+            green: color1.green * inverseRatio + color2.green * ratio,
+            blue: color1.blue * inverseRatio + color2.blue * ratio
         )
     }
-    
-    private func findSurroundingStops(position: Double) -> (left: GradientStop, right: GradientStop)? {
-        let sortedStops = stops.sorted { $0.position < $1.position }
-        for i in 0..<(sortedStops.count - 1) {
-            if position >= sortedStops[i].position && position <= sortedStops[i + 1].position {
-                return (sortedStops[i], sortedStops[i + 1])
-            }
+
+    private func removeStop(at index: Int) {
+        guard stops.count > 2 else { return }
+        stops.remove(at: index)
+        selectedStop = nil
+    }
+
+    private func reverseStops() {
+        stops = stops.map { stop in
+            var reversedStop = stop
+            reversedStop.position = 1.0 - stop.position
+            return reversedStop
         }
-        return nil
+    }
+
+    private func updateStopPosition(index: Int, newPosition: Double) {
+        stops[index].position = newPosition.clamped(to: 0.0...1.0)
     }
 }
 
-struct StopPin: View {
-    let isSelected: Bool
-    let color: Color
-    
-    var body: some View {
-        ZStack {
-            // Pin shape
-            Path { path in
-                path.move(to: CGPoint(x: 0, y: 0))
-                path.addLine(to: CGPoint(x: 12, y: 0))
-                path.addLine(to: CGPoint(x: 6, y: 12))
-                path.closeSubpath()
-            }
-            .fill(color)
-            .frame(width: 12, height: 12)
-            
-            // Selection indicator
-            if isSelected {
-                Circle()
-                    .stroke(Color.white, lineWidth: 2)
-                    .frame(width: 4, height: 4)
-                    .offset(y: -2)
-            }
-        }
+extension Double {
+    func clamped(to range: ClosedRange<Double>) -> Double {
+        return min(max(self, range.lowerBound), range.upperBound)
     }
 }
 
 #Preview {
-    GradientStopEditor()
+    GradientStopEditorView()
 }

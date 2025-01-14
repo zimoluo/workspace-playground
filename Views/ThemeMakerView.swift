@@ -135,37 +135,31 @@ struct ThemeMakerView: View {
                                 .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
                             Spacer()
                         }
-                        // Content
                         HStack(spacing: 12) {
-                            // Two big rectangles
-                            Rectangle()
-                                .fill(Color.green) // Color placeholder for the rectangles
-                                .frame(maxWidth: .infinity, minHeight: 180).cornerRadius(12)
-                            Rectangle()
-                                .fill(Color.yellow) // Color placeholder for the rectangles
-                                .frame(maxWidth: .infinity, minHeight: 180).cornerRadius(12)
+                            Group {
+                                GradientTypeSelectorView()
+                            }
+                            .padding(.horizontal, 24)
+                            .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                            .cornerRadius(16)
+                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                            .frame(minHeight: 360, maxHeight: 360)
 
-                            // Small strip rectangle with buttons
-                            VStack(spacing: 8) {
-                                Button(action: {
-                                    theme.tertiary = RGBAColor.randomBright()
-                                }) {
-                                    Image(systemName: "wand.and.sparkles")
-                                        .font(.title)
-                                }
-                                Button(action: {}) {
-                                    Image(systemName: "bubbles.and.sparkles")
-                                        .font(.title)
-                                }
+                            VStack {
+                                GradientStopEditorView()
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 12)
+                                    .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                                    .cornerRadius(16)
+                                    .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                                 Spacer()
                             }
-                            .padding(8)
-                            .background(Color.gray)
-                            .cornerRadius(12)
-                        }.padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.blue)
-                            .cornerRadius(16)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
+                        .padding(12)
+                        .frame(maxWidth: .infinity)
+                        .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 4))
+                        .cornerRadius(16).shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
                     }
                 }
                 .padding(32)
