@@ -2,10 +2,7 @@ import SwiftUI
 
 struct GradientStopEditorView: View {
     @Environment(\.colorScheme) private var colorScheme
-    @State private var stops: [GradientStop] = [
-        GradientStop(color: RGBAColor(red: 0.0, green: 0.0, blue: 1.0), position: 0.0),
-        GradientStop(color: RGBAColor(red: 1.0, green: 0.0, blue: 1.0), position: 1.0)
-    ]
+    @Environment(\.theme) private var theme
     @State private var selectedStop: Int? = nil
 
     var body: some View {
@@ -14,13 +11,13 @@ struct GradientStopEditorView: View {
                 ColorPicker("", selection: Binding(
                     get: {
                         guard let selectedStop else { return .clear }
-                        let stopColor = stops[selectedStop].color
+                        let stopColor = theme.mainGradient.stops[selectedStop].color
                         return stopColor.color
                     },
                     set: { newColor in
                         guard let selectedStop else { return }
-                        if let components = newColor.cgColor?.components {
-                            stops[selectedStop].color = RGBAColor(
+                        if let components = newColor.cgColor?.components, components.count >= 3 {
+                            theme.mainGradient.stops[selectedStop].color = RGBAColor(
                                 red: components[0],
                                 green: components[1],
                                 blue: components[2]
@@ -44,30 +41,33 @@ struct GradientStopEditorView: View {
                 }) {
                     Image(systemName: "minus.circle")
                         .font(.title2)
-                        .opacity((selectedStop != nil && stops.count > 2) ? 1 : 0) // Adjust opacity
-                        .scaleEffect((selectedStop != nil && stops.count > 2) ? 1 : 0.8) // Scale effect
-                        .blur(radius: (selectedStop != nil && stops.count > 2) ? 0 : 5) // Blur effect
+                        .themedForeground(using: theme, in: colorScheme, category: .secondary)
+                        .opacity((selectedStop != nil && theme.mainGradient.stops.count > 2) ? 1 : 0) // Adjust opacity
+                        .scaleEffect((selectedStop != nil && theme.mainGradient.stops.count > 2) ? 1 : 0.8) // Scale effect
+                        .blur(radius: (selectedStop != nil && theme.mainGradient.stops.count > 2) ? 0 : 5) // Blur effect
                 }
-                .disabled(!(selectedStop != nil && stops.count > 2)) // Disable the button when conditions are not met
+                .disabled(!(selectedStop != nil && theme.mainGradient.stops.count > 2)) // Disable the button when conditions are not met
                 .animation(.easeInOut(duration: 0.3), value: selectedStop)
 
                 Button(action: {
                     if let selectedIndex = selectedStop {
-                        let newPosition = stops[selectedIndex].position + 0.05
-                        addStop(at: newPosition > 1 ? stops[selectedIndex].position - 0.05 : newPosition)
+                        let newPosition = theme.mainGradient.stops[selectedIndex].position + 0.05
+                        addStop(at: newPosition > 1 ? theme.mainGradient.stops[selectedIndex].position - 0.05 : newPosition)
                     } else {
                         addStop(at: 0.5)
                     }
                 }) {
                     Image(systemName: "plus.circle")
                         .font(.title2)
+                        .themedForeground(using: theme, in: colorScheme, category: .secondary)
                 }
 
                 Button(action: {
                     reverseStops()
                 }) {
-                    Image(systemName: "arrow.uturn.left.circle")
+                    Image(systemName: "arrow.clockwise.circle")
                         .font(.title2)
+                        .themedForeground(using: theme, in: colorScheme, category: .secondary)
                 }
             }
 
@@ -75,7 +75,7 @@ struct GradientStopEditorView: View {
                 GeometryReader { geometry in
                     let width = geometry.size.width
                     let gradient = LinearGradient(
-                        gradient: Gradient(stops: stops
+                        gradient: Gradient(stops: theme.mainGradient.stops
                             .sorted { $0.position < $1.position }
                             .map { $0.toSwiftUIStop(in: colorScheme) }),
                         startPoint: .leading,
@@ -86,6 +86,7 @@ struct GradientStopEditorView: View {
                         .fill(gradient)
                         .frame(height: 32)
                         .cornerRadius(12)
+                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
                         .gesture(
                             DragGesture(minimumDistance: 0)
                                 .onEnded { value in
@@ -95,8 +96,12 @@ struct GradientStopEditorView: View {
                                 }
                         )
 
-                    ForEach(0 ..< stops.count, id: \..self) { index in
-                        let stop = stops[index]
+                    ForEach(theme.mainGradient.stops.indices, id: \.self) { index in
+                        let stop = theme.mainGradient.stops[index]
+
+                        let circleShadeMap = stop.color.shadeMap(numShades: 16, saturationMultiplier: 0.6)
+
+                        let circleColor = circleShadeMap.index > 5 ? circleShadeMap.shadeMap[0] : circleShadeMap.shadeMap[10]
 
                         ZStack {
                             // Pin shape
@@ -115,12 +120,13 @@ struct GradientStopEditorView: View {
                             // Selection indicator
                             if selectedStop == index {
                                 Circle()
-                                    .fill(Color.white)
+                                    .fill(circleColor.color)
                                     .frame(width: 9, height: 9)
                                     .offset(y: 3)
                             }
                         }
                         .frame(width: 20, height: 20)
+                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
                         .position(x: CGFloat(stop.position) * width, y: 50)
                         .gesture(
                             DragGesture()
@@ -146,7 +152,7 @@ struct GradientStopEditorView: View {
         let clampedPosition = position.clamped(to: 0.0...1.0)
 
         // Find the stops on the left and right
-        let sortedStops = stops.sorted { $0.position < $1.position }
+        let sortedStops = theme.mainGradient.stops.sorted { $0.position < $1.position }
         let leftStop = sortedStops.last { $0.position <= clampedPosition }
         let rightStop = sortedStops.first { $0.position >= clampedPosition }
 
@@ -174,8 +180,8 @@ struct GradientStopEditorView: View {
 
         // Add the new stop
         let newStop = GradientStop(color: newColor, position: clampedPosition)
-        stops.append(newStop)
-        selectedStop = stops.count - 1
+        theme.mainGradient.stops.append(newStop)
+        selectedStop = theme.mainGradient.stops.count - 1
     }
 
     private func blendColors(color1: RGBAColor, color2: RGBAColor, ratio: Double) -> RGBAColor {
@@ -188,13 +194,13 @@ struct GradientStopEditorView: View {
     }
 
     private func removeStop(at index: Int) {
-        guard stops.count > 2 else { return }
-        stops.remove(at: index)
+        guard theme.mainGradient.stops.count > 2 else { return }
+        theme.mainGradient.stops.remove(at: index)
         selectedStop = nil
     }
 
     private func reverseStops() {
-        stops = stops.map { stop in
+        theme.mainGradient.stops = theme.mainGradient.stops.map { stop in
             var reversedStop = stop
             reversedStop.position = 1.0 - stop.position
             return reversedStop
@@ -202,7 +208,7 @@ struct GradientStopEditorView: View {
     }
 
     private func updateStopPosition(index: Int, newPosition: Double) {
-        stops[index].position = newPosition.clamped(to: 0.0...1.0)
+        theme.mainGradient.stops[index].position = newPosition.clamped(to: 0.0...1.0)
     }
 }
 
@@ -212,6 +218,9 @@ extension Double {
     }
 }
 
-#Preview {
-    GradientStopEditorView()
+struct GradientStopEditorView_Previews: PreviewProvider {
+    static var previews: some View {
+        GradientStopEditorView()
+            .environment(\.theme, Theme()) // Provide a Theme instance
+    }
 }
