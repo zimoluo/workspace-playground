@@ -167,7 +167,7 @@ struct ConnectPointsPanel: View {
         }
     }
 
-    private let angleHandleRadius: CGFloat = 0.14
+    private let angleHandleRadius: CGFloat = 0.15
 
     @ViewBuilder
     private func angularAngleHandle(_ geometry: GeometryProxy) -> some View {
@@ -187,7 +187,7 @@ struct ConnectPointsPanel: View {
 
         DraggablePoint(
             point: .constant(CodableUnitPoint(x: handleX, y: handleY)), // not a binding to theme
-            size: 20,
+            size: 19,
             color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color,
             shadowColor: theme.secondary.toShadow(opacityMultiplier: 0.4)
         )
@@ -291,6 +291,10 @@ struct ConnectPointsPanel: View {
 
         Ellipse()
             .fill(theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.3))
+            .stroke(
+                theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.3),
+                style: StrokeStyle(lineWidth: 4)
+            )
             .frame(width: ellipseWidth, height: ellipseHeight)
             .position(x: centerPt.x, y: centerPt.y)
     }
@@ -310,7 +314,7 @@ struct ConnectPointsPanel: View {
         Circle()
             .stroke(
                 theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.3),
-                style: StrokeStyle(lineWidth: 6, dash: [10, 10])
+                style: StrokeStyle(lineWidth: 6, lineCap: .round, dash: [9, 8.5])
             )
             .frame(width: orbitPxRadius * 2, height: orbitPxRadius * 2)
             .position(x: centerPt.x, y: centerPt.y)
