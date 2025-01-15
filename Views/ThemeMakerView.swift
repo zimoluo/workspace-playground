@@ -23,9 +23,8 @@ struct ThemeMakerView: View {
                             Text("Interface")
                                 .font(.title2)
                                 .fontWeight(.semibold)
-                                .opacity(0.8)
                                 .padding(.horizontal, 6)
-                                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
+                                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                             Spacer()
                         }
 
@@ -130,9 +129,8 @@ struct ThemeMakerView: View {
                             Text("Background")
                                 .font(.title2)
                                 .fontWeight(.semibold)
-                                .opacity(0.8)
                                 .padding(.horizontal, 6)
-                                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
+                                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                             Spacer()
                         }
                         HStack(spacing: 12) {
@@ -143,16 +141,71 @@ struct ThemeMakerView: View {
                             .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                             .cornerRadius(16)
                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
-                            .frame(minHeight: 360, maxHeight: 360)
+                            .frame(height: 400)
 
-                            VStack {
+                            VStack(spacing: 12) {
                                 GradientStopEditorView()
                                     .padding(.horizontal, 20)
                                     .padding(.vertical, 12)
                                     .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                                     .cornerRadius(16)
                                     .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
-                                Spacer()
+                                HStack(spacing: 12) {
+                                    ConnectPointsPanel()
+                                        .padding(24)
+                                        .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                                        .cornerRadius(16)
+                                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                                    ZStack {
+                                        theme.mainGradient.toGradient(in: colorScheme)
+
+                                        Rectangle()
+                                            .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                                            .mask(
+                                                LinearGradient(
+                                                    gradient: Gradient(stops: [
+                                                        .init(color: .black, location: 0), // Fully visible
+                                                        .init(color: .clear, location: 0.15),
+                                                        .init(color: .clear, location: 0.85),
+                                                        .init(color: .black, location: 1)
+                                                    ]),
+                                                    startPoint: .leading,
+                                                    endPoint: .trailing
+                                                )
+                                            )
+
+                                        Rectangle()
+                                            .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                                            .mask(
+                                                LinearGradient(
+                                                    gradient: Gradient(stops: [
+                                                        .init(color: .black, location: 0),
+                                                        .init(color: .clear, location: 0.15),
+                                                        .init(color: .clear, location: 0.85),
+                                                        .init(color: .black, location: 1)
+                                                    ]),
+                                                    startPoint: .top,
+                                                    endPoint: .bottom
+                                                )
+                                            )
+
+                                        Rectangle()
+                                            .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                                            .mask(
+                                                EllipticalGradient(
+                                                    gradient: Gradient(stops: [
+                                                        .init(color: .clear, location: 0),
+                                                        .init(color: .clear, location: 0.5),
+                                                        .init(color: .black, location: 0.65)
+                                                    ]),
+                                                    center: .center, startRadiusFraction: 0, endRadiusFraction: 1.08
+                                                )
+                                            )
+                                    }
+                                    .cornerRadius(16)
+                                    .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                                    .frame(maxWidth: 240, maxHeight: .infinity)
+                                }.frame(maxHeight: .infinity)
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }

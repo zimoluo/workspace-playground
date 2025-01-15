@@ -69,6 +69,14 @@ struct GradientStopEditorView: View {
                         .font(.title2)
                         .themedForeground(using: theme, in: colorScheme, category: .secondary)
                 }
+
+                Button(action: {
+                    evenOutStops()
+                }) {
+                    Image(systemName: "grid.circle")
+                        .font(.title2)
+                        .themedForeground(using: theme, in: colorScheme, category: .secondary)
+                }
             }
 
             ZStack {
@@ -204,6 +212,20 @@ struct GradientStopEditorView: View {
             var reversedStop = stop
             reversedStop.position = 1.0 - stop.position
             return reversedStop
+        }
+    }
+
+    private func evenOutStops() {
+        guard theme.mainGradient.stops.count > 1 else { return }
+
+        let sortedStops = theme.mainGradient.stops.enumerated()
+            .sorted(by: { $0.element.position < $1.element.position })
+
+        let totalStops = sortedStops.count
+        let evenlyDistributedPositions = stride(from: 0.0, through: 1.0, by: 1.0 / Double(totalStops - 1))
+
+        for (newIndex, (originalIndex, _)) in zip(evenlyDistributedPositions, sortedStops) {
+            theme.mainGradient.stops[originalIndex].position = newIndex
         }
     }
 
