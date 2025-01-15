@@ -151,6 +151,7 @@ struct ThemeMakerView: View {
                                         .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                                         .cornerRadius(16)
                                         .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                                        .contentShape(RoundedRectangle(cornerRadius: 16))
                                     ZStack {
                                         theme.mainGradient.toGradient(in: colorScheme)
 

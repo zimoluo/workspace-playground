@@ -49,18 +49,13 @@ struct GridBackground: View {
             }
         }
     }
-
-    // Currently unused but could be helpful.
-    private func isPointOnBorder(_ point: CodableUnitPoint) -> Bool {
-        let threshold = 0.01
-        return point.x < threshold || point.x > (1.0 - threshold) ||
-            point.y < threshold || point.y > (1.0 - threshold)
-    }
 }
 
 struct ConnectPointsPanel: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
+
+    @Namespace private var shapeNamespace
 
     let rows: Int = 7
     let columns: Int = 7
@@ -83,7 +78,7 @@ struct ConnectPointsPanel: View {
         var minDistance = Double.infinity
 
         for gridPoint in gridPoints {
-            let distance = sqrt(pow(point.x - gridPoint.x, 2) + pow(point.y - gridPoint.y, 2))
+            let distance = hypot(point.x - gridPoint.x, point.y - gridPoint.y)
             if distance < minDistance {
                 minDistance = distance
                 closestPoint = gridPoint
@@ -148,10 +143,30 @@ struct ConnectPointsPanel: View {
         )
     }
 
-    // Angular gradient special
+    var primaryPointBinding: Binding<CodableUnitPoint> {
+        switch theme.mainGradient.type {
+        case .linear, .mesh:
+            return linearStartBinding
+        case .radial:
+            return radialCenterBinding
+        case .angular:
+            return angularCenterBinding
+        }
+    }
+
+    var secondaryPointBinding: Binding<CodableUnitPoint> {
+        switch theme.mainGradient.type {
+        case .linear, .mesh:
+            return linearEndBinding
+        case .radial:
+            return radialEdgeBinding
+        case .angular:
+            return angularCenterBinding
+        }
+    }
+
     private let angleHandleRadius: CGFloat = 0.14
 
-    // A special dot
     @ViewBuilder
     private func angularAngleHandle(_ geometry: GeometryProxy) -> some View {
         let center = theme.mainGradient.angularAttributes.center
@@ -165,8 +180,8 @@ struct ConnectPointsPanel: View {
 
         let radians = angleDegrees * .pi / 180
 
-        let handleX = cx + radius * cos(radians) / width
-        let handleY = cy + radius * sin(radians) / height
+        let handleX = cx + (radius * cos(radians)) / width
+        let handleY = cy + (radius * sin(radians)) / height
 
         DraggablePoint(
             point: .constant(CodableUnitPoint(x: handleX, y: handleY)), // not a binding to theme
@@ -186,6 +201,7 @@ struct ConnectPointsPanel: View {
                     theme.mainGradient.angularAttributes.angle.degrees = newAngle
                 }
         )
+        .transition(.opacity)
     }
 
     var body: some View {
@@ -197,14 +213,31 @@ struct ConnectPointsPanel: View {
                 switch theme.mainGradient.type {
                 case .linear, .mesh:
                     linearUI(geometry)
+                        .transition(.scale(0, anchor: theme.mainGradient.linearAttributes.startPoint.asUnitPoint).combined(with: .opacity))
 
                 case .radial:
                     radialUI(geometry)
+                        .transition(.scale(0, anchor: theme.mainGradient.radialAttributes.center.asUnitPoint).combined(with: .opacity))
 
                 case .angular:
                     angularUI(geometry)
+                        .transition(.scale(0, anchor: theme.mainGradient.angularAttributes.center.asUnitPoint).combined(with: .opacity))
                 }
+
+                DraggablePoint(
+                    point: secondaryPointBinding,
+                    size: 24,
+                    color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color
+                )
+                .animation(.easeInOut, value: theme.mainGradient.type)
+
+                DraggablePoint(
+                    point: primaryPointBinding,
+                    size: 24,
+                    color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color
+                )
             }
+            .animation(.easeInOut, value: theme.mainGradient.type)
         }
     }
 
@@ -230,11 +263,6 @@ struct ConnectPointsPanel: View {
             theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.2),
             lineWidth: 24
         )
-
-        DraggablePoint(point: linearStartBinding,
-                       color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color)
-        DraggablePoint(point: linearEndBinding,
-                       color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color)
     }
 
     @ViewBuilder
@@ -251,25 +279,15 @@ struct ConnectPointsPanel: View {
             - theme.mainGradient.radialAttributes.center.x
         let dy = theme.mainGradient.radialAttributes.edgePoint.y
             - theme.mainGradient.radialAttributes.center.y
-        // This fraction is how far edge is from center in 0..1 coordinates
-        let radiusFraction = hypot(dx, dy)
 
+        let radiusFraction = hypot(dx, dy)
         let ellipseWidth = radiusFraction * width * 2
         let ellipseHeight = radiusFraction * height * 2
 
         Ellipse()
             .fill(theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.3))
-            .stroke(
-                theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.3),
-                style: StrokeStyle(lineWidth: 4)
-            )
             .frame(width: ellipseWidth, height: ellipseHeight)
             .position(x: centerPt.x, y: centerPt.y)
-
-        DraggablePoint(point: radialCenterBinding,
-                       color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color)
-        DraggablePoint(point: radialEdgeBinding,
-                       color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color)
     }
 
     @ViewBuilder
@@ -292,15 +310,6 @@ struct ConnectPointsPanel: View {
             .frame(width: orbitPxRadius * 2, height: orbitPxRadius * 2)
             .position(x: centerPt.x, y: centerPt.y)
 
-        DraggablePoint(
-            point: angularCenterBinding,
-            color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color
-        )
-
         angularAngleHandle(geometry)
     }
-}
-
-#Preview {
-    ConnectPointsPanel().environment(\.theme, Theme(mainGradient: ColorGradient(type: .angular))).padding(64)
 }
