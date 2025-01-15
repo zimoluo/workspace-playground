@@ -134,14 +134,9 @@ struct ThemeMakerView: View {
                             Spacer()
                         }
                         HStack(spacing: 12) {
-                            Group {
-                                GradientTypeSelectorView()
-                            }
-                            .padding(.horizontal, 24)
-                            .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
-                            .cornerRadius(16)
-                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
-                            .frame(height: 400)
+                            GradientTypeSelectorView()
+                                .frame(height: 400)
+                                .frame(maxWidth: 80.88)
 
                             VStack(spacing: 12) {
                                 GradientStopEditorView()

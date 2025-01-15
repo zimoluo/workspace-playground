@@ -149,7 +149,7 @@ struct ConnectPointsPanel: View {
     }
 
     // Angular gradient special
-    private let angleHandleRadius: CGFloat = 0.09
+    private let angleHandleRadius: CGFloat = 0.14
 
     // A special dot
     @ViewBuilder
@@ -195,7 +195,7 @@ struct ConnectPointsPanel: View {
                     .edgesIgnoringSafeArea(.all)
 
                 switch theme.mainGradient.type {
-                case .linear:
+                case .linear, .mesh:
                     linearUI(geometry)
 
                 case .radial:
@@ -287,7 +287,7 @@ struct ConnectPointsPanel: View {
         Circle()
             .stroke(
                 theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.3),
-                style: StrokeStyle(lineWidth: 8, dash: [15.5, 13])
+                style: StrokeStyle(lineWidth: 6, dash: [10, 10])
             )
             .frame(width: orbitPxRadius * 2, height: orbitPxRadius * 2)
             .position(x: centerPt.x, y: centerPt.y)

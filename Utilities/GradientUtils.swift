@@ -45,6 +45,29 @@ enum GradientType: String, Codable {
     case linear
     case radial
     case angular
+    case mesh
+
+    var symbol: String {
+        switch self {
+        case .linear: return "LinearGradient"
+        case .radial: return "RadialGradient"
+        case .angular: return "AngularGradient"
+        case .mesh: return "MeshGradient"
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .linear: return "Linear"
+        case .radial: return "Radial"
+        case .angular: return "Conic"
+        case .mesh: return "Mesh"
+        }
+    }
+
+    static var allCases: [GradientType] {
+        [.linear, .radial, .angular, .mesh]
+    }
 }
 
 struct LinearGradientAttributes: Codable {
@@ -108,7 +131,7 @@ struct ColorGradient: Codable {
         let sortedStops = stops.sorted { $0.position < $1.position }
 
         switch type {
-        case .linear:
+        case .linear, .mesh:
             LinearGradient(
                 gradient: Gradient(stops: sortedStops.map { $0.toSwiftUIStop(in: colorScheme) }),
                 startPoint: linearAttributes.startPoint.asUnitPoint,

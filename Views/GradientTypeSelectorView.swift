@@ -1,39 +1,63 @@
 import SwiftUI
 
 struct GradientTypeSelectorView: View {
-    @State private var selectedIndex: Int = 0
-
-    let items: [String] = ["sun.max", "moon", "cloud", "wind", "snowflake"]
-
+    @Environment(\.theme) private var theme
+    @Environment(\.colorScheme) private var colorScheme
+    
+    // Assuming GradientType conforms to CaseIterable and has necessary properties
+    var gradientTypes: [GradientType] = GradientType.allCases
+    
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 16) {
-                ForEach(items.indices, id: \.self) { index in
-                    Image(systemName: items[index])
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 64, height: 64)
-                        .scrollTransition(.animated.threshold(.visible(0.9))) { content, phase in
-                            content
-                                .opacity(phase.isIdentity ? 1 : 0)
-                                .scaleEffect(phase.isIdentity ? 1 : 0.2)
-                                .blur(radius: phase.isIdentity ? 0 : 8)
-                                .offset(y: phase.value * -30)
+        GeometryReader { geometry in
+            let totalItems = gradientTypes.count
+            let selectedCount = 3
+            let unselectedCount = 2 * (totalItems - 1)
+            let totalFractions = selectedCount + unselectedCount
+            let spacing: CGFloat = 12
+            let fractionHeight = (geometry.size.height - spacing * CGFloat(totalItems - 1)) / CGFloat(totalFractions)
+            let itemWidth = 2 * fractionHeight
+ 
+            VStack(spacing: spacing) {
+                ForEach(gradientTypes, id: \.self) { gradientType in
+                    let isSelected = theme.mainGradient.type == gradientType
+                    let itemHeight = isSelected ? 3 * fractionHeight : 2 * fractionHeight
+                        
+                    VStack(spacing: 12) {
+                        Image(gradientType.symbol)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: itemWidth * 0.7, height: itemWidth * 0.7)
+                            .clipShape(Circle())
+                            
+                        if isSelected {
+                            Text(gradientType.title)
+                                .font(.headline)
+                                .transition(.opacity)
+                                .fontWeight(.bold)
                         }
-                        .onTapGesture {
-                            withAnimation(.spring()) {
-                                selectedIndex = index
-                            }
+                    }
+                    .frame(height: itemHeight)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        themeColor(from: theme, for: .secondary, in: colorScheme, level: isSelected ? 2 : 5)
+                    )
+                    .cornerRadius(16)
+                    .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                    .onTapGesture {
+                        withAnimation(.spring()) { // Smooth animation
+                            theme.mainGradient.type = gradientType
                         }
-                        .foregroundStyle(selectedIndex == index ? Color.red : Color.primary)
+                    }
+                    .foregroundColor(
+                        themeColor(from: theme, for: .secondary, in: colorScheme, level: isSelected ? 5 : 2)
+                    )
                 }
-            }.padding(.vertical, 128)
+            }
+            .frame(width: itemWidth, height: geometry.size.height)
         }
     }
 }
 
-struct GradientTypeSelectorView_Previews: PreviewProvider {
-    static var previews: some View {
-        GradientTypeSelectorView()
-    }
+#Preview {
+    GradientTypeSelectorView()
 }
