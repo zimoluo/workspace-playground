@@ -4,6 +4,7 @@ struct DraggablePoint: View {
     @Binding var point: CodableUnitPoint
     var size: CGFloat = 24
     var color: Color = .blue
+    var shadowColor: Color = .black.opacity(0.2)
 
     var body: some View {
         GeometryReader { geometry in
@@ -23,6 +24,7 @@ struct DraggablePoint: View {
                             point.y = Double(newY)
                         }
                 )
+                .shadow(color: shadowColor, radius: 12, y: 8)
         }
     }
 }
@@ -186,7 +188,8 @@ struct ConnectPointsPanel: View {
         DraggablePoint(
             point: .constant(CodableUnitPoint(x: handleX, y: handleY)), // not a binding to theme
             size: 20,
-            color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color
+            color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color,
+            shadowColor: theme.secondary.toShadow(opacityMultiplier: 0.4)
         )
         .simultaneousGesture(
             DragGesture()
@@ -227,14 +230,16 @@ struct ConnectPointsPanel: View {
                 DraggablePoint(
                     point: secondaryPointBinding,
                     size: 24,
-                    color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color
+                    color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color,
+                    shadowColor: theme.secondary.toShadow(opacityMultiplier: 0.4)
                 )
                 .animation(.easeInOut, value: theme.mainGradient.type)
 
                 DraggablePoint(
                     point: primaryPointBinding,
                     size: 24,
-                    color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color
+                    color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color,
+                    shadowColor: theme.secondary.toShadow(opacityMultiplier: 0.4)
                 )
             }
             .animation(.easeInOut, value: theme.mainGradient.type)
