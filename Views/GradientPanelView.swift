@@ -314,7 +314,7 @@ struct ConnectPointsPanel: View {
         Circle()
             .stroke(
                 theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.3),
-                style: StrokeStyle(lineWidth: 6, lineCap: .round, dash: [9, 8.5])
+                style: StrokeStyle(lineWidth: 6, lineCap: .round, dash: [4, 12])
             )
             .frame(width: orbitPxRadius * 2, height: orbitPxRadius * 2)
             .position(x: centerPt.x, y: centerPt.y)
