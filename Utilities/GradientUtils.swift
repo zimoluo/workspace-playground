@@ -55,8 +55,7 @@ struct LinearGradientAttributes: Codable {
 /// Attributes for a radial gradient.
 struct RadialGradientAttributes: Codable {
     var center: CodableUnitPoint
-    var startRadiusFraction: Double
-    var endRadiusFraction: Double
+    var edgePoint: CodableUnitPoint
 }
 
 /// Attributes for an angular gradient.
@@ -90,8 +89,7 @@ struct ColorGradient: Codable {
         ),
         radialAttributes: RadialGradientAttributes = RadialGradientAttributes(
             center: CodableUnitPoint(from: .center),
-            startRadiusFraction: 0.0,
-            endRadiusFraction: 1.0
+            edgePoint: CodableUnitPoint(from: .top)
         ),
         angularAttributes: AngularGradientAttributes = AngularGradientAttributes(
             center: CodableUnitPoint(from: .center),
@@ -121,8 +119,14 @@ struct ColorGradient: Codable {
             EllipticalGradient(
                 gradient: Gradient(stops: sortedStops.map { $0.toSwiftUIStop(in: colorScheme) }),
                 center: radialAttributes.center.asUnitPoint,
-                startRadiusFraction: radialAttributes.startRadiusFraction,
-                endRadiusFraction: radialAttributes.endRadiusFraction
+                startRadiusFraction: 0,
+                endRadiusFraction: {
+                    let center = radialAttributes.center
+                    let edgePoint = radialAttributes.edgePoint
+                    let dx = edgePoint.x - center.x
+                    let dy = edgePoint.y - center.y
+                    return sqrt(dx * dx + dy * dy)
+                }()
             )
 
         case .angular:
