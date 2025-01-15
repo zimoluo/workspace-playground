@@ -22,7 +22,7 @@ struct ThemeMakerView: View {
                         HStack {
                             Text("Interface")
                                 .font(.title2)
-                                .fontWeight(.semibold)
+                                .fontWeight(.bold)
                                 .padding(.horizontal, 6)
                                 .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                             Spacer()
@@ -128,7 +128,7 @@ struct ThemeMakerView: View {
                         HStack {
                             Text("Background")
                                 .font(.title2)
-                                .fontWeight(.semibold)
+                                .fontWeight(.bold)
                                 .padding(.horizontal, 6)
                                 .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                             Spacer()
