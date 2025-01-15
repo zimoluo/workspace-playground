@@ -27,7 +27,6 @@ struct DraggablePoint: View {
     }
 }
 
-// 3. GridBackground View
 struct GridBackground: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
@@ -59,7 +58,6 @@ struct GridBackground: View {
     }
 }
 
-// 4. ConnectPointsPanel View
 struct ConnectPointsPanel: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
@@ -69,11 +67,11 @@ struct ConnectPointsPanel: View {
     let columns: Int = 7
     let snappingThreshold: Double = 0.03
 
-    // Computed grid points excluding the borders
+    // Computed grid points for snapping
     var gridPoints: [CodableUnitPoint] {
         var points = [CodableUnitPoint]()
-        for row in 0..<rows { // Include first and last rows
-            for column in 0..<columns { // Include first and last columns
+        for row in 0..<rows {
+            for column in 0..<columns {
                 let x = Double(column) / Double(columns - 1)
                 let y = Double(row) / Double(rows - 1)
                 points.append(CodableUnitPoint(x: x, y: y))
@@ -82,7 +80,6 @@ struct ConnectPointsPanel: View {
         return points
     }
 
-    // Helper function to find the closest grid point within the snapping threshold
     func snapPoint(_ point: CodableUnitPoint) -> CodableUnitPoint {
         var closestPoint: CodableUnitPoint?
         var minDistance = Double.infinity
@@ -102,48 +99,254 @@ struct ConnectPointsPanel: View {
         return point
     }
 
-    // Custom binding for point1 with snapping
-    var point1Binding: Binding<CodableUnitPoint> {
+    // MARK: - Linear: Start/End Bindings
+
+    var linearStartBinding: Binding<CodableUnitPoint> {
         Binding(
             get: { theme.mainGradient.linearAttributes.startPoint },
             set: { newValue in
-                let snapped = self.snapPoint(newValue)
+                let snapped = snapPoint(newValue)
                 theme.mainGradient.linearAttributes.startPoint = snapped
             }
         )
     }
 
-    // Custom binding for point2 with snapping
-    var point2Binding: Binding<CodableUnitPoint> {
+    var linearEndBinding: Binding<CodableUnitPoint> {
         Binding(
             get: { theme.mainGradient.linearAttributes.endPoint },
             set: { newValue in
-                let snapped = self.snapPoint(newValue)
+                let snapped = snapPoint(newValue)
                 theme.mainGradient.linearAttributes.endPoint = snapped
             }
         )
     }
 
+    // MARK: - Radial: Center/Edge Bindings
+
+    var radialCenterBinding: Binding<CodableUnitPoint> {
+        Binding(
+            get: { theme.mainGradient.radialAttributes.center },
+            set: { newValue in
+                let snapped = snapPoint(newValue)
+                theme.mainGradient.radialAttributes.center = snapped
+            }
+        )
+    }
+
+    var radialEdgeBinding: Binding<CodableUnitPoint> {
+        Binding(
+            get: { theme.mainGradient.radialAttributes.edgePoint },
+            set: { newValue in
+                let snapped = snapPoint(newValue)
+                theme.mainGradient.radialAttributes.edgePoint = snapped
+            }
+        )
+    }
+
+    // MARK: - Angular: Center + Angle
+
+    //
+    // For angular gradients, we let the "center" snap, but the "orbit" point
+    // does NOT snap — it just changes the angle by user drag.
+
+    var angularCenterBinding: Binding<CodableUnitPoint> {
+        Binding(
+            get: { theme.mainGradient.angularAttributes.center },
+            set: { newValue in
+                // Snap the center
+                let snapped = snapPoint(newValue)
+                theme.mainGradient.angularAttributes.center = snapped
+            }
+        )
+    }
+
+    /// A constant radius for the orbit handle. Feel free to tweak this.
+    private let angleHandleRadius: CGFloat = 0.09
+
+    /// A smaller draggable point that orbits around the center at a fixed radius.
+    /// We convert drag positions -> angle in degrees, and store in `angularAttributes.angle`.
+    ///
+    /// Since the center might move, we rely on geometry to recalculate relative positions.
+    @ViewBuilder
+    private func angularAngleHandle(_ geometry: GeometryProxy) -> some View {
+        let center = theme.mainGradient.angularAttributes.center
+        let angleDegrees = theme.mainGradient.angularAttributes.angle.degrees
+        let width = geometry.size.width
+        let height = geometry.size.height
+
+        // Convert angle to x,y in 0..1 coordinates
+        let cx = center.x
+        let cy = center.y
+        let radius = angleHandleRadius * min(width, height)
+        // Convert from degrees to radians
+        let radians = angleDegrees * .pi / 180
+
+        // The orbit handle is at center + (cos θ, sin θ) * radius
+        let handleX = cx + radius * cos(radians) / width
+        let handleY = cy + radius * sin(radians) / height
+
+        DraggablePoint(
+            point: .constant(CodableUnitPoint(x: handleX, y: handleY)), // not a binding to theme
+            size: 20,
+            color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color
+        )
+        .simultaneousGesture(
+            DragGesture()
+                .onChanged { value in
+                    let relX = value.location.x / width
+                    let relY = value.location.y / height
+
+                    // Vector from center -> new location
+                    let dx = relX - cx
+                    let dy = relY - cy
+
+                    // Recompute angle in degrees
+                    let newAngle = atan2(dy, dx) * 180 / .pi
+                    theme.mainGradient.angularAttributes.angle.degrees = newAngle
+                }
+        )
+    }
+
+    // MARK: - Body
+
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Grid Background
+                // Grid background dots
                 GridBackground(gridPoints: gridPoints, dotSize: 4)
                     .edgesIgnoringSafeArea(.all)
 
-                // Line connecting the two points
-                Path { path in
-                    let p1 = CGPoint(x: theme.mainGradient.linearAttributes.startPoint.x * geometry.size.width, y: theme.mainGradient.linearAttributes.startPoint.y * geometry.size.height)
-                    let p2 = CGPoint(x: theme.mainGradient.linearAttributes.endPoint.x * geometry.size.width, y: theme.mainGradient.linearAttributes.endPoint.y * geometry.size.height)
-                    path.move(to: p1)
-                    path.addLine(to: p2)
-                }
-                .stroke(theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.2), lineWidth: 24)
+                switch theme.mainGradient.type {
+                case .linear:
+                    // 1) Show a line from start to end.
+                    // 2) Draggable points for start/end
+                    linearUI(geometry)
 
-                // Draggable Points
-                DraggablePoint(point: point1Binding, color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color)
-                DraggablePoint(point: point2Binding, color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color)
+                case .radial:
+                    // 1) Show line from center to edge
+                    // 2) Draggable points for center/edge
+                    radialUI(geometry)
+
+                case .angular:
+                    // 1) Show line from center to orbit handle
+                    // 2) Center is draggable (snapped)
+                    // 3) Orbit handle is draggable (angle only, no snap)
+                    angularUI(geometry)
+                }
             }
         }
     }
+
+    // MARK: - Linear Editor
+
+    @ViewBuilder
+    private func linearUI(_ geometry: GeometryProxy) -> some View {
+        let width = geometry.size.width
+        let height = geometry.size.height
+
+        let p1 = CGPoint(
+            x: theme.mainGradient.linearAttributes.startPoint.x * width,
+            y: theme.mainGradient.linearAttributes.startPoint.y * height
+        )
+        let p2 = CGPoint(
+            x: theme.mainGradient.linearAttributes.endPoint.x * width,
+            y: theme.mainGradient.linearAttributes.endPoint.y * height
+        )
+
+        // Optional line
+        Path { path in
+            path.move(to: p1)
+            path.addLine(to: p2)
+        }
+        .stroke(
+            theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.2),
+            lineWidth: 24
+        )
+
+        // Draggable dots
+        DraggablePoint(point: linearStartBinding,
+                       color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color)
+        DraggablePoint(point: linearEndBinding,
+                       color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color)
+    }
+
+    // MARK: - Radial Editor
+
+    @ViewBuilder
+    private func radialUI(_ geometry: GeometryProxy) -> some View {
+        let width = geometry.size.width
+        let height = geometry.size.height
+
+        // Convert from Unit coords to actual points
+        let centerPt = CGPoint(
+            x: theme.mainGradient.radialAttributes.center.x * width,
+            y: theme.mainGradient.radialAttributes.center.y * height
+        )
+
+        // Distance in unit space:
+        let dx = theme.mainGradient.radialAttributes.edgePoint.x
+            - theme.mainGradient.radialAttributes.center.x
+        let dy = theme.mainGradient.radialAttributes.edgePoint.y
+            - theme.mainGradient.radialAttributes.center.y
+        // This fraction is how far edge is from center in 0..1 coordinates
+        let radiusFraction = hypot(dx, dy)
+
+        // Convert that fraction to pixel dimensions for an ellipse
+        // (EllipticalGradient in SwiftUI is scaled by width/height)
+        let ellipseWidth = radiusFraction * width * 2
+        let ellipseHeight = radiusFraction * height * 2
+
+        Ellipse()
+            .fill(theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.3))
+            .stroke(
+                theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.3),
+                style: StrokeStyle(lineWidth: 4)
+            )
+            .frame(width: ellipseWidth, height: ellipseHeight)
+            .position(x: centerPt.x, y: centerPt.y)
+
+        // Draggable handles for center/edge
+        DraggablePoint(point: radialCenterBinding,
+                       color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color)
+        DraggablePoint(point: radialEdgeBinding,
+                       color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color)
+    }
+
+    // MARK: - Angular Editor
+
+    @ViewBuilder
+    private func angularUI(_ geometry: GeometryProxy) -> some View {
+        let width = geometry.size.width
+        let height = geometry.size.height
+
+        // Center
+        let centerPt = CGPoint(
+            x: theme.mainGradient.angularAttributes.center.x * width,
+            y: theme.mainGradient.angularAttributes.center.y * height
+        )
+
+        // Orbit circle radius in pixels: use the smaller dimension => always a circle
+        let orbitPxRadius = angleHandleRadius * min(width, height)
+
+        Circle()
+            .stroke(
+                theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.3),
+                style: StrokeStyle(lineWidth: 8, dash: [15.5, 13])
+            )
+            .frame(width: orbitPxRadius * 2, height: orbitPxRadius * 2)
+            .position(x: centerPt.x, y: centerPt.y)
+
+        // Draggable center (snapped)
+        DraggablePoint(
+            point: angularCenterBinding,
+            color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color
+        )
+
+        // Orbit handle (angle) – no snap, smaller handle
+        angularAngleHandle(geometry)
+    }
+}
+
+#Preview {
+    ConnectPointsPanel().environment(\.theme, Theme(mainGradient: ColorGradient(type: .angular))).padding(64)
 }
