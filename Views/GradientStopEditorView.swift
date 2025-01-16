@@ -26,10 +26,10 @@ struct GradientStopEditorView: View {
                     }
                 ))
                 .frame(width: 24, height: 24)
-                .transition(.scale.combined(with: .opacity)) // Scale and fade-in effect
-                .opacity((selectedStop != nil) ? 1 : 0) // Adjust opacity
-                .scaleEffect((selectedStop != nil) ? 0.8 : 0.7) // Scale effect
-                .blur(radius: (selectedStop != nil) ? 0 : 5) // Blur effect
+                .transition(.scale.combined(with: .opacity))
+                .opacity((selectedStop != nil) ? 1 : 0)
+                .scaleEffect((selectedStop != nil) ? 0.8 : 0.7)
+                .blur(radius: (selectedStop != nil) ? 0 : 5)
                 .animation(.easeInOut(duration: 0.3), value: selectedStop)
 
                 Spacer()
@@ -39,14 +39,27 @@ struct GradientStopEditorView: View {
                         removeStop(at: selectedIndex)
                     }
                 }) {
-                    Image(systemName: "minus.circle")
+                    Image(systemName: "xmark.circle")
                         .font(.title2)
                         .themedForeground(using: theme, in: colorScheme, category: .secondary)
-                        .opacity((selectedStop != nil && theme.mainGradient.stops.count > 2) ? 1 : 0) // Adjust opacity
-                        .scaleEffect((selectedStop != nil && theme.mainGradient.stops.count > 2) ? 1 : 0.8) // Scale effect
-                        .blur(radius: (selectedStop != nil && theme.mainGradient.stops.count > 2) ? 0 : 5) // Blur effect
+                        .opacity((selectedStop != nil && theme.mainGradient.stops.count > 2) ? 1 : 0)
+                        .scaleEffect((selectedStop != nil && theme.mainGradient.stops.count > 2) ? 1 : 0.8)
+                        .blur(radius: (selectedStop != nil && theme.mainGradient.stops.count > 2) ? 0 : 5)
                 }
-                .disabled(!(selectedStop != nil && theme.mainGradient.stops.count > 2)) // Disable the button when conditions are not met
+                .disabled(!(selectedStop != nil && theme.mainGradient.stops.count > 2))
+                .animation(.easeInOut(duration: 0.3), value: selectedStop)
+
+                Button(action: {
+                    selectedStop = nil
+                }) {
+                    Image(systemName: "circle.dashed")
+                        .font(.title2)
+                        .themedForeground(using: theme, in: colorScheme, level: 1, category: .secondary)
+                        .opacity(selectedStop != nil ? 1 : 0)
+                        .scaleEffect(selectedStop != nil ? 1 : 0.8)
+                        .blur(radius: selectedStop != nil ? 0 : 5)
+                }
+                .disabled(!(selectedStop != nil))
                 .animation(.easeInOut(duration: 0.3), value: selectedStop)
 
                 Button(action: {
@@ -59,7 +72,7 @@ struct GradientStopEditorView: View {
                 }) {
                     Image(systemName: "plus.circle")
                         .font(.title2)
-                        .themedForeground(using: theme, in: colorScheme, category: .secondary)
+                        .themedForeground(using: theme, in: colorScheme, level: 1, category: .secondary)
                 }
 
                 Button(action: {
@@ -67,7 +80,7 @@ struct GradientStopEditorView: View {
                 }) {
                     Image(systemName: "arrow.clockwise.circle")
                         .font(.title2)
-                        .themedForeground(using: theme, in: colorScheme, category: .secondary)
+                        .themedForeground(using: theme, in: colorScheme, level: 1, category: .secondary)
                 }
 
                 Button(action: {
@@ -75,7 +88,7 @@ struct GradientStopEditorView: View {
                 }) {
                     Image(systemName: "grid.circle")
                         .font(.title2)
-                        .themedForeground(using: theme, in: colorScheme, category: .secondary)
+                        .themedForeground(using: theme, in: colorScheme, level: 1, category: .secondary)
                 }
             }
 

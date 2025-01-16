@@ -38,7 +38,7 @@ struct GradientTypeSelectorView: View {
                     .frame(height: itemHeight)
                     .frame(maxWidth: .infinity)
                     .background(
-                        themeColor(from: theme, for: .secondary, in: colorScheme, level: isSelected ? 2 : 5)
+                        themeColor(from: theme, for: .secondary, in: colorScheme, level: isSelected ? 1 : 5)
                     )
                     .cornerRadius(16)
                     .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
@@ -48,7 +48,7 @@ struct GradientTypeSelectorView: View {
                         }
                     }
                     .foregroundColor(
-                        themeColor(from: theme, for: .secondary, in: colorScheme, level: isSelected ? 5 : 2)
+                        themeColor(from: theme, for: .secondary, in: colorScheme, level: isSelected ? 5 : 1)
                     )
                 }
             }

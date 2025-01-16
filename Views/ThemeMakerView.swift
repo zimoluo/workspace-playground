@@ -91,7 +91,7 @@ struct ThemeMakerView: View {
                                 }) {
                                     Image(systemName: "wand.and.sparkles")
                                         .font(.title)
-                                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
+                                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                                 }
                                 Button(action: {
                                     theme.primary = RGBAColor.randomBright()
@@ -100,7 +100,7 @@ struct ThemeMakerView: View {
                                 }) {
                                     Image(systemName: "bubbles.and.sparkles")
                                         .font(.title)
-                                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
+                                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                                 }
                                 Spacer()
                             }
