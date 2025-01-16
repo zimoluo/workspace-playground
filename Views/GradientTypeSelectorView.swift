@@ -4,7 +4,6 @@ struct GradientTypeSelectorView: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
     
-    // Assuming GradientType conforms to CaseIterable and has necessary properties
     var gradientTypes: [GradientType] = GradientType.allCases
     
     var body: some View {

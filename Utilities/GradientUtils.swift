@@ -75,16 +75,21 @@ struct LinearGradientAttributes: Codable {
     var endPoint: CodableUnitPoint
 }
 
-/// Attributes for a radial gradient.
 struct RadialGradientAttributes: Codable {
     var center: CodableUnitPoint
     var edgePoint: CodableUnitPoint
 }
 
-/// Attributes for an angular gradient.
 struct AngularGradientAttributes: Codable {
     var center: CodableUnitPoint
     var angle: CodableAngle
+}
+
+struct MeshGradientAttributes: Codable {
+    var width: Int
+    var height: Int
+    var points: [SIMD2<Float>]
+    var colors: [RGBAColor]
 }
 
 struct ColorGradient: Codable {
@@ -93,6 +98,7 @@ struct ColorGradient: Codable {
     var linearAttributes: LinearGradientAttributes
     var radialAttributes: RadialGradientAttributes
     var angularAttributes: AngularGradientAttributes
+    var meshAttributes: MeshGradientAttributes
 
     init(
         type: GradientType = .linear,
@@ -117,13 +123,15 @@ struct ColorGradient: Codable {
         angularAttributes: AngularGradientAttributes = AngularGradientAttributes(
             center: CodableUnitPoint(from: .center),
             angle: CodableAngle(from: .zero)
-        )
+        ),
+        meshAttributes: MeshGradientAttributes = MeshGradientAttributes(width: 3, height: 3, points: [[0.0, 0.0], [0.5, 0.0], [1.0, 0.0], [0.0, 0.5], [0.5, 0.5], [1.0, 0.5], [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]], colors: [RGBAColor(.red), RGBAColor(.red), RGBAColor(.red), RGBAColor(.green), RGBAColor(.green), RGBAColor(.green), RGBAColor(.blue), RGBAColor(.blue), RGBAColor(.blue)])
     ) {
         self.type = type
         self.stops = stops
         self.linearAttributes = linearAttributes
         self.radialAttributes = radialAttributes
         self.angularAttributes = angularAttributes
+        self.meshAttributes = meshAttributes
     }
 
     @ViewBuilder
@@ -131,7 +139,7 @@ struct ColorGradient: Codable {
         let sortedStops = stops.sorted { $0.position < $1.position }
 
         switch type {
-        case .linear, .mesh:
+        case .linear:
             LinearGradient(
                 gradient: Gradient(stops: sortedStops.map { $0.toSwiftUIStop(in: colorScheme) }),
                 startPoint: linearAttributes.startPoint.asUnitPoint,
@@ -157,6 +165,22 @@ struct ColorGradient: Codable {
                 gradient: Gradient(stops: sortedStops.map { $0.toSwiftUIStop(in: colorScheme) }),
                 center: angularAttributes.center.asUnitPoint,
                 angle: angularAttributes.angle.asAngle
+            )
+
+        case .mesh:
+            let requiredCount = meshAttributes.width * meshAttributes.height
+            let points = meshAttributes.points.prefix(requiredCount) +
+                Array(repeating: SIMD2<Float>(0.5, 0.5), count: max(0, requiredCount - meshAttributes.points.count))
+
+            let colors = meshAttributes.colors.prefix(requiredCount) +
+                Array(repeating: RGBAColor(.white), count: max(0, requiredCount - meshAttributes.colors.count))
+
+            MeshGradient(
+                width: meshAttributes.width,
+                height: meshAttributes.height,
+                points: points.map { $0 },
+                colors: colors.map { $0.shadeMap(numShades: 28, saturationMultiplier: colorScheme == .light ? 0.92 : 0.6).shadeMap[colorScheme == .light ? 1 : 25].color },
+                background: colors[0].shadeMap(numShades: 28, saturationMultiplier: colorScheme == .light ? 0.92 : 0.6).shadeMap[colorScheme == .light ? 1 : 25].color
             )
         }
     }

@@ -138,7 +138,6 @@ struct ConnectPointsPanel: View {
         Binding(
             get: { theme.mainGradient.angularAttributes.center },
             set: { newValue in
-                // Snap the center
                 let snapped = snapPoint(newValue)
                 theme.mainGradient.angularAttributes.center = snapped
             }

@@ -243,6 +243,6 @@ extension Double {
 struct GradientStopEditorView_Previews: PreviewProvider {
     static var previews: some View {
         GradientStopEditorView()
-            .environment(\.theme, Theme()) // Provide a Theme instance
+            .environment(\.theme, Theme())
     }
 }

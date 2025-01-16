@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 struct ThemeMakerView: View {
-    @Environment(\.modelContext) private var modelContext
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
 
@@ -138,7 +137,9 @@ struct ThemeMakerView: View {
                                 .frame(height: 400)
                                 .frame(maxWidth: 80.88)
 
-                            VStack(spacing: 12) {
+                            if theme.mainGradient.type == .mesh {
+                                MeshGradientEditorView()
+                            } else { VStack(spacing: 12) {
                                 GradientStopEditorView()
                                     .padding(.horizontal, 20)
                                     .padding(.vertical, 12)
@@ -204,6 +205,7 @@ struct ThemeMakerView: View {
                                 }.frame(maxHeight: .infinity)
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            }
                         }
                         .padding(12)
                         .frame(maxWidth: .infinity)
@@ -224,4 +226,8 @@ struct ThemeMakerView: View {
             }
         }
     }
+}
+
+#Preview {
+    ThemeMakerView().environment(\.theme, Theme(mainGradient: ColorGradient(type: .mesh, meshAttributes: MeshGradientAttributes(width: 3, height: 4, points: [[0, 0], [0.8, 0.2], [0.3, 0.6], [1, 1]], colors: [RGBAColor(.red), RGBAColor(.blue), RGBAColor(.green), RGBAColor(.orange)]))))
 }
