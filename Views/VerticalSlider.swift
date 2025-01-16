@@ -27,13 +27,13 @@ struct VerticalSlider: View {
                         )
                     )
                     .frame(width: geo.size.width)
-                    .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                    .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
 
                 ZStack {
                     Circle()
                         .fill(themeColor(from: theme, for: .secondary, in: .light, level: 5))
                         .frame(width: geo.size.width * 0.8, height: geo.size.width * 0.8)
-                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 8, y: 6)
                     Text("\(value)")
                         .fontWeight(.bold)
                         .foregroundStyle(themeColor(from: theme, for: .secondary, in: .light, level: 1))
