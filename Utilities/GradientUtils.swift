@@ -37,7 +37,7 @@ struct GradientStop: Codable {
     var position: Double
 
     func toSwiftUIStop(in colorScheme: ColorScheme = .light) -> Gradient.Stop {
-        Gradient.Stop(color: color.shadeMap(numShades: 28, saturationMultiplier: colorScheme == .light ? 0.92 : 0.6).shadeMap[colorScheme == .light ? 1 : 25].color, location: position)
+        Gradient.Stop(color: color.toThemeGradientColor(in: colorScheme), location: position)
     }
 }
 
@@ -179,8 +179,8 @@ struct ColorGradient: Codable {
                 width: meshAttributes.width,
                 height: meshAttributes.height,
                 points: points.map { $0 },
-                colors: colors.map { $0.shadeMap(numShades: 28, saturationMultiplier: colorScheme == .light ? 0.92 : 0.6).shadeMap[colorScheme == .light ? 1 : 25].color },
-                background: colors[0].shadeMap(numShades: 28, saturationMultiplier: colorScheme == .light ? 0.92 : 0.6).shadeMap[colorScheme == .light ? 1 : 25].color
+                colors: colors.map { $0.toThemeGradientColor(in: colorScheme) },
+                background: colors[0].toThemeGradientColor(in: colorScheme)
             )
         }
     }

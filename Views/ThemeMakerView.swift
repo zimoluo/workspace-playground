@@ -17,16 +17,7 @@ struct ThemeMakerView: View {
             theme.mainGradient.toGradient(in: colorScheme).ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 32) {
-                    VStack(spacing: 8) {
-                        HStack {
-                            Text("Interface")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .padding(.horizontal, 6)
-                                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
-                            Spacer()
-                        }
-
+                    VStack(spacing: 18) {
                         HStack(spacing: 12) {
                             VStack(spacing: 4) {
                                 ColorPicker("",
@@ -117,21 +108,13 @@ struct ThemeMakerView: View {
                             .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                             .cornerRadius(16)
                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
-                        }.padding(12)
-                            .frame(maxWidth: .infinity)
-                            .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 4))
-                            .cornerRadius(16).shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
-                    }
-
-                    VStack(spacing: 8) {
-                        HStack {
-                            Text("Background")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .padding(.horizontal, 6)
-                                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
-                            Spacer()
                         }
+
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                            .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
+                            .frame(height: 8)
+
                         HStack(spacing: 12) {
                             GradientTypeSelectorView()
                                 .frame(height: 400)
@@ -207,11 +190,11 @@ struct ThemeMakerView: View {
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             }
                         }
-                        .padding(12)
-                        .frame(maxWidth: .infinity)
-                        .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 4))
-                        .cornerRadius(16).shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
                     }
+                    .padding(12)
+                    .frame(maxWidth: .infinity)
+                    .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 4))
+                    .cornerRadius(16).shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
                 }
                 .padding(32)
             }

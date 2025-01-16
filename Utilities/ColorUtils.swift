@@ -30,6 +30,10 @@ struct RGBAColor: Codable {
         self.shadeMap(numShades: 16).shadeMap[12].toColor(opacity: 0.18 * opacityMultiplier)
     }
 
+    func toThemeGradientColor(in colorScheme: ColorScheme = .light) -> Color {
+        self.shadeMap(numShades: 28, saturationMultiplier: colorScheme == .light ? 0.92 : 0.6).shadeMap[colorScheme == .light ? 1 : 25].color
+    }
+
     init(_ color: Color) {
         let uiColor = UIColor(color)
         var r: CGFloat = 0
