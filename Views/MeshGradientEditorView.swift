@@ -46,10 +46,10 @@ struct MeshGradientEditorView: View {
 
                             VerticalSlider(
                                 value: Binding(
-                                    get: { theme.mainGradient.meshAttributes.width
+                                    get: { theme.mainGradient.meshAttributes.height
                                     },
                                     set: { newValue in
-                                        updateMeshSize(newWidth: newValue, newHeight: theme.mainGradient.meshAttributes.height)
+                                        updateMeshSize(newWidth: theme.mainGradient.meshAttributes.width, newHeight: newValue)
                                     }
                                 )
                             )
@@ -60,10 +60,10 @@ struct MeshGradientEditorView: View {
 
                             VerticalSlider(
                                 value: Binding(
-                                    get: { theme.mainGradient.meshAttributes.height
+                                    get: { theme.mainGradient.meshAttributes.width
                                     },
                                     set: { newValue in
-                                        updateMeshSize(newWidth: theme.mainGradient.meshAttributes.width, newHeight: newValue)
+                                        updateMeshSize(newWidth: newValue, newHeight: theme.mainGradient.meshAttributes.height)
                                     }
                                 )
                             )
