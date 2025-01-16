@@ -58,7 +58,7 @@ struct RGBAColor: Codable {
     static func randomBright() -> RGBAColor {
         let hue = Double.random(in: 0...1)
         let brightness = Double.random(in: 0.5...0.7)
-        let saturation = Double.random(in: 0.6...0.95)
+        let saturation = Double.random(in: 0.33...0.95)
         let uiColor = UIColor(hue: CGFloat(hue), saturation: CGFloat(saturation), brightness: CGFloat(brightness), alpha: 1.0)
         let color = RGBAColor(Color(uiColor))
         return color
