@@ -71,9 +71,8 @@ struct RGBAColor: Codable {
         return RGBAColor.fromHSB(hue: hueComplement, saturation: saturationAdjusted, brightness: brightnessAdjusted)
     }
 
-    /// Calculates the tertiary key color as a balance between primary and secondary.
     func tertiaryColor() -> RGBAColor {
-        let hueAnalogous = (hue + 0.08).truncatingRemainder(dividingBy: 1.0) // Analogous hue offset
+        let hueAnalogous = (hue + 0.12).truncatingRemainder(dividingBy: 1.0) // Analogous hue offset
         let saturationAdjusted = max(0.5, saturation * 0.7) // Further adjust saturation for subtlety
         let brightnessAdjusted = max(0.5, brightness * 0.8) // Slight dimming for harmony
         return RGBAColor.fromHSB(hue: hueAnalogous, saturation: saturationAdjusted, brightness: brightnessAdjusted)
