@@ -10,7 +10,7 @@ struct MeshGradientEditorView: View {
         HStack(spacing: 12) {
             meshEditorView
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(28)
+                .padding(32)
                 .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                 .cornerRadius(16)
                 .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
@@ -131,46 +131,100 @@ struct MeshGradientEditorView: View {
                 ZStack {
                     meshLines(in: geo.size)
                         .stroke(
-                            theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.2),
+                            theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.6),
                             lineWidth: 6
                         )
 
-                    ForEach(0..<theme.mainGradient.meshAttributes.points.count, id: \.self) { idx in
-                        let color = theme.mainGradient.meshAttributes.colors[idx].color
-                        let isSelected = (idx == selectedVertexIndex)
+                    ForEach(cornerIndices, id: \.self) { idx in
+                        renderPoint(at: idx, in: geo.size, isCorner: true)
+                    }
 
-                        ZStack {
-                            Circle()
-                                .fill(color)
-                                .frame(width: 20, height: 20)
-                            Circle()
-                                .strokeBorder(theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.2),
-                                              lineWidth: isSelected ? 6 : 0)
-                                .frame(width: 28, height: 28)
-                        }
-                        .position(
-                            x: CGFloat(theme.mainGradient.meshAttributes.points[idx].x) * geo.size.width,
-                            y: CGFloat(theme.mainGradient.meshAttributes.points[idx].y) * geo.size.height
-                        )
-                        .gesture(
-                            DragGesture()
-                                .onChanged { drag in
-                                    let newX = min(max(drag.location.x / geo.size.width, 0), 1)
-                                    let newY = min(max(drag.location.y / geo.size.height, 0), 1)
-                                    theme.mainGradient.meshAttributes.points[idx].x = Float(newX)
-                                    theme.mainGradient.meshAttributes.points[idx].y = Float(newY)
-
-                                    if selectedVertexIndex != idx {
-                                        selectedVertexIndex = idx
-                                    }
-                                }
-                        )
-                        .onTapGesture {
-                            selectedVertexIndex = idx
-                        }
+                    ForEach(nonCornerIndices, id: \.self) { idx in
+                        renderPoint(at: idx, in: geo.size)
                     }
                 }
             }
+        }
+    }
+
+    private func renderPoint(at idx: Int, in size: CGSize, isCorner _: Bool = false) -> some View {
+        let color = theme.mainGradient.meshAttributes.colors[idx].color
+        let isSelected = (idx == selectedVertexIndex)
+
+        let row = idx / theme.mainGradient.meshAttributes.width
+        let col = idx % theme.mainGradient.meshAttributes.width
+        let isEdge = row == 0 || row == theme.mainGradient.meshAttributes.height - 1 ||
+            col == 0 || col == theme.mainGradient.meshAttributes.width - 1
+        let isCorner = (row == 0 || row == theme.mainGradient.meshAttributes.height - 1) &&
+            (col == 0 || col == theme.mainGradient.meshAttributes.width - 1)
+
+        return ZStack {
+            Circle()
+                .fill(color)
+                .frame(width: 20, height: 20)
+            if isSelected {
+                Circle()
+                    .strokeBorder(theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.6),
+                                  lineWidth: 6)
+                    .frame(width: 28, height: 28)
+            }
+        }
+        .position(
+            x: CGFloat(theme.mainGradient.meshAttributes.points[idx].x) * size.width,
+            y: CGFloat(theme.mainGradient.meshAttributes.points[idx].y) * size.height
+        )
+        .gesture(
+            DragGesture().onChanged { drag in
+                if selectedVertexIndex != idx {
+                    selectedVertexIndex = idx
+                }
+
+                if isCorner { return }
+
+                let newX = min(max(drag.location.x / size.width, 0), 1)
+                let newY = min(max(drag.location.y / size.height, 0), 1)
+
+                if !isEdge {
+                    theme.mainGradient.meshAttributes.points[idx].x = Float(newX)
+                    theme.mainGradient.meshAttributes.points[idx].y = Float(newY)
+                    return
+                }
+
+                if row == 0 || row == theme.mainGradient.meshAttributes.height - 1 {
+                    theme.mainGradient.meshAttributes.points[idx].x = Float(newX)
+                    theme.mainGradient.meshAttributes.points[idx].y = row == 0 ? 0.0 : 1.0
+                } else if col == 0 || col == theme.mainGradient.meshAttributes.width - 1 {
+                    theme.mainGradient.meshAttributes.points[idx].x = col == 0 ? 0.0 : 1.0
+                    theme.mainGradient.meshAttributes.points[idx].y = Float(newY)
+                }
+            }
+        )
+        .onTapGesture {
+            selectedVertexIndex = idx
+        }
+    }
+
+    private var cornerIndices: [Int] {
+        let w = theme.mainGradient.meshAttributes.width
+        let h = theme.mainGradient.meshAttributes.height
+        let total = w * h
+        return [
+            0,
+            w - 1,
+            (h - 1) * w,
+            total - 1
+        ].filter { $0 >= 0 && $0 < total }
+    }
+
+    private var nonCornerIndices: [Int] {
+        let w = theme.mainGradient.meshAttributes.width
+        let h = theme.mainGradient.meshAttributes.height
+        let total = w * h
+        return (0..<total).filter { idx in
+            let row = idx / w
+            let col = idx % w
+            let isCorner = (row == 0 || row == h - 1) && (col == 0 || col == w - 1)
+            return !isCorner
         }
     }
 
@@ -245,7 +299,7 @@ struct MeshGradientEditorView: View {
         theme.mainGradient.meshAttributes.height = newHeight
 
         var newPoints: [SIMD2<Float>] = Array(repeating: SIMD2<Float>(0, 0), count: newWidth * newHeight)
-        var newColors: [RGBAColor] = Array(repeating: oldColors.last ?? RGBAColor(.white), count: newWidth * newHeight)
+        var newColors: [RGBAColor] = Array(repeating: RGBAColor(.white), count: newWidth * newHeight)
 
         for row in 0..<newHeight {
             for col in 0..<newWidth {
@@ -258,7 +312,7 @@ struct MeshGradientEditorView: View {
                 } else {
                     newPoints[newIndex] = SIMD2<Float>(Float(col) / Float(max(newWidth - 1, 1)),
                                                        Float(row) / Float(max(newHeight - 1, 1)))
-                    newColors[newIndex] = oldColors.last ?? RGBAColor(.white)
+                    newColors[newIndex] = RGBAColor.randomBright()
                 }
             }
         }
