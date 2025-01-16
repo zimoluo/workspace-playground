@@ -131,7 +131,7 @@ struct MeshGradientEditorView: View {
                 ZStack {
                     meshLines(in: geo.size)
                         .stroke(
-                            theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.6),
+                            theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.4),
                             lineWidth: 6
                         )
 
@@ -164,7 +164,7 @@ struct MeshGradientEditorView: View {
                 .frame(width: 20, height: 20)
             if isSelected {
                 Circle()
-                    .strokeBorder(theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.6),
+                    .strokeBorder(theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.4),
                                   lineWidth: 6)
                     .frame(width: 28, height: 28)
             }
