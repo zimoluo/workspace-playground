@@ -98,7 +98,7 @@ struct ThemeMakerView: View {
                                     theme.secondary = RGBAColor.randomBright()
                                     theme.tertiary = RGBAColor.randomBright()
                                 }) {
-                                    Image(systemName: "bubbles.and.sparkles")
+                                    Image(systemName: "dice")
                                         .font(.title)
                                         .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                                 }
