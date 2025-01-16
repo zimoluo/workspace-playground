@@ -144,25 +144,38 @@ struct ConnectPointsPanel: View {
         )
     }
 
+    // placeholder binding since mesh editor isn't in this view
+    var meshBinding: Binding<CodableUnitPoint> {
+        Binding(
+            get: { CodableUnitPoint(from: .center) },
+            set: { _ in
+            }
+        )
+    }
+
     var primaryPointBinding: Binding<CodableUnitPoint> {
         switch theme.mainGradient.type {
-        case .linear, .mesh:
+        case .linear:
             return linearStartBinding
         case .radial:
             return radialCenterBinding
         case .angular:
             return angularCenterBinding
+        case .mesh:
+            return meshBinding
         }
     }
 
     var secondaryPointBinding: Binding<CodableUnitPoint> {
         switch theme.mainGradient.type {
-        case .linear, .mesh:
+        case .linear:
             return linearEndBinding
         case .radial:
             return radialEdgeBinding
         case .angular:
             return angularCenterBinding
+        case .mesh:
+            return meshBinding
         }
     }
 
@@ -213,7 +226,7 @@ struct ConnectPointsPanel: View {
                     .edgesIgnoringSafeArea(.all)
 
                 switch theme.mainGradient.type {
-                case .linear, .mesh:
+                case .linear:
                     linearUI(geometry)
                         .transition(.scale(0, anchor: theme.mainGradient.linearAttributes.startPoint.asUnitPoint).combined(with: .opacity))
 
@@ -223,6 +236,10 @@ struct ConnectPointsPanel: View {
 
                 case .angular:
                     angularUI(geometry)
+                        .transition(.scale(0, anchor: theme.mainGradient.angularAttributes.center.asUnitPoint).combined(with: .opacity))
+
+                case .mesh:
+                    meshUI(geometry)
                         .transition(.scale(0, anchor: theme.mainGradient.angularAttributes.center.asUnitPoint).combined(with: .opacity))
                 }
 
@@ -320,4 +337,8 @@ struct ConnectPointsPanel: View {
 
         angularAngleHandle(geometry)
     }
+
+    // For transition purposes only. The real mesh UI isn't in this View.
+    @ViewBuilder
+    private func meshUI(_ geometry: GeometryProxy) -> some View {}
 }
