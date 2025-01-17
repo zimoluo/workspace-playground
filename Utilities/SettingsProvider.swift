@@ -12,12 +12,14 @@ struct SettingsProvider<Content: View>: View {
     @Environment(\.modelContext) private var modelContext
     @Query var settings: [Settings]
 
-    let content: (Theme) -> Content
+    let content: (Theme, Settings) -> Content
 
     var body: some View {
         Group {
             if let currentSettings = settings.first {
-                content(currentSettings.theme)
+                content(currentSettings.theme, currentSettings).task {
+                    await initializeDefaultThemesIfNeeded()
+                }
             } else {
                 ProgressView("Loading settings...")
                     .onAppear(perform: ensureSettingsExist)
@@ -30,6 +32,32 @@ struct SettingsProvider<Content: View>: View {
             let defaultSettings = Settings()
             modelContext.insert(defaultSettings)
             try? modelContext.save()
+        }
+    }
+
+    private func initializeDefaultThemesIfNeeded() async {
+        let hasInitializedThemeDefaults = UserDefaults.standard.bool(forKey: "HasInitializedThemeDefaults")
+
+        guard !hasInitializedThemeDefaults else {
+            return
+        }
+
+        // Add default data
+        let defaultThemes: [Theme] = [
+            Theme(),
+            Theme(),
+            Theme()
+        ]
+
+        for theme in defaultThemes {
+            modelContext.insert(theme)
+        }
+
+        do {
+            try modelContext.save()
+            UserDefaults.standard.set(true, forKey: "HasInitializedThemeDefaults")
+        } catch {
+            print("Error initializing default data: \(error)")
         }
     }
 }

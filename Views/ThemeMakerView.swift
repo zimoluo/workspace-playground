@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 import SwiftUI
 
 struct ThemeMakerView: View {
@@ -18,6 +19,20 @@ struct ThemeMakerView: View {
             ScrollView {
                 VStack(spacing: 32) {
                     VStack(spacing: 18) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                                .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
+                                .frame(maxHeight: .infinity)
+
+                            ThemeSelectorView()
+                        }.frame(height: 48)
+
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                            .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
+                            .frame(height: 8)
+
                         HStack(spacing: 12) {
                             VStack(spacing: 4) {
                                 ColorPicker("",

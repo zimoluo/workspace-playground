@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct RGBAColor: Codable {
+struct RGBAColor: Codable, Equatable {
     var red: Double
     var green: Double
     var blue: Double
@@ -32,6 +32,13 @@ struct RGBAColor: Codable {
 
     func toThemeGradientColor(in colorScheme: ColorScheme = .light) -> Color {
         self.shadeMap(numShades: 28, saturationMultiplier: colorScheme == .light ? 0.92 : 0.6).shadeMap[colorScheme == .light ? 1 : 25].color
+    }
+
+    static func == (lhs: RGBAColor, rhs: RGBAColor) -> Bool {
+        return lhs.red == rhs.red &&
+            lhs.green == rhs.green &&
+            lhs.blue == rhs.blue &&
+            lhs.alpha == rhs.alpha
     }
 
     init(_ color: Color) {
@@ -223,7 +230,7 @@ struct RGBAColor: Codable {
 }
 
 let shadeIndexMapLight: [Int: Int] = [
-    0: 28,
+    0: 27,
     1: 21,
     2: 10,
     3: 3,

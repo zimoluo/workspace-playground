@@ -47,15 +47,5 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
-        .onAppear {
-            ensureSettingsExist()
-        }
-    }
-
-    private func ensureSettingsExist() {
-        if settings.isEmpty {
-            let defaultSettings = Settings()
-            modelContext.insert(defaultSettings)
-        }
     }
 }

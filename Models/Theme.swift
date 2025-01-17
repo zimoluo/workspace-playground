@@ -9,23 +9,25 @@ import SwiftData
 import SwiftUI
 
 @Model
-class Theme: ObservableObject {
+class Theme: ObservableObject, Equatable {
     @Attribute(.unique) var id: UUID
 
-    var title: String
     var dateCreated: Date
 
-    // Palette
     var primary: RGBAColor
     var secondary: RGBAColor
     var tertiary: RGBAColor
 
     var mainGradient: ColorGradient
 
-    // Miscellaneous
-    var readingBlur: Double
-
     var version: Int
+
+    var thumbnail: AngularGradient {
+        AngularGradient(
+            gradient: Gradient(colors: [self.primary.shadeMap(numShades: 20).shadeMap[11].color, self.secondary.shadeMap(numShades: 20).shadeMap[8].color, self.tertiary.shadeMap(numShades: 20).shadeMap[4].color, self.primary.shadeMap(numShades: 20).shadeMap[1].color]),
+            center: .center
+        )
+    }
 
     init(
         primary: RGBAColor = RGBAColor(red: 0.486, green: 0.176, blue: 0.071),
@@ -33,19 +35,32 @@ class Theme: ObservableObject {
         tertiary: RGBAColor = RGBAColor(red: 1.0, green: 0.969, blue: 0.929),
         mainGradient: ColorGradient = ColorGradient(type: .linear, stops: [
             GradientStop(color: RGBAColor(red: 1, green: 0.929, blue: 0.898), position: 0), GradientStop(color: RGBAColor(red: 1, green: 0.984, blue: 0.894), position: 1)
-        ], linearAttributes: LinearGradientAttributes(startPoint: CodableUnitPoint(from: .bottomLeading), endPoint: CodableUnitPoint(from: .topTrailing))),
-        readingBlur: Double = 0.0,
-        title: String = "Default Theme"
+        ], linearAttributes: LinearGradientAttributes(startPoint: CodableUnitPoint(from: .bottomLeading), endPoint: CodableUnitPoint(from: .topTrailing)))
     ) {
         self.primary = primary
         self.secondary = secondary
         self.tertiary = tertiary
-        self.readingBlur = readingBlur
+        self.mainGradient = mainGradient
         self.id = UUID()
-        self.title = title
         self.dateCreated = Date()
         self.version = 1
-        self.mainGradient = mainGradient
+    }
+
+    static func == (lhs: Theme, rhs: Theme) -> Bool {
+        return
+            lhs.primary == rhs.primary &&
+            lhs.secondary == rhs.secondary &&
+            lhs.tertiary == rhs.tertiary &&
+            lhs.mainGradient == rhs.mainGradient
+    }
+
+    func deepCopy() -> Theme {
+        return Theme(
+            primary: self.primary,
+            secondary: self.secondary,
+            tertiary: self.tertiary,
+            mainGradient: self.mainGradient
+        )
     }
 }
 

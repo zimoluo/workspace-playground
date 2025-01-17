@@ -29,8 +29,8 @@ struct ContentView: View {
                         let backgroundColor = themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
                         let foregroundColor = themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                         SectionView(header: "Themes") {
-                            ForEach(themes, id: \.id) { theme in
-                                Text(theme.title)
+                            ForEach(themes, id: \.id) { _ in
+                                Text("anakin is gone")
                                     .padding()
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .background(

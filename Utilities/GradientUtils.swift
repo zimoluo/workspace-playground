@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-struct CodableUnitPoint: Codable {
+struct CodableUnitPoint: Codable, Equatable {
     var x: Double
     var y: Double
 
@@ -18,9 +18,13 @@ struct CodableUnitPoint: Codable {
     var asUnitPoint: UnitPoint {
         .init(x: x, y: y)
     }
+
+    static func == (lhs: CodableUnitPoint, rhs: CodableUnitPoint) -> Bool {
+        return lhs.x == rhs.x && lhs.y == rhs.y
+    }
 }
 
-struct CodableAngle: Codable {
+struct CodableAngle: Codable, Equatable {
     var degrees: Double
 
     init(from angle: Angle) {
@@ -30,14 +34,23 @@ struct CodableAngle: Codable {
     var asAngle: Angle {
         .degrees(degrees)
     }
+
+    static func == (lhs: CodableAngle, rhs: CodableAngle) -> Bool {
+        return lhs.degrees == rhs.degrees
+    }
 }
 
-struct GradientStop: Codable {
+struct GradientStop: Codable, Equatable {
     var color: RGBAColor
     var position: Double
 
     func toSwiftUIStop(in colorScheme: ColorScheme = .light) -> Gradient.Stop {
         Gradient.Stop(color: color.toThemeGradientColor(in: colorScheme), location: position)
+    }
+
+    static func == (lhs: GradientStop, rhs: GradientStop) -> Bool {
+        return lhs.color == rhs.color &&
+            lhs.position == rhs.position
     }
 }
 
@@ -70,29 +83,51 @@ enum GradientType: String, Codable {
     }
 }
 
-struct LinearGradientAttributes: Codable {
+struct LinearGradientAttributes: Codable, Equatable {
     var startPoint: CodableUnitPoint
     var endPoint: CodableUnitPoint
+
+    static func == (lhs: LinearGradientAttributes, rhs: LinearGradientAttributes) -> Bool {
+        return lhs.startPoint == rhs.startPoint &&
+            lhs.endPoint == rhs.endPoint
+    }
 }
 
-struct RadialGradientAttributes: Codable {
+struct RadialGradientAttributes: Codable, Equatable {
     var center: CodableUnitPoint
     var edgePoint: CodableUnitPoint
+
+    static func == (lhs: RadialGradientAttributes, rhs: RadialGradientAttributes) -> Bool {
+        return lhs.center == rhs.center &&
+            lhs.edgePoint == rhs.edgePoint
+    }
 }
 
-struct AngularGradientAttributes: Codable {
+struct AngularGradientAttributes: Codable, Equatable {
     var center: CodableUnitPoint
     var angle: CodableAngle
+
+    static func == (lhs: AngularGradientAttributes, rhs: AngularGradientAttributes) -> Bool {
+        return lhs.center == rhs.center &&
+            lhs.angle == rhs.angle
+    }
 }
 
-struct MeshGradientAttributes: Codable {
+struct MeshGradientAttributes: Codable, Equatable {
     var width: Int
     var height: Int
     var points: [SIMD2<Float>]
     var colors: [RGBAColor]
+
+    static func == (lhs: MeshGradientAttributes, rhs: MeshGradientAttributes) -> Bool {
+        return lhs.width == rhs.width &&
+            lhs.height == rhs.height &&
+            lhs.points == rhs.points &&
+            lhs.colors == rhs.colors
+    }
 }
 
-struct ColorGradient: Codable {
+struct ColorGradient: Codable, Equatable {
     var type: GradientType
     var stops: [GradientStop]
     var linearAttributes: LinearGradientAttributes
@@ -132,6 +167,15 @@ struct ColorGradient: Codable {
         self.radialAttributes = radialAttributes
         self.angularAttributes = angularAttributes
         self.meshAttributes = meshAttributes
+    }
+
+    static func == (lhs: ColorGradient, rhs: ColorGradient) -> Bool {
+        return lhs.type == rhs.type &&
+            lhs.stops == rhs.stops &&
+            lhs.linearAttributes == rhs.linearAttributes &&
+            lhs.radialAttributes == rhs.radialAttributes &&
+            lhs.angularAttributes == rhs.angularAttributes &&
+            lhs.meshAttributes == rhs.meshAttributes
     }
 
     @ViewBuilder
