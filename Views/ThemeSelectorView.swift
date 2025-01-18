@@ -88,9 +88,7 @@ struct ThemeSelectorView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
-        .background(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 5))
         .cornerRadius(16)
-        .shadow(color: currentTheme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
     }
 
     private func applyTheme(_ id: UUID?) {

@@ -118,6 +118,7 @@ struct ThemeMakerView: View {
                             .cornerRadius(16)
                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                         }
+                        .frame(height: 164)
 
                         RoundedRectangle(cornerRadius: 16)
                             .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
@@ -199,6 +200,7 @@ struct ThemeMakerView: View {
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             }
                         }
+                        .frame(height: 400)
                     }
                     .padding(12)
                     .frame(maxWidth: .infinity)
