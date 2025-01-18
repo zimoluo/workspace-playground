@@ -16,7 +16,7 @@ struct ThemeMakerView: View {
                             RoundedRectangle(cornerRadius: 16)
                                 .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                                 .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
-                                .frame(maxHeight: .infinity)
+                                .frame(height: 64)
 
                             ThemeSelectorView()
                         }
@@ -57,7 +57,7 @@ struct ThemeMakerView: View {
                             }
                             .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                             .cornerRadius(16)
-                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                            .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
 
                             Grid(horizontalSpacing: 10, verticalSpacing: 16) {
                                 GridRow {
@@ -65,7 +65,7 @@ struct ThemeMakerView: View {
                                         Rectangle()
                                             .fill(themeColor(from: theme, for: .primary, in: colorScheme, level: level))
                                             .cornerRadius(8)
-                                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                                     }
                                 }
                                 GridRow {
@@ -73,7 +73,7 @@ struct ThemeMakerView: View {
                                         Rectangle()
                                             .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: level))
                                             .cornerRadius(8)
-                                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                                     }
                                 }
                                 GridRow {
@@ -81,7 +81,7 @@ struct ThemeMakerView: View {
                                         Rectangle()
                                             .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: level))
                                             .cornerRadius(8)
-                                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                                     }
                                 }
                             }
@@ -89,7 +89,7 @@ struct ThemeMakerView: View {
                             .padding(12)
                             .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                             .cornerRadius(16)
-                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                            .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
 
                             VStack(spacing: 8) {
                                 Button(action: {
@@ -116,7 +116,7 @@ struct ThemeMakerView: View {
                             .padding(8)
                             .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                             .cornerRadius(16)
-                            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                            .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
                         }
                         .frame(height: 164)
 
@@ -144,7 +144,7 @@ struct ThemeMakerView: View {
                                         .padding(32)
                                         .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                                         .cornerRadius(16)
-                                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                                        .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
                                         .contentShape(RoundedRectangle(cornerRadius: 16))
                                     ZStack {
                                         theme.mainGradient.toGradient(in: colorScheme)
@@ -193,7 +193,7 @@ struct ThemeMakerView: View {
                                             )
                                     }
                                     .cornerRadius(16)
-                                    .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                                    .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
                                     .frame(maxWidth: 240, maxHeight: .infinity)
                                 }.frame(maxHeight: .infinity)
                             }

@@ -41,7 +41,7 @@ struct GradientTypeSelectorView: View {
                         themeColor(from: theme, for: .secondary, in: colorScheme, level: isSelected ? 1 : 5)
                     )
                     .cornerRadius(16)
-                    .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                    .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
                     .onTapGesture {
                         withAnimation(.spring()) {
                             theme.mainGradient.type = gradientType

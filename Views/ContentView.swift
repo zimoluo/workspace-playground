@@ -56,7 +56,7 @@ struct ContentView: View {
                                             Circle()
                                                 .fill(eachTheme.thumbnail)
                                                 .frame(width: 36, height: 36)
-                                                .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.4), radius: 4, y: 2)
+                                                .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 4, y: 2)
                                                 .overlay(
                                                     Circle()
                                                         .stroke(themeColor(from: theme, for: .primary, in: .light, level: 5), lineWidth: 3)

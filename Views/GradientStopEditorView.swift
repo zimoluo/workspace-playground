@@ -101,7 +101,7 @@ struct GradientStopEditorView: View {
                         .fill(gradient)
                         .frame(height: 32)
                         .cornerRadius(12)
-                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                         .gesture(
                             DragGesture(minimumDistance: 0)
                                 .onEnded { value in
@@ -141,7 +141,7 @@ struct GradientStopEditorView: View {
                             }
                         }
                         .frame(width: 20, height: 20)
-                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 12, y: 8)
+                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 4)
                         .position(x: CGFloat(stop.position) * width, y: 50)
                         .gesture(
                             DragGesture()

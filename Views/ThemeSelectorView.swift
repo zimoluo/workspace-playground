@@ -181,6 +181,6 @@ struct ThemeCircle: View {
                     .frame(width: 35, height: 35) : nil
             )
             .frame(width: 44, height: 44)
-            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 4, y: 2)
+            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 4, y: 2)
     }
 }

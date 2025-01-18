@@ -13,7 +13,7 @@ struct MeshGradientEditorView: View {
                 .padding(32)
                 .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                 .cornerRadius(16)
-                .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
 
             VStack(spacing: 12) {
                 Group {

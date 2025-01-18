@@ -1,15 +1,18 @@
 import SwiftUI
 
 struct DraggablePoint: View {
+    @Environment(\.theme) private var theme
+
     @Binding var point: CodableUnitPoint
+
     var size: CGFloat = 24
     var color: Color = .blue
-    var shadowColor: Color = .black.opacity(0.2)
 
     var body: some View {
         GeometryReader { geometry in
             let width = geometry.size.width
             let height = geometry.size.height
+            let shadowColor = theme.secondary.toShadow(opacityMultiplier: 0.8)
 
             Circle()
                 .fill(color)
@@ -24,7 +27,7 @@ struct DraggablePoint: View {
                             point.y = Double(newY)
                         }
                 )
-                .shadow(color: shadowColor, radius: 12, y: 8)
+                .shadow(color: shadowColor, radius: 8, y: 6)
         }
     }
 }
@@ -200,8 +203,7 @@ struct ConnectPointsPanel: View {
         DraggablePoint(
             point: .constant(CodableUnitPoint(x: handleX, y: handleY)), // not a binding to theme
             size: 19,
-            color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color,
-            shadowColor: theme.secondary.toShadow(opacityMultiplier: 0.4)
+            color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color
         )
         .simultaneousGesture(
             DragGesture()
@@ -246,16 +248,14 @@ struct ConnectPointsPanel: View {
                 DraggablePoint(
                     point: secondaryPointBinding,
                     size: 24,
-                    color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color,
-                    shadowColor: theme.secondary.toShadow(opacityMultiplier: 0.4)
+                    color: theme.secondary.shadeMap(numShades: 16).shadeMap[4].color
                 )
                 .animation(.easeInOut, value: theme.mainGradient.type)
 
                 DraggablePoint(
                     point: primaryPointBinding,
                     size: 24,
-                    color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color,
-                    shadowColor: theme.secondary.toShadow(opacityMultiplier: 0.4)
+                    color: theme.secondary.shadeMap(numShades: 16).shadeMap[10].color
                 )
             }
             .animation(.easeInOut, value: theme.mainGradient.type)
