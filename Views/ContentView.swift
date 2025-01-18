@@ -133,11 +133,15 @@ struct ContentView: View {
                     ], startPoint: .bottom, endPoint: .top))
                 }
             } detail: {
-                switch selectedScreen.type {
-                case .themeMaker:
-                    ThemeMakerView()
-                default:
+                ZStack {
                     theme.mainGradient.toGradient(in: colorScheme).ignoresSafeArea()
+
+                    switch selectedScreen.type {
+                    case .themeMaker:
+                        ThemeMakerView()
+                    default:
+                        EmptyView()
+                    }
                 }
             }
             .accentColor(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
