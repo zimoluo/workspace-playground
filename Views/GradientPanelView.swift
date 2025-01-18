@@ -12,7 +12,7 @@ struct DraggablePoint: View {
         GeometryReader { geometry in
             let width = geometry.size.width
             let height = geometry.size.height
-            let shadowColor = theme.secondary.toShadow(opacityMultiplier: 0.8)
+            let shadowColor = theme.secondary.toShadow(opacityMultiplier: 0.6)
 
             Circle()
                 .fill(color)
@@ -27,7 +27,7 @@ struct DraggablePoint: View {
                             point.y = Double(newY)
                         }
                 )
-                .shadow(color: shadowColor, radius: 8, y: 6)
+                .shadow(color: shadowColor, radius: 6, y: 3)
         }
     }
 }

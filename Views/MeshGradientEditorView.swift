@@ -162,6 +162,7 @@ struct MeshGradientEditorView: View {
             Circle()
                 .fill(color)
                 .frame(width: 20, height: 20)
+                .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.6), radius: 6, y: 3)
             if isSelected {
                 Circle()
                     .strokeBorder(theme.secondary.shadeMap(numShades: 16).shadeMap[8].color.opacity(0.4),
