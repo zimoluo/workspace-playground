@@ -26,7 +26,7 @@ struct ThemeMakerView: View {
                                 .frame(maxHeight: .infinity)
 
                             ThemeSelectorView()
-                        }.frame(height: 48)
+                        }.frame(height: 64)
 
                         RoundedRectangle(cornerRadius: 16)
                             .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
@@ -211,7 +211,7 @@ struct ThemeMakerView: View {
                     .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 4))
                     .cornerRadius(16).shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
                 }
-                .padding(32)
+                .padding(.horizontal, 32)
             }
         }.toolbar {
             ToolbarItem(placement: .navigation) {

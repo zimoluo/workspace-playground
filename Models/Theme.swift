@@ -55,11 +55,17 @@ class Theme: ObservableObject, Equatable {
     }
 
     func deepCopy() -> Theme {
+        guard let encodedGradient = try? JSONEncoder().encode(self.mainGradient),
+              let copiedMainGradient = try? JSONDecoder().decode(ColorGradient.self, from: encodedGradient)
+        else {
+            return .init()
+        }
+
         return Theme(
             primary: self.primary,
             secondary: self.secondary,
             tertiary: self.tertiary,
-            mainGradient: self.mainGradient
+            mainGradient: copiedMainGradient
         )
     }
 }

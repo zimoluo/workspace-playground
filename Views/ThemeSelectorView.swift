@@ -17,36 +17,44 @@ struct ThemeSelectorView: View {
     @State private var showInfo = false
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 20) {
             // Dashed Circle for creating a new theme
-            NewThemeCircle()
-                .frame(width: 48, height: 48)
+            NewThemeCircle(selectedThemeId: $selectedThemeId)
                 .onTapGesture {
-                    selectedThemeId = nil // Indicates creation of a new theme
+                    withAnimation(.spring(duration: 0.15)) {
+                        selectedThemeId = nil
+                    }
                 }
 
             // Vertical Separator
             Divider()
-                .frame(height: 48)
+                .frame(width: 3, height: 44)
                 .background(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 3))
 
             // Horizontal ScrollView of existing themes
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 16) {
+                LazyHStack(spacing: 20) {
                     ForEach(themes.filter { $0.id != currentTheme.id }) { theme in
                         ThemeCircle(theme: theme, isSelected: theme.id == selectedThemeId)
                             .onTapGesture {
-                                selectedThemeId = theme.id
+                                withAnimation(.spring(duration: 0.15)) {
+                                    selectedThemeId = theme.id
+                                }
+                            }
+                            .scrollTransition { content, phase in
+                                content
+                                    .opacity(phase.isIdentity ? 1 : 0)
+                                    .scaleEffect(phase.isIdentity ? 1 : 0.6)
+                                    .blur(radius: phase.isIdentity ? 0 : 10)
                             }
                     }
                 }
-                .padding(.horizontal, 8)
             }
-            .frame(height: 48)
+            .frame(height: 44)
 
             // Another Vertical Separator
             Divider()
-                .frame(height: 48)
+                .frame(width: 3, height: 44)
                 .background(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 3))
 
             // Info, Load, and Save Buttons
@@ -63,15 +71,26 @@ struct ThemeSelectorView: View {
                     InfoPopoverView()
                 }
 
-                // Load Button
-                Button(action: {
-                    if let selected = selectedThemeId {
-                        applyTheme(selected)
+                if selectedThemeId != nil {
+                    Button(action: {
+                        deleteTheme(selectedThemeId)
+                    }) {
+                        Image(systemName: "trash.circle")
+                            .font(.title2)
+                            .foregroundStyle(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 1))
                     }
-                }) {
-                    Image(systemName: "arrow.down.circle")
-                        .font(.title2)
-                        .foregroundStyle(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 1))
+                }
+
+                if selectedThemeId != nil {
+                    Button(action: {
+                        if let selected = selectedThemeId {
+                            applyTheme(selected)
+                        }
+                    }) {
+                        Image(systemName: "arrow.down.circle")
+                            .font(.title2)
+                            .foregroundStyle(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 1))
+                    }
                 }
 
                 // Save Button
@@ -84,7 +103,8 @@ struct ThemeSelectorView: View {
                 }
             }
         }
-        .padding(8)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
         .background(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 5))
         .cornerRadius(16)
         .shadow(color: currentTheme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
@@ -119,12 +139,27 @@ struct ThemeSelectorView: View {
         matchingTheme.primary = copiedTheme.primary
         matchingTheme.secondary = copiedTheme.secondary
         matchingTheme.tertiary = copiedTheme.tertiary
+        matchingTheme.mainGradient = copiedTheme.mainGradient
     }
 
     private func createNewTheme() {
         let newTheme = currentTheme.deepCopy()
-        modelContext.insert(newTheme)
-        selectedThemeId = newTheme.id
+
+        withAnimation(.spring(duration: 0.15)) {
+            modelContext.insert(newTheme)
+            selectedThemeId = newTheme.id
+        }
+    }
+
+    private func deleteTheme(_ id: UUID?) {
+        guard let id = id, let themeToDelete = themes.first(where: { $0.id == id }) else {
+            return
+        }
+
+        withAnimation(.spring(duration: 0.15)) {
+            modelContext.delete(themeToDelete)
+            selectedThemeId = nil
+        }
     }
 }
 
@@ -139,15 +174,14 @@ struct NewThemeCircle: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.theme) private var theme
 
+    @Binding var selectedThemeId: UUID?
+
     var body: some View {
         Circle()
-            .stroke(style: StrokeStyle(lineWidth: 2, dash: [5]))
-            .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 3))
-            .overlay(
-                Image(systemName: "plus")
-                    .font(.title2)
-                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
-            )
+            .fill(selectedThemeId == nil ? themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(0.33) : .clear)
+            .stroke(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1), style: StrokeStyle(lineWidth: 4, lineCap: .round, dash: [4, 10]))
+            .frame(width: 38, height: 38)
+            .contentShape(Circle())
     }
 }
 
@@ -162,11 +196,12 @@ struct ThemeCircle: View {
                 theme.thumbnail
             )
             .overlay(
-                Circle()
-                    .stroke(Color.white, lineWidth: 3)
-                    .shadow(color: Color.black.opacity(isSelected ? 0.2 : 0), radius: 4, y: 2)
+                isSelected ?
+                    Circle()
+                    .stroke(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5), lineWidth: 3.5)
+                    .frame(width: 35, height: 35) : nil
             )
-            .frame(width: 48, height: 48)
+            .frame(width: 44, height: 44)
             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.4), radius: 4, y: 2)
     }
 }

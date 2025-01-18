@@ -43,7 +43,7 @@ struct GradientTypeSelectorView: View {
                     .cornerRadius(16)
                     .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                     .onTapGesture {
-                        withAnimation(.spring()) { // Smooth animation
+                        withAnimation(.spring()) {
                             theme.mainGradient.type = gradientType
                         }
                     }

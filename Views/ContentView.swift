@@ -81,14 +81,7 @@ struct ContentView: View {
                 .background(LinearGradient(colors: [themeColor(from: theme, for: .primary, in: colorScheme, level: 4), themeColor(from: theme, for: .primary, in: colorScheme, level: 5)], startPoint: .bottom, endPoint: .top))
             }
         } detail: {
-            // Main Content Area
-            VStack {
-                Text("Welcome to My Notes!")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding()
-                Spacer()
-            }.background(theme.mainGradient.toGradient())
+            theme.mainGradient.toGradient(in: colorScheme).ignoresSafeArea()
         }.accentColor(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
     }
 
