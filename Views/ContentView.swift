@@ -7,6 +7,8 @@ struct ContentView: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
 
+    @State private var selectedScreen: Screen = .init()
+
     private let columns: [GridItem] = Array(repeating: .init(.fixed(36), spacing: 16), count: 5)
     private let maxThemesGridHeight: CGFloat = 120
 
@@ -67,7 +69,11 @@ struct ContentView: View {
                                     }
                                 }
 
-                                NavigationLink(destination: ThemeMakerView()) {
+                                Button(action: {
+                                    withAnimation(.spring(duration: 0.2)) {
+                                        selectedScreen.type = .themeMaker
+                                    }
+                                }) {
                                     Circle()
                                         .stroke(themeColor(from: theme, for: .primary, in: colorScheme, level: 1), style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [4, 6.2]))
                                         .frame(width: 33, height: 33)
@@ -93,22 +99,26 @@ struct ContentView: View {
                         .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                     }
 
-                    NavigationLink(destination: ThemeMakerView()) {
+                    Button(action: {
+                        withAnimation(.spring(duration: 0.2)) {
+                            selectedScreen.type = .themeMaker
+                        }
+                    }) {
                         HStack(spacing: 12) {
                             Image(systemName: "paintpalette").font(.title2)
                                 .frame(width: 24, height: 24)
                                 .foregroundColor(
-                                    themeColor(from: theme, for: .primary, in: colorScheme, level: 1)
+                                    selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 4) : themeColor(from: theme, for: .primary, in: colorScheme, level: 1)
                                 )
                             Text("Theme Maker")
                                 .foregroundColor(
-                                    themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                                    selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 5) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                                 )
                         }
                         .padding(16)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(
-                            themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
+                            selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 1) : themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
                         )
                         .cornerRadius(16)
                         .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
@@ -121,7 +131,12 @@ struct ContentView: View {
                 ], startPoint: .bottom, endPoint: .top))
             }
         } detail: {
-            theme.mainGradient.toGradient(in: colorScheme).ignoresSafeArea()
+            switch selectedScreen.type {
+            case .themeMaker:
+                ThemeMakerView()
+            default:
+                theme.mainGradient.toGradient(in: colorScheme).ignoresSafeArea()
+            }
         }
         .accentColor(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
     }

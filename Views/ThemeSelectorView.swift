@@ -273,7 +273,7 @@ struct InfoFullScreenView: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 16)
                             .fill(themeColor(from: theme, in: colorScheme, level: 1))
-                            .frame(height: 56)
+                            .frame(height: 52)
 
                         Text("Got it!")
                             .font(.title3)
@@ -282,7 +282,7 @@ struct InfoFullScreenView: View {
                     }
                     .shadow(color: theme.primary.toShadow(), radius: 12, y: 8)
                 }
-                .padding(.horizontal, 144)
+                .padding(.horizontal, 150)
                 .padding(.bottom, 32)
             }
             .frame(maxWidth: 600, maxHeight: 800)
