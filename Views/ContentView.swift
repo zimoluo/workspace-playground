@@ -20,7 +20,7 @@ struct ContentView: View {
                         .themedForeground(using: theme, in: colorScheme)
                     Spacer()
                 }
-                .padding(16)
+                .padding(20)
                 .background(themeColor(from: theme, for: .primary, in: colorScheme, level: 5))
 
                 VStack(spacing: 8) {
@@ -69,8 +69,8 @@ struct ContentView: View {
 
                                 NavigationLink(destination: ThemeMakerView()) {
                                     Circle()
-                                        .stroke(themeColor(from: theme, for: .primary, in: colorScheme, level: 1), style: StrokeStyle(lineWidth: 4, lineCap: .round, dash: [4, 7]))
-                                        .frame(width: 32, height: 32)
+                                        .stroke(themeColor(from: theme, for: .primary, in: colorScheme, level: 1), style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [4, 6.2]))
+                                        .frame(width: 33, height: 33)
                                         .contentShape(Circle())
                                         .overlay(Image(systemName: "plus")
                                             .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
@@ -114,7 +114,7 @@ struct ContentView: View {
                         .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 20)
                 .background(LinearGradient(colors: [
                     themeColor(from: theme, for: .primary, in: colorScheme, level: 4),
                     themeColor(from: theme, for: .primary, in: colorScheme, level: 5)

@@ -80,7 +80,7 @@ struct ThemeSelectorView: View {
                 Button(action: {
                     showInfo = true
                 }) {
-                    Image(systemName: "info.square")
+                    Image(systemName: "info.bubble")
                         .font(.system(size: 25, weight: .regular, design: .default))
                         .foregroundStyle(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 1))
                 }
@@ -207,7 +207,7 @@ struct InfoFullScreenView: View {
                 }
 
             VStack(spacing: 32) {
-                Text("Using the Theme Maker")
+                Text("Exploring the Theme Maker")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .padding(.horizontal, 150)
