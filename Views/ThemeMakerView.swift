@@ -209,17 +209,18 @@ struct ThemeMakerView: View {
                     .padding(12)
                     .frame(maxWidth: .infinity)
                     .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 4))
-                    .cornerRadius(16).shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
+                    .cornerRadius(16)
+                    .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
                 }
                 .padding(.horizontal, 32)
+                .padding(.vertical, 20)
             }
         }.toolbar {
             ToolbarItem(placement: .navigation) {
                 Text("Theme Maker")
-                    .font(.title)
+                    .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
-                    .frame(alignment: .leading)
                     .padding(.horizontal, 4)
             }
         }
