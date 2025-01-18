@@ -1,10 +1,3 @@
-//
-//  ThemeKey.swift
-//  workspace-playground
-//
-//  Created by Zimo Luo on 1/11/25.
-//
-
 import SwiftUI
 
 struct ThemeKey: EnvironmentKey {

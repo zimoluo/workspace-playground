@@ -13,132 +13,136 @@ struct ContentView: View {
     private let maxThemesGridHeight: CGFloat = 120
 
     var body: some View {
-        NavigationSplitView {
-            VStack(spacing: 0) {
-                HStack {
-                    Text("WorkSpace")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .themedForeground(using: theme, in: colorScheme)
-                    Spacer()
-                }
-                .padding(20)
-                .background(themeColor(from: theme, for: .primary, in: colorScheme, level: 5))
-
-                VStack(spacing: 8) {
-                    SectionView(header: "Spaces") {
-                        ScrollView {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("Until we meet again")
-                                    .padding(16)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(
-                                        themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
-                                    )
-                                    .cornerRadius(16)
-                                    .foregroundColor(
-                                        themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
-                                    )
-                                    .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
-                            }
-                        }
-                        .frame(maxHeight: .infinity)
+        ZStack {
+            NavigationSplitView {
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("WorkSpace")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .themedForeground(using: theme, in: colorScheme)
+                        Spacer()
                     }
+                    .padding(20)
+                    .background(themeColor(from: theme, for: .primary, in: colorScheme, level: 5))
 
-                    SectionView(header: "Themes") {
-                        ScrollView {
-                            LazyVGrid(columns: columns, spacing: 16) {
-                                ForEach(themes.filter { $0.id != theme.id }) { eachTheme in
-                                    Button(action: {
-                                        applyTheme(eachTheme.id)
-                                    }) {
-                                        Circle()
-                                            .fill(eachTheme.thumbnail)
-                                            .frame(width: 36, height: 36)
-                                            .overlay(
-                                                Circle()
-                                                    .stroke(themeColor(from: theme, for: .primary, in: .light, level: 5), lineWidth: 3)
-                                                    .frame(width: 33, height: 33))
-                                    }
-                                    .buttonStyle(PlainButtonStyle())
-                                    .scrollTransition { content, phase in
-                                        content
-                                            .opacity(phase.isIdentity ? 1 : 0)
-                                            .scaleEffect(phase.isIdentity ? 1 : 0.6)
-                                            .blur(radius: phase.isIdentity ? 0 : 10)
-                                    }
+                    VStack(spacing: 8) {
+                        SectionView(header: "Spaces") {
+                            ScrollView {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text("Until we meet again")
+                                        .padding(16)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .background(
+                                            themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
+                                        )
+                                        .cornerRadius(16)
+                                        .foregroundColor(
+                                            themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                                        )
+                                        .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                                 }
+                            }
+                            .frame(maxHeight: .infinity)
+                        }
 
-                                Button(action: {
-                                    withAnimation(.spring(duration: 0.2)) {
-                                        selectedScreen.type = .themeMaker
-                                    }
-                                }) {
-                                    Circle()
-                                        .stroke(themeColor(from: theme, for: .primary, in: colorScheme, level: 1), style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [4, 6.2]))
-                                        .frame(width: 33, height: 33)
-                                        .contentShape(Circle())
-                                        .overlay(Image(systemName: "plus")
-                                            .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
-                                            .fontWeight(.bold))
+                        SectionView(header: "Themes") {
+                            ScrollView {
+                                LazyVGrid(columns: columns, spacing: 16) {
+                                    ForEach(themes.filter { $0.id != theme.id }) { eachTheme in
+                                        Button(action: {
+                                            applyTheme(eachTheme.id)
+                                        }) {
+                                            Circle()
+                                                .fill(eachTheme.thumbnail)
+                                                .frame(width: 36, height: 36)
+                                                .overlay(
+                                                    Circle()
+                                                        .stroke(themeColor(from: theme, for: .primary, in: .light, level: 5), lineWidth: 3)
+                                                        .frame(width: 33, height: 33))
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
                                         .scrollTransition { content, phase in
                                             content
                                                 .opacity(phase.isIdentity ? 1 : 0)
                                                 .scaleEffect(phase.isIdentity ? 1 : 0.6)
                                                 .blur(radius: phase.isIdentity ? 0 : 10)
                                         }
+                                    }
+
+                                    Button(action: {
+                                        withAnimation(.spring(duration: 0.2)) {
+                                            selectedScreen.type = .themeMaker
+                                        }
+                                    }) {
+                                        Circle()
+                                            .stroke(themeColor(from: theme, for: .primary, in: colorScheme, level: 1), style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [4, 6.2]))
+                                            .frame(width: 33, height: 33)
+                                            .contentShape(Circle())
+                                            .overlay(Image(systemName: "plus")
+                                                .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
+                                                .fontWeight(.bold))
+                                            .scrollTransition { content, phase in
+                                                content
+                                                    .opacity(phase.isIdentity ? 1 : 0)
+                                                    .scaleEffect(phase.isIdentity ? 1 : 0.6)
+                                                    .blur(radius: phase.isIdentity ? 0 : 10)
+                                            }
+                                    }
                                 }
+                                .padding(16)
+                            }
+                            .frame(height: themesGridHeight)
+                            .background(
+                                themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
+                            )
+                            .cornerRadius(16)
+                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                        }
+
+                        Button(action: {
+                            withAnimation(.spring(duration: 0.2)) {
+                                selectedScreen.type = .themeMaker
+                            }
+                        }) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "paintpalette").font(.title2)
+                                    .frame(width: 24, height: 24)
+                                    .foregroundColor(
+                                        selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 4) : themeColor(from: theme, for: .primary, in: colorScheme, level: 1)
+                                    )
+                                Text("Theme Maker")
+                                    .foregroundColor(
+                                        selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 5) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                                    )
                             }
                             .padding(16)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(
+                                selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 1) : themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
+                            )
+                            .cornerRadius(16)
+                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                         }
-                        .frame(height: themesGridHeight)
-                        .background(
-                            themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
-                        )
-                        .cornerRadius(16)
-                        .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                     }
-
-                    Button(action: {
-                        withAnimation(.spring(duration: 0.2)) {
-                            selectedScreen.type = .themeMaker
-                        }
-                    }) {
-                        HStack(spacing: 12) {
-                            Image(systemName: "paintpalette").font(.title2)
-                                .frame(width: 24, height: 24)
-                                .foregroundColor(
-                                    selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 4) : themeColor(from: theme, for: .primary, in: colorScheme, level: 1)
-                                )
-                            Text("Theme Maker")
-                                .foregroundColor(
-                                    selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 5) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
-                                )
-                        }
-                        .padding(16)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(
-                            selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 1) : themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
-                        )
-                        .cornerRadius(16)
-                        .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
-                    }
+                    .padding(.horizontal, 20)
+                    .background(LinearGradient(colors: [
+                        themeColor(from: theme, for: .primary, in: colorScheme, level: 4),
+                        themeColor(from: theme, for: .primary, in: colorScheme, level: 5)
+                    ], startPoint: .bottom, endPoint: .top))
                 }
-                .padding(.horizontal, 20)
-                .background(LinearGradient(colors: [
-                    themeColor(from: theme, for: .primary, in: colorScheme, level: 4),
-                    themeColor(from: theme, for: .primary, in: colorScheme, level: 5)
-                ], startPoint: .bottom, endPoint: .top))
+            } detail: {
+                switch selectedScreen.type {
+                case .themeMaker:
+                    ThemeMakerView()
+                default:
+                    theme.mainGradient.toGradient(in: colorScheme).ignoresSafeArea()
+                }
             }
-        } detail: {
-            switch selectedScreen.type {
-            case .themeMaker:
-                ThemeMakerView()
-            default:
-                theme.mainGradient.toGradient(in: colorScheme).ignoresSafeArea()
-            }
+            .accentColor(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+
+            PopUpView().ignoresSafeArea()
         }
-        .accentColor(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
     }
 
     private var themesGridHeight: CGFloat {
