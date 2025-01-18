@@ -126,7 +126,7 @@ struct ContentView: View {
                             .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                         }
                     }
-                    .padding(.horizontal, 20)
+                    .safeAreaPadding(.horizontal, 20)
                     .background(LinearGradient(colors: [
                         themeColor(from: theme, for: .primary, in: colorScheme, level: 4),
                         themeColor(from: theme, for: .primary, in: colorScheme, level: 5)
