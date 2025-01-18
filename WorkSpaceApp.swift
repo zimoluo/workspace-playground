@@ -9,6 +9,7 @@ struct WorkSpaceApp: App {
                 ContentView()
                     .environment(\.theme, theme)
                     .environment(\.settings, settings)
+                    .environment(\.popUp, .empty)
             }.modelContainer(for: [Theme.self, Settings.self, Note.self])
         }
     }
