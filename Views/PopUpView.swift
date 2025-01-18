@@ -42,59 +42,62 @@ struct PopUpView: View {
                     .padding(.top, 44)
                     .multilineTextAlignment(.center)
                     .themedForeground(using: theme, in: colorScheme)
-                VStack(alignment: .leading, spacing: 36) {
-                    HStack(spacing: 16) {
-                        Image(systemName: "pencil.and.outline")
-                            .font(.title)
-                            .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
-                            .frame(width: 36, height: 36)
-                        VStack(alignment: .leading) {
-                            Text("Saving and Applying Themes")
-                                .fontWeight(.semibold)
-                                .font(.subheadline)
-                                .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
-                            Text("Save your custom theme with ease and reuse it anytime with just a tap.")
-                                .font(.subheadline)
-                                .opacity(0.7)
-                                .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
-                        }
-                    }
 
-                    HStack(spacing: 16) {
-                        Image(systemName: "paintpalette.fill")
-                            .font(.title)
-                            .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
-                            .frame(width: 36, height: 36)
-                        VStack(alignment: .leading) {
-                            Text("Editing Accent Colors")
-                                .fontWeight(.semibold)
-                                .font(.subheadline)
-                                .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
-                            Text("Edit three accent colors with ease. WorkSpace adapts brightness and saturation to ensure your colors always look great!")
-                                .font(.subheadline)
-                                .opacity(0.7)
-                                .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 36) {
+                        HStack(spacing: 16) {
+                            Image(systemName: "pencil.and.outline")
+                                .font(.title)
+                                .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
+                                .frame(width: 36, height: 36)
+                            VStack(alignment: .leading) {
+                                Text("Saving and Applying Themes")
+                                    .fontWeight(.semibold)
+                                    .font(.subheadline)
+                                    .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+                                Text("Save your custom theme with ease and reuse it anytime with just a tap.")
+                                    .font(.subheadline)
+                                    .opacity(0.7)
+                                    .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+                            }
                         }
-                    }
 
-                    HStack(spacing: 16) {
-                        Image(systemName: "line.3.crossed.swirl.circle.fill")
-                            .font(.title)
-                            .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
-                            .frame(width: 36, height: 36)
-                        VStack(alignment: .leading) {
-                            Text("Playing with Gradient")
-                                .fontWeight(.semibold)
-                                .font(.subheadline)
-                                .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
-                            Text("Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s playground simplifies the process, and its smart color algorithm guarantees gorgeous results.")
-                                .font(.subheadline)
-                                .opacity(0.7)
-                                .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+                        HStack(spacing: 16) {
+                            Image(systemName: "paintpalette.fill")
+                                .font(.title)
+                                .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
+                                .frame(width: 36, height: 36)
+                            VStack(alignment: .leading) {
+                                Text("Editing Accent Colors")
+                                    .fontWeight(.semibold)
+                                    .font(.subheadline)
+                                    .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+                                Text("Edit three accent colors with ease. WorkSpace adapts brightness and saturation to ensure your colors always look great!")
+                                    .font(.subheadline)
+                                    .opacity(0.7)
+                                    .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+                            }
+                        }
+
+                        HStack(spacing: 16) {
+                            Image(systemName: "line.3.crossed.swirl.circle.fill")
+                                .font(.title)
+                                .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
+                                .frame(width: 36, height: 36)
+                            VStack(alignment: .leading) {
+                                Text("Playing with Gradient")
+                                    .fontWeight(.semibold)
+                                    .font(.subheadline)
+                                    .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+                                Text("Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s playground simplifies the process, and its smart color algorithm guarantees gorgeous results.")
+                                    .font(.subheadline)
+                                    .opacity(0.7)
+                                    .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+                            }
                         }
                     }
+                    .padding(.horizontal, 140)
                 }
-                .padding(.horizontal, 140)
 
                 Spacer()
 
