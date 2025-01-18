@@ -165,7 +165,7 @@ struct NewThemeCircle: View {
     var body: some View {
         Circle()
             .fill(selectedThemeId == nil ? themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(0.33) : .clear)
-            .stroke(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1), style: StrokeStyle(lineWidth: 4, lineCap: .round, dash: [4, 10]))
+            .stroke(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1), style: StrokeStyle(lineWidth: 4, lineCap: .round, dash: [4, 9.2]))
             .frame(width: 38, height: 38)
             .contentShape(Circle())
     }
