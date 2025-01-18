@@ -1,10 +1,3 @@
-//
-//  ColorUtils.swift
-//  workspace-playground
-//
-//  Created by Zimo Luo on 1/8/25.
-//
-
 import SwiftUI
 
 struct RGBAColor: Codable, Equatable {
@@ -85,7 +78,6 @@ struct RGBAColor: Codable, Equatable {
         return RGBAColor.fromHSB(hue: hueAnalogous, saturation: saturationAdjusted, brightness: brightnessAdjusted)
     }
 
-    /// Helper to create an RGBAColor from HSB values.
     static func fromHSB(hue: Double, saturation: Double, brightness: Double, alpha: Double = 1.0) -> RGBAColor {
         let uiColor = UIColor(
             hue: CGFloat(hue),
@@ -96,7 +88,6 @@ struct RGBAColor: Codable, Equatable {
         return RGBAColor(Color(uiColor))
     }
 
-    /// Decomposes the color to HSB for manipulation.
     private var hue: Double {
         let uiColor = UIColor(Color(red: red, green: green, blue: blue, opacity: alpha))
         var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
@@ -127,16 +118,13 @@ struct RGBAColor: Codable, Equatable {
         let minC = min(r, g, b)
         let delta = maxC - minC
 
-        // Lightness
         let l = (maxC + minC) / 2.0
 
-        // Saturation
         var s: Double = 0
         if delta != 0 {
             s = delta / (1 - abs(2 * l - 1))
         }
 
-        // Hue
         var h: Double = 0
         if delta != 0 {
             switch maxC {
@@ -151,7 +139,6 @@ struct RGBAColor: Codable, Equatable {
             }
         }
 
-        // Normalize hue to [0, 1)
         if h < 0 {
             h += 1.0
         }
@@ -189,7 +176,6 @@ struct RGBAColor: Codable, Equatable {
     }
 
     func shadeMap(numShades: Int = 32, hueMultiplier: Double = 1.0, saturationMultiplier: Double = 1.0) -> (index: Int, shadeMap: [RGBAColor]) {
-        // Convert this color to HSL
         let (h, s, _) = self.toHSL()
         let modifiedS = s * saturationMultiplier
         var modifiedH = h * hueMultiplier

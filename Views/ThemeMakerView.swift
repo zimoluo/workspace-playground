@@ -4,6 +4,7 @@ import SwiftUI
 struct ThemeMakerView: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var popUp: PopUp
 
     var body: some View {
         ZStack {
@@ -207,7 +208,8 @@ struct ThemeMakerView: View {
                 .padding(.horizontal, 32)
                 .padding(.vertical, 20)
             }
-        }.toolbar {
+        }
+        .toolbar {
             ToolbarItem(placement: .navigation) {
                 Text("Theme Maker")
                     .font(.largeTitle)
@@ -216,9 +218,18 @@ struct ThemeMakerView: View {
                     .padding(.horizontal, 4)
             }
         }
+        .task { showGuideFirstTime() }
     }
-}
 
-#Preview {
-    ThemeMakerView().environment(\.theme, Theme(mainGradient: ColorGradient(type: .mesh, meshAttributes: MeshGradientAttributes(width: 3, height: 4, points: [[0, 0], [0.8, 0.2], [0.3, 0.6], [1, 1]], colors: [RGBAColor(.red), RGBAColor(.blue), RGBAColor(.green), RGBAColor(.orange)]))))
+    private func showGuideFirstTime() {
+        let hasSeenThemeMakerGuide = UserDefaults.standard.bool(forKey: "HasSeenThemeMakerGuide")
+
+        guard !hasSeenThemeMakerGuide else {
+            return
+        }
+
+        popUp.type = .themeMakerGuide
+
+        UserDefaults.standard.set(true, forKey: "HasSeenThemeMakerGuide")
+    }
 }

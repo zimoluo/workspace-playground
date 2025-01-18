@@ -9,7 +9,7 @@ struct PopUpView: View {
         ZStack {
             if popUp.type != .empty {
                 Color.black
-                    .opacity(0.25)
+                    .opacity(colorScheme == .light ? 0.25 : 0.75)
                     .ignoresSafeArea()
                     .transition(.opacity)
                     .animation(.spring(duration: 0.1), value: popUp.type)
