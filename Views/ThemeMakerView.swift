@@ -19,7 +19,8 @@ struct ThemeMakerView: View {
                                 .frame(maxHeight: .infinity)
 
                             ThemeSelectorView()
-                        }.frame(height: 64)
+                        }
+                        .frame(height: 64)
 
                         RoundedRectangle(cornerRadius: 16)
                             .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
