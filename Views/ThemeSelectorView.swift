@@ -59,24 +59,12 @@ struct ThemeSelectorView: View {
 
             // Info, Load, and Save Buttons
             HStack(spacing: 8) {
-                // Info Button
-                Button(action: {
-                    showInfo.toggle()
-                }) {
-                    Image(systemName: "info.circle")
-                        .font(.title2)
-                        .foregroundStyle(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 1))
-                }
-                .popover(isPresented: $showInfo) {
-                    InfoPopoverView()
-                }
-
                 if selectedThemeId != nil {
                     Button(action: {
                         deleteTheme(selectedThemeId)
                     }) {
-                        Image(systemName: "trash.circle")
-                            .font(.title2)
+                        Image(systemName: "trash")
+                            .font(.title)
                             .foregroundStyle(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 1))
                     }
                 }
@@ -87,8 +75,8 @@ struct ThemeSelectorView: View {
                             applyTheme(selected)
                         }
                     }) {
-                        Image(systemName: "arrow.down.circle")
-                            .font(.title2)
+                        Image(systemName: "pencil.and.outline")
+                            .font(.title)
                             .foregroundStyle(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 1))
                     }
                 }
@@ -97,9 +85,20 @@ struct ThemeSelectorView: View {
                 Button(action: {
                     saveTheme(selectedThemeId)
                 }) {
-                    Image(systemName: "square.and.arrow.down")
-                        .font(.title2)
+                    Image(systemName: "tray.and.arrow.down")
+                        .font(.title)
                         .foregroundStyle(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 1))
+                }
+
+                Button(action: {
+                    showInfo.toggle()
+                }) {
+                    Image(systemName: "info.square")
+                        .font(.title)
+                        .foregroundStyle(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 1))
+                }
+                .popover(isPresented: $showInfo) {
+                    InfoPopoverView()
                 }
             }
         }
