@@ -16,13 +16,7 @@ struct GradientStopEditorView: View {
                     },
                     set: { newColor in
                         guard let selectedStop else { return }
-                        if let components = newColor.cgColor?.components, components.count >= 3 {
-                            theme.mainGradient.stops[selectedStop].color = RGBAColor(
-                                red: components[0],
-                                green: components[1],
-                                blue: components[2]
-                            )
-                        }
+                        theme.mainGradient.stops[selectedStop].color = RGBAColor(newColor)
                     }
                 ))
                 .frame(width: 24, height: 24)
