@@ -40,7 +40,7 @@ struct PopUpView: View {
                     PopUpItem(
                         icon: "pencil.and.outline",
                         title: "Saving and Applying Themes",
-                        description: "Save your custom theme with ease and reuse it anytime with just a tap."
+                        description: "Save your custom theme effortlessly and reuse it anytime with just a tap."
                     ),
                     PopUpItem(
                         icon: "paintpalette.fill",
@@ -50,7 +50,7 @@ struct PopUpView: View {
                     PopUpItem(
                         icon: "line.3.crossed.swirl.circle.fill",
                         title: "Playing with Gradient",
-                        description: "Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s playground simplifies the process, and its smart color algorithm guarantees gorgeous results."
+                        description: "Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s toolset simplifies the process, and its smart color algorithm guarantees gorgeous results."
                     )
                 ],
                 buttonText: "Got it!",
