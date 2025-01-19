@@ -43,32 +43,10 @@ struct SettingsProvider<Content: View>: View {
         }
 
         let defaultThemes: [Theme] = [
-            Theme(
-                primary: RGBAColor(red: 0.502, green: 0.031, blue: 0.188),
-                secondary: RGBAColor(red: 0.769, green: 0.102, blue: 0.525),
-                tertiary: RGBAColor(red: 0.812, green: 0.831, blue: 0.773),
-                mainGradient: ColorGradient(
-                    type: .linear,
-                    stops: [
-                        GradientStop(color: RGBAColor(red: 0.812, green: 0.831, blue: 0.773, alpha: 1.0), position: 0.0),
-                        GradientStop(color: RGBAColor(red: 0.812, green: 0.831, blue: 0.773, alpha: 1.0), position: 0.2),
-                        GradientStop(color: RGBAColor(red: 0.945, green: 0.561, blue: 0.811, alpha: 1.0), position: 0.2001),
-                        GradientStop(color: RGBAColor(red: 0.945, green: 0.561, blue: 0.811, alpha: 1.0), position: 0.4),
-                        GradientStop(color: RGBAColor(red: 0.937, green: 0.725, blue: 0.796, alpha: 1.0), position: 0.4001),
-                        GradientStop(color: RGBAColor(red: 0.937, green: 0.725, blue: 0.796, alpha: 1.0), position: 0.6),
-                        GradientStop(color: RGBAColor(red: 0.902, green: 0.678, blue: 0.925, alpha: 1.0), position: 0.6001),
-                        GradientStop(color: RGBAColor(red: 0.902, green: 0.678, blue: 0.925, alpha: 1.0), position: 0.8),
-                        GradientStop(color: RGBAColor(red: 0.761, green: 0.529, blue: 0.964, alpha: 1.0), position: 0.8001),
-                        GradientStop(color: RGBAColor(red: 0.761, green: 0.529, blue: 0.964, alpha: 1.0), position: 1.0)
-                    ],
-                    linearAttributes: LinearGradientAttributes(
-                        startPoint: CodableUnitPoint(x: 0.0, y: 0.833),
-                        endPoint: CodableUnitPoint(x: 1.0, y: 0.167)
-                    )
-                )
-            ),
-            Theme(),
-            Theme()
+            BuiltinThemes.cold,
+            BuiltinThemes.cherry,
+            BuiltinThemes.warm,
+            BuiltinThemes.whim
         ]
 
         for theme in defaultThemes {

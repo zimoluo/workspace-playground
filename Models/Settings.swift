@@ -13,7 +13,7 @@ class Settings: ObservableObject {
     var theme: Theme
     var notificationsEnabled: Bool
 
-    init(theme: Theme = Theme(), notificationsEnabled: Bool = true) {
+    init(theme: Theme = BuiltinThemes.whim, notificationsEnabled: Bool = true) {
         self.theme = theme
         self.notificationsEnabled = notificationsEnabled
     }

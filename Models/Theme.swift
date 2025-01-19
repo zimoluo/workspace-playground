@@ -30,11 +30,11 @@ class Theme: ObservableObject, Equatable {
     }
 
     init(
-        primary: RGBAColor = RGBAColor(red: 0.486, green: 0.176, blue: 0.071),
-        secondary: RGBAColor = RGBAColor(red: 0.761, green: 0.255, blue: 0.047),
-        tertiary: RGBAColor = RGBAColor(red: 1.0, green: 0.969, blue: 0.929),
+        primary: RGBAColor = RGBAColor(red: 1, green: 0, blue: 0),
+        secondary: RGBAColor = RGBAColor(red: 0, green: 1, blue: 0),
+        tertiary: RGBAColor = RGBAColor(red: 0, green: 0, blue: 1),
         mainGradient: ColorGradient = ColorGradient(type: .linear, stops: [
-            GradientStop(color: RGBAColor(red: 1, green: 0.929, blue: 0.898), position: 0), GradientStop(color: RGBAColor(red: 1, green: 0.984, blue: 0.894), position: 1)
+            GradientStop(color: RGBAColor(red: 1, green: 1, blue: 0), position: 0), GradientStop(color: RGBAColor(red: 0, green: 1, blue: 1), position: 1)
         ], linearAttributes: LinearGradientAttributes(startPoint: CodableUnitPoint(from: .bottomLeading), endPoint: CodableUnitPoint(from: .topTrailing)))
     ) {
         self.primary = primary
