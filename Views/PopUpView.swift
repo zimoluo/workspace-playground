@@ -40,7 +40,7 @@ struct PopUpView: View {
                     PopUpItem(
                         icon: "pencil.and.outline",
                         title: "Saving and Applying Themes",
-                        description: "Save your custom theme effortlessly and reuse it anytime with just a tap."
+                        description: "Save your custom theme and reuse it anytime with just a tap."
                     ),
                     PopUpItem(
                         icon: "paintpalette.fill",
