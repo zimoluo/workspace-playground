@@ -9,12 +9,11 @@ struct Window: Codable {
 
     init(
         state: WindowState = .init(),
-        data: WindowData = .init(),
-        order: Int = 0
+        data: WindowData = .init()
     ) {
         self.id = UUID()
         self.state = state
-        self.data = data
+        self.data = WindowData.applyDefaults(baseData: data)
     }
 }
 
@@ -56,34 +55,25 @@ struct WindowData: Codable {
         self.layer = layer
         self.order = order
     }
+
+    static func applyDefaults(baseData: WindowData) -> WindowData {
+        var updatedData = baseData
+
+        switch updatedData.type {
+        case .notes:
+            updatedData.maxHeight = 500
+            updatedData.maxWidth = 800
+            updatedData.minHeight = 200
+            updatedData.minWidth = 300
+        case .blank:
+            break
+        }
+
+        return updatedData
+    }
 }
 
 enum WindowType: String, Codable {
     case blank
     case notes
-
-    func presetData() -> WindowData {
-        switch self {
-        case .blank:
-            return WindowData(
-                type: .blank,
-                saveData: [:],
-                minHeight: 0,
-                minWidth: 0,
-                maxHeight: .infinity,
-                maxWidth: .infinity,
-                layer: 0
-            )
-        case .notes:
-            return WindowData(
-                type: .notes,
-                saveData: [:],
-                minHeight: 200,
-                minWidth: 300,
-                maxHeight: 300,
-                maxWidth: 500,
-                layer: 1
-            )
-        }
-    }
 }

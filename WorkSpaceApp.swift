@@ -12,7 +12,7 @@ struct WorkSpaceApp: App {
                     .environment(\.theme, theme)
                     .environment(\.settings, settings)
                     .environmentObject(popUp)
-            }.modelContainer(for: [Theme.self, Settings.self, Note.self])
+            }.modelContainer(for: [Theme.self, Settings.self, Note.self, Space.self])
         }
     }
 }
