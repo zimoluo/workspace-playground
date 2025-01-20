@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-struct Window {
+struct Window: Codable {
     var id: UUID
 
     var state: WindowState
@@ -19,7 +19,7 @@ struct Window {
 }
 
 // WindowState stores the dimension and position of the window. Due to its changeable nature, it's managed by windows themselves, but it's also stored in model context in order to persist. Windows will choose specific occasions, like right after finishing dragging, to sync its version of WindowState with the model context. This means individual windows only need its own copy of state and its UUID which is used to link itself to the model context.
-struct WindowState {
+struct WindowState: Codable {
     var x: CGFloat = 0
     var y: CGFloat = 0
     var width: CGFloat = 100
@@ -27,7 +27,7 @@ struct WindowState {
 }
 
 // WindowData is directly tied to the model context, meaning that individual windows won't keep their own version of the window data, and every change happens directly at the app data level. It's still mutable, but much less needed compared to WindowState, so the performance impact is minimal.
-struct WindowData {
+struct WindowData: Codable {
     var type: WindowType
     var saveData: [String: String]
     var minHeight: CGFloat
@@ -58,7 +58,7 @@ struct WindowData {
     }
 }
 
-enum WindowType {
+enum WindowType: String, Codable {
     case blank
     case notes
 

@@ -70,7 +70,7 @@ class Theme: ObservableObject, Equatable {
     }
 }
 
-enum PaletteCategory {
+enum PaletteCategory: String {
     case primary
     case secondary
     case tertiary
