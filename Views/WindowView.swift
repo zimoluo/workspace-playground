@@ -7,22 +7,21 @@ struct WindowView: View {
     @Binding var window: Window
     @ObservedObject var space: Space
 
-    var parentSize: CGSize
+    let parentSize: CGSize
 
-    // For drag gesture purposes
     @State private var dragOffset: CGSize = .zero
 
     var body: some View {
         ZStack {
             WindowTypeView(windowData: window.data)
-                .frame(width: window.state.width * space.cameraZoom,
-                       height: window.state.height * space.cameraZoom)
+                .frame(width: window.state.width,
+                       height: window.state.height)
                 .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                 .cornerRadius(16)
                 .shadow(color: theme.secondary.toShadow(), radius: window.state.width / 8.33, y: window.state.width / 12.5)
         }
-        .position(x: transformedX,
-                  y: transformedY)
+        .position(x: window.state.x + dragOffset.width,
+                  y: window.state.y + dragOffset.height)
         .gesture(
             DragGesture()
                 .onChanged { value in
@@ -30,27 +29,11 @@ struct WindowView: View {
                 }
                 .onEnded { value in
                     let finalOffset = value.translation
-                    window.state.x += finalOffset.width / space.cameraZoom
-                    window.state.y += finalOffset.height / space.cameraZoom
+                    window.state.x += finalOffset.width
+                    window.state.y += finalOffset.height
 
                     dragOffset = .zero
                 }
         )
-    }
-
-    private var transformedX: CGFloat {
-        let scale = space.cameraZoom
-        let halfWidth = parentSize.width / 2
-
-        return window.state.x * scale - space.cameraCenterX + halfWidth
-            + dragOffset.width
-    }
-
-    private var transformedY: CGFloat {
-        let scale = space.cameraZoom
-        let halfHeight = parentSize.height / 2
-
-        return window.state.y * scale - space.cameraCenterY + halfHeight
-            + dragOffset.height
     }
 }

@@ -29,28 +29,33 @@ class Space: ObservableObject {
     }
 
     func renderDots(viewSize: CGSize, color: Color = .blue) -> some View {
-        let scaledDistance = Space.dotBaseDistance * cameraZoom
         let scaledDotDiameter = Space.dotBaseDiameter * cameraZoom
 
         let halfViewWidth = viewSize.width / 2
         let halfViewHeight = viewSize.height / 2
 
-        let minX = cameraCenterX - halfViewWidth
-        let maxX = cameraCenterX + halfViewWidth
-        let minY = cameraCenterY - halfViewHeight
-        let maxY = cameraCenterY + halfViewHeight
+        let visibleWidth = viewSize.width / cameraZoom
+        let visibleHeight = viewSize.height / cameraZoom
 
-        let startColumn = Int(floor(minX / scaledDistance))
-        let endColumn = Int(ceil(maxX / scaledDistance))
-        let startRow = Int(floor(minY / scaledDistance))
-        let endRow = Int(ceil(maxY / scaledDistance))
+        let minX = cameraCenterX - visibleWidth / 2
+        let maxX = cameraCenterX + visibleWidth / 2
+        let minY = cameraCenterY - visibleHeight / 2
+        let maxY = cameraCenterY + visibleHeight / 2
+
+        let startColumn = Int(floor(minX / Space.dotBaseDistance))
+        let endColumn = Int(ceil(maxX / Space.dotBaseDistance))
+        let startRow = Int(floor(minY / Space.dotBaseDistance))
+        let endRow = Int(ceil(maxY / Space.dotBaseDistance))
 
         let dots = (startRow...endRow).flatMap { row in
             (startColumn...endColumn).map { column -> CGPoint in
-                CGPoint(
-                    x: CGFloat(column) * scaledDistance - cameraCenterX + halfViewWidth,
-                    y: CGFloat(row) * scaledDistance - cameraCenterY + halfViewHeight
-                )
+                let xRelative = CGFloat(column) * Space.dotBaseDistance - cameraCenterX
+                let yRelative = CGFloat(row) * Space.dotBaseDistance - cameraCenterY
+
+                let x = xRelative * cameraZoom + halfViewWidth
+                let y = yRelative * cameraZoom + halfViewHeight
+
+                return CGPoint(x: x, y: y)
             }
         }
 
@@ -59,10 +64,16 @@ class Space: ObservableObject {
                 let dotDiameter = scaledDotDiameter
                 let dotColor = color.opacity(0.4)
 
-                context.fill(
-                    Circle().path(in: CGRect(x: dot.x - dotDiameter / 2, y: dot.y - dotDiameter / 2, width: dotDiameter, height: dotDiameter)),
-                    with: .color(dotColor)
-                )
+                let circle = Path { path in
+                    path.addEllipse(in: CGRect(
+                        x: dot.x - dotDiameter / 2,
+                        y: dot.y - dotDiameter / 2,
+                        width: dotDiameter,
+                        height: dotDiameter
+                    ))
+                }
+
+                context.fill(circle, with: .color(dotColor))
             }
         }
     }
