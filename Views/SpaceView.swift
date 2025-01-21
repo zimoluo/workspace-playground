@@ -18,7 +18,7 @@ struct SpaceView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                space.renderDots(viewSize: geometry.size, dotColor: theme.secondary.shadeMap(numShades: 19).shadeMap[7].color)
+                space.renderDots(viewSize: geometry.size, color: theme.secondary.shadeMap(numShades: 19).shadeMap[7].color)
 
                 Color.clear
                     .contentShape(Rectangle())
@@ -61,7 +61,7 @@ struct SpaceView: View {
     }
 
     private func applyMomentum() {
-        let deceleration: CGFloat = 0.84
+        let deceleration: CGFloat = 0.885
         let minVelocity: CGFloat = 0.1
 
         Timer.scheduledTimer(withTimeInterval: 0.016, repeats: true) { timer in

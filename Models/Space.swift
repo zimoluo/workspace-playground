@@ -25,7 +25,7 @@ class Space: ObservableObject {
         self.cameraZoom = cameraZoom
     }
 
-    func renderDots(viewSize: CGSize, dotColor: Color = .blue) -> some View {
+    func renderDots(viewSize: CGSize, color: Color = .blue) -> some View {
         let baseDistance: CGFloat = 36
         let baseDotDiameter: CGFloat = 3
         let originDotMultiplier: CGFloat = 1.25
@@ -47,25 +47,25 @@ class Space: ObservableObject {
         let startRow = Int(floor(minY / scaledDistance))
         let endRow = Int(ceil(maxY / scaledDistance))
 
-        return ZStack {
-            ForEach(startRow...endRow, id: \.self) { row in
-                ForEach(startColumn...endColumn, id: \.self) { [self] column in
-                    let dotLogicalX = CGFloat(column) * scaledDistance
-                    let dotLogicalY = CGFloat(row) * scaledDistance
+        let dots = (startRow...endRow).flatMap { row in
+            (startColumn...endColumn).map { column -> CGPoint in
+                CGPoint(
+                    x: CGFloat(column) * scaledDistance - cameraCenterX + halfViewWidth,
+                    y: CGFloat(row) * scaledDistance - cameraCenterY + halfViewHeight
+                )
+            }
+        }
 
-                    let dotScreenX = dotLogicalX - cameraCenterX + halfViewWidth
-                    let dotScreenY = dotLogicalY - cameraCenterY + halfViewHeight
+        return Canvas { context, _ in
+            for dot in dots {
+                let isOriginPoint = (dot.x == halfViewWidth && dot.y == halfViewHeight)
+                let dotDiameter = isOriginPoint ? scaledOriginDotDiameter : scaledDotDiameter
+                let dotColor = isOriginPoint ? color.opacity(0.25) : color.opacity(0.5)
 
-                    let isOriginPoint = dotLogicalX == 0 && dotLogicalY == 0
-
-                    Circle()
-                        .fill(isOriginPoint ? dotColor.opacity(0.25) : dotColor.opacity(0.5))
-                        .frame(
-                            width: isOriginPoint ? scaledOriginDotDiameter : scaledDotDiameter,
-                            height: isOriginPoint ? scaledOriginDotDiameter : scaledDotDiameter
-                        )
-                        .position(x: dotScreenX, y: dotScreenY)
-                }
+                context.fill(
+                    Circle().path(in: CGRect(x: dot.x - dotDiameter / 2, y: dot.y - dotDiameter / 2, width: dotDiameter, height: dotDiameter)),
+                    with: .color(dotColor)
+                )
             }
         }
     }
