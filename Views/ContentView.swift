@@ -4,10 +4,11 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Theme.dateCreated, order: .reverse) var themes: [Theme]
+    @Query() var spaces: [Space]
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
 
-    @State private var selectedScreen: Screen = .init()
+    @State private var selectedScreen: Screen = .init(type: .space)
 
     private let columns: [GridItem] = Array(repeating: .init(.fixed(36), spacing: 16), count: 5)
     private let maxThemesGridHeight: CGFloat = 120
@@ -139,6 +140,10 @@ struct ContentView: View {
                     switch selectedScreen.type {
                     case .themeMaker:
                         ThemeMakerView()
+
+                    case .space:
+                        SpaceView()
+
                     default:
                         EmptyView()
                     }
