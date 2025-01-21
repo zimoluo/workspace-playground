@@ -25,17 +25,15 @@ class Space: ObservableObject {
         self.cameraZoom = cameraZoom
     }
 
-    func renderDots(viewSize: CGSize) -> some View {
-        let baseDistance: CGFloat = 64 // Base distance between dots
-        let baseDotDiameter: CGFloat = 20 // Standard dot diameter
-        let originDotMultiplier: CGFloat = 1.5 // Multiplier for the origin dot size
+    func renderDots(viewSize: CGSize, dotColor: Color = .blue) -> some View {
+        let baseDistance: CGFloat = 36
+        let baseDotDiameter: CGFloat = 3
+        let originDotMultiplier: CGFloat = 1.25
 
-        // Adjust values based on zoom
         let scaledDistance = baseDistance * cameraZoom
         let scaledDotDiameter = baseDotDiameter * cameraZoom
         let scaledOriginDotDiameter = scaledDotDiameter * originDotMultiplier
 
-        // Calculate the visible area bounds in the logical coordinate system
         let halfViewWidth = viewSize.width / 2
         let halfViewHeight = viewSize.height / 2
 
@@ -44,7 +42,6 @@ class Space: ObservableObject {
         let minY = cameraCenterY - halfViewHeight
         let maxY = cameraCenterY + halfViewHeight
 
-        // Determine the range of visible grid lines using floor and ceil
         let startColumn = Int(floor(minX / scaledDistance))
         let endColumn = Int(ceil(maxX / scaledDistance))
         let startRow = Int(floor(minY / scaledDistance))
@@ -62,7 +59,7 @@ class Space: ObservableObject {
                     let isOriginPoint = dotLogicalX == 0 && dotLogicalY == 0
 
                     Circle()
-                        .fill(isOriginPoint ? Color.red : Color.blue)
+                        .fill(isOriginPoint ? dotColor.opacity(0.25) : dotColor.opacity(0.5))
                         .frame(
                             width: isOriginPoint ? scaledOriginDotDiameter : scaledDotDiameter,
                             height: isOriginPoint ? scaledOriginDotDiameter : scaledDotDiameter
