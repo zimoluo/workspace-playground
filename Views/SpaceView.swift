@@ -10,6 +10,9 @@ struct SpaceView: View {
     @State private var dragVelocity: CGSize = .zero
     @State private var currentZoom: CGFloat = 1.0
 
+    @State private var initialPinchPoint: CGPoint = .zero
+    @State private var initialCameraCenter: CGPoint = .zero
+
     private var maxCameraX: CGFloat = 200
     private var maxCameraY: CGFloat = 200
     private var minCameraX: CGFloat = -200
@@ -47,11 +50,34 @@ struct SpaceView: View {
                     .gesture(
                         MagnifyGesture()
                             .onChanged { value in
-                                let newZoom = currentZoom * value.magnification
-                                space.cameraZoom = newZoom.clamped(to: 0.8 ... 1.25)
+                                let zoomFactor = value.magnification
+
+                                if initialPinchPoint == .zero {
+                                    initialPinchPoint = CGPoint(
+                                        x: value.startLocation.x - geometry.size.width / 2,
+                                        y: value.startLocation.y - geometry.size.height / 2
+                                    )
+                                    initialCameraCenter = CGPoint(
+                                        x: space.cameraCenterX,
+                                        y: space.cameraCenterY
+                                    )
+                                }
+
+                                let newZoom = currentZoom * zoomFactor
+                                let clampedZoom = newZoom.clamped(to: 0.8 ... 1.25)
+
+                                let zoomChange = clampedZoom / currentZoom
+
+                                let adjustedCenterX = initialCameraCenter.x - (initialPinchPoint.x * (1 - zoomChange))
+                                let adjustedCenterY = initialCameraCenter.y - (initialPinchPoint.y * (1 - zoomChange))
+
+                                space.cameraZoom = clampedZoom
+                                space.cameraCenterX = adjustedCenterX.clamped(to: minCameraX ... maxCameraX)
+                                space.cameraCenterY = adjustedCenterY.clamped(to: minCameraY ... maxCameraY)
                             }
                             .onEnded { _ in
                                 currentZoom = space.cameraZoom
+                                initialPinchPoint = .zero
                             }
                     )
 

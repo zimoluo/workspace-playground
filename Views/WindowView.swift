@@ -42,7 +42,7 @@ struct WindowView: View {
         let scale = space.cameraZoom
         let halfWidth = parentSize.width / 2
 
-        return ((window.state.x - space.cameraCenterX) + halfWidth) * scale
+        return window.state.x * scale - space.cameraCenterX + halfWidth
             + dragOffset.width
     }
 
@@ -50,7 +50,7 @@ struct WindowView: View {
         let scale = space.cameraZoom
         let halfHeight = parentSize.height / 2
 
-        return ((window.state.y - space.cameraCenterY) + halfHeight) * scale
+        return window.state.y * scale - space.cameraCenterY + halfHeight
             + dragOffset.height
     }
 }
