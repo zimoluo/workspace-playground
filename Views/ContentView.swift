@@ -136,6 +136,7 @@ struct ContentView: View {
                         }
                     }
                     .safeAreaPadding(.horizontal, 20)
+                    .safeAreaPadding(.vertical, macCatalystSpecificPadding)
                     .background(LinearGradient(colors: [
                         themeColor(from: theme, for: .primary, in: colorScheme, level: 4),
                         themeColor(from: theme, for: .primary, in: colorScheme, level: 5)
@@ -193,6 +194,15 @@ struct ContentView: View {
         theme.secondary = copiedTheme.secondary
         theme.tertiary = copiedTheme.tertiary
         theme.mainGradient = copiedTheme.mainGradient
+    }
+
+    // idk why mac catalyst doesnt have that padding so i'll just... do it i guess
+    private var macCatalystSpecificPadding: CGFloat {
+        #if targetEnvironment(macCatalyst)
+        20
+        #else
+        0
+        #endif
     }
 }
 

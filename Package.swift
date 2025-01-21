@@ -17,6 +17,7 @@ let package = Package(
             name: "workspace-playground",
             targets: ["AppModule"],
             bundleIdentifier: "kawarage.workspace-playground",
+            teamIdentifier: "DY9X92M8C7",
             displayVersion: "1.0",
             bundleVersion: "1",
             appIcon: .asset("AppIcon"),
