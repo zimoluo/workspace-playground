@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct Screen {
+struct Screen: Equatable {
     var type: ScreenType
     var spaceId: UUID // reserved for the uuid of a workspace
 

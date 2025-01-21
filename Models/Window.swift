@@ -18,6 +18,7 @@ struct Window: Codable {
 }
 
 // WindowState stores the dimension and position of the window. Due to its changeable nature, it's managed by windows themselves, but it's also stored in model context in order to persist. Windows will choose specific occasions, like right after finishing dragging, to sync its version of WindowState with the model context. This means individual windows only need its own copy of state and its UUID which is used to link itself to the model context.
+// In short, WindowState is kept and managed by windows themselves and only synced to the model context at select occasions.
 struct WindowState: Codable {
     var x: CGFloat = 0
     var y: CGFloat = 0
@@ -26,6 +27,7 @@ struct WindowState: Codable {
 }
 
 // WindowData is directly tied to the model context, meaning that individual windows won't keep their own version of the window data, and every change happens directly at the app data level. It's still mutable, but much less needed compared to WindowState, so the performance impact is minimal.
+// In short, WindowData is only kept by the model context. Windows directly read WindowData from model context and makes changes on the model context directly.
 struct WindowData: Codable {
     var type: WindowType
     var saveData: [String: String]
