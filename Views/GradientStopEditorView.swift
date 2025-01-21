@@ -35,7 +35,7 @@ struct GradientStopEditorView: View {
                 }) {
                     Image(systemName: "xmark.circle")
                         .font(.title2)
-                        .themedForeground(using: theme, in: colorScheme, category: .secondary)
+                        .themedForeground(using: theme, in: colorScheme, level: 1, category: .secondary)
                         .opacity((selectedStop != nil && theme.mainGradient.stops.count > 2) ? 1 : 0)
                         .scaleEffect((selectedStop != nil && theme.mainGradient.stops.count > 2) ? 1 : 0.8)
                         .blur(radius: (selectedStop != nil && theme.mainGradient.stops.count > 2) ? 0 : 5)
