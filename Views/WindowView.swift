@@ -18,8 +18,8 @@ struct WindowView: View {
                 .frame(width: window.state.width * space.cameraZoom,
                        height: window.state.height * space.cameraZoom)
                 .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
-                .cornerRadius(6)
-                .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
+                .cornerRadius(16)
+                .shadow(color: theme.secondary.toShadow(), radius: window.state.width / 8.33, y: window.state.width / 12.5)
         }
         .position(x: transformedX,
                   y: transformedY)
