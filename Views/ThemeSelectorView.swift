@@ -19,7 +19,7 @@ struct ThemeSelectorView: View {
                 }
 
             Divider()
-                .frame(width: 3, height: 44)
+                .frame(width: 3, height: 38)
                 .background(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 3))
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -43,7 +43,7 @@ struct ThemeSelectorView: View {
             .frame(height: 44)
 
             Divider()
-                .frame(width: 3, height: 44)
+                .frame(width: 3, height: 38)
                 .background(themeColor(from: currentTheme, for: .secondary, in: colorScheme, level: 3))
 
             HStack(spacing: 16) {
