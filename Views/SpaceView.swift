@@ -54,6 +54,11 @@ struct SpaceView: View {
                                 currentZoom = space.cameraZoom
                             }
                     )
+
+                WindowsOverlayView(
+                    space: space,
+                    parentSize: geometry.size
+                )
             }
         }
         .ignoresSafeArea()
