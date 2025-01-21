@@ -106,7 +106,7 @@ struct GradientStopEditorView: View {
                             DragGesture(minimumDistance: 0)
                                 .onEnded { value in
                                     let tapLocation = value.location.x
-                                    let position = Double(tapLocation / width)
+                                    let position = CGFloat(tapLocation / width)
                                     addStop(at: position.clamped(to: 0.0...1.0))
                                 }
                         )
@@ -146,7 +146,7 @@ struct GradientStopEditorView: View {
                         .gesture(
                             DragGesture()
                                 .onChanged { value in
-                                    updateStopPosition(index: index, newPosition: Double(value.location.x / width))
+                                    updateStopPosition(index: index, newPosition: CGFloat(value.location.x / width))
                                     if selectedStop != index {
                                         selectedStop = index
                                     }
@@ -163,7 +163,7 @@ struct GradientStopEditorView: View {
         .padding(8)
     }
 
-    private func addStop(at position: Double) {
+    private func addStop(at position: CGFloat) {
         let clampedPosition = position.clamped(to: 0.0...1.0)
 
         // Find the stops on the left and right
@@ -199,7 +199,7 @@ struct GradientStopEditorView: View {
         selectedStop = theme.mainGradient.stops.count - 1
     }
 
-    private func blendColors(color1: RGBAColor, color2: RGBAColor, ratio: Double) -> RGBAColor {
+    private func blendColors(color1: RGBAColor, color2: RGBAColor, ratio: CGFloat) -> RGBAColor {
         let inverseRatio = 1.0 - ratio
         return RGBAColor(
             red: color1.red * inverseRatio + color2.red * ratio,
@@ -229,14 +229,14 @@ struct GradientStopEditorView: View {
             .sorted(by: { $0.element.position < $1.element.position })
 
         let totalStops = sortedStops.count
-        let evenlyDistributedPositions = stride(from: 0.0, through: 1.0, by: 1.0 / Double(totalStops - 1))
+        let evenlyDistributedPositions = stride(from: 0.0, through: 1.0, by: 1.0 / CGFloat(totalStops - 1))
 
         for (newIndex, (originalIndex, _)) in zip(evenlyDistributedPositions, sortedStops) {
             theme.mainGradient.stops[originalIndex].position = newIndex
         }
     }
 
-    private func updateStopPosition(index: Int, newPosition: Double) {
+    private func updateStopPosition(index: Int, newPosition: CGFloat) {
         theme.mainGradient.stops[index].position = newPosition.clamped(to: 0.0...1.0)
     }
 }

@@ -1,16 +1,16 @@
 import SwiftUI
 
 struct RGBAColor: Codable, Equatable {
-    var red: Double
-    var green: Double
-    var blue: Double
-    var alpha: Double
+    var red: CGFloat
+    var green: CGFloat
+    var blue: CGFloat
+    var alpha: CGFloat
 
     var color: Color {
         self.toColor()
     }
 
-    func toColor(opacity: Double? = nil) -> Color {
+    func toColor(opacity: CGFloat? = nil) -> Color {
         Color(
             red: self.red,
             green: self.green,
@@ -19,7 +19,7 @@ struct RGBAColor: Codable, Equatable {
         )
     }
 
-    func toShadow(opacityMultiplier: Double = 1) -> Color {
+    func toShadow(opacityMultiplier: CGFloat = 1) -> Color {
         self.shadeMap(numShades: 16).shadeMap[12].toColor(opacity: 0.18 * opacityMultiplier)
     }
 
@@ -42,13 +42,13 @@ struct RGBAColor: Codable, Equatable {
         var a: CGFloat = 0
         uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
 
-        self.red = Double(r)
-        self.green = Double(g)
-        self.blue = Double(b)
-        self.alpha = Double(a)
+        self.red = r
+        self.green = g
+        self.blue = b
+        self.alpha = a
     }
 
-    init(red: Double, green: Double, blue: Double, alpha: Double = 1.0) {
+    init(red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat = 1.0) {
         self.red = red
         self.green = green
         self.blue = blue
@@ -56,10 +56,10 @@ struct RGBAColor: Codable, Equatable {
     }
 
     static func randomBright() -> RGBAColor {
-        let hue = Double.random(in: 0...1)
-        let brightness = Double.random(in: 0.5...0.7)
-        let saturation = Double.random(in: 0.33...0.95)
-        let uiColor = UIColor(hue: CGFloat(hue), saturation: CGFloat(saturation), brightness: CGFloat(brightness), alpha: 1.0)
+        let hue = CGFloat.random(in: 0...1)
+        let brightness = CGFloat.random(in: 0.5...0.7)
+        let saturation = CGFloat.random(in: 0.33...0.95)
+        let uiColor = UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1.0)
         let color = RGBAColor(Color(uiColor))
         return color
     }
@@ -78,7 +78,7 @@ struct RGBAColor: Codable, Equatable {
         return RGBAColor.fromHSB(hue: hueAnalogous, saturation: saturationAdjusted, brightness: brightnessAdjusted)
     }
 
-    static func fromHSB(hue: Double, saturation: Double, brightness: Double, alpha: Double = 1.0) -> RGBAColor {
+    static func fromHSB(hue: CGFloat, saturation: CGFloat, brightness: CGFloat, alpha: CGFloat = 1.0) -> RGBAColor {
         let uiColor = UIColor(
             hue: CGFloat(hue),
             saturation: CGFloat(saturation),
@@ -88,28 +88,28 @@ struct RGBAColor: Codable, Equatable {
         return RGBAColor(Color(uiColor))
     }
 
-    private var hue: Double {
+    private var hue: CGFloat {
         let uiColor = UIColor(Color(red: red, green: green, blue: blue, opacity: alpha))
         var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
         uiColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
-        return Double(h)
+        return h
     }
 
-    private var saturation: Double {
+    private var saturation: CGFloat {
         let uiColor = UIColor(Color(red: red, green: green, blue: blue, opacity: alpha))
         var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
         uiColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
-        return Double(s)
+        return s
     }
 
-    private var brightness: Double {
+    private var brightness: CGFloat {
         let uiColor = UIColor(Color(red: red, green: green, blue: blue, opacity: alpha))
         var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
         uiColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
-        return Double(b)
+        return b
     }
 
-    private func toHSL() -> (h: Double, s: Double, l: Double) {
+    private func toHSL() -> (h: CGFloat, s: CGFloat, l: CGFloat) {
         let r = self.red
         let g = self.green
         let b = self.blue
@@ -120,12 +120,12 @@ struct RGBAColor: Codable, Equatable {
 
         let l = (maxC + minC) / 2.0
 
-        var s: Double = 0
+        var s: CGFloat = 0
         if delta != 0 {
             s = delta / (1 - abs(2 * l - 1))
         }
 
-        var h: Double = 0
+        var h: CGFloat = 0
         if delta != 0 {
             switch maxC {
             case r:
@@ -146,12 +146,12 @@ struct RGBAColor: Codable, Equatable {
         return (h: h, s: s, l: l)
     }
 
-    private static func fromHSL(h: Double, s: Double, l: Double) -> RGBAColor {
+    private static func fromHSL(h: CGFloat, s: CGFloat, l: CGFloat) -> RGBAColor {
         let c = (1 - abs(2 * l - 1)) * s
         let x = c * (1 - abs((h * 6).truncatingRemainder(dividingBy: 2) - 1))
         let m = l - c / 2
 
-        let (r, g, b): (Double, Double, Double)
+        let (r, g, b): (CGFloat, CGFloat, CGFloat)
         switch h {
         case 0..<1 / 6:
             (r, g, b) = (c, x, 0)
@@ -175,7 +175,7 @@ struct RGBAColor: Codable, Equatable {
         )
     }
 
-    func shadeMap(numShades: Int = 32, hueMultiplier: Double = 1.0, saturationMultiplier: Double = 1.0) -> (index: Int, shadeMap: [RGBAColor]) {
+    func shadeMap(numShades: Int = 32, hueMultiplier: CGFloat = 1.0, saturationMultiplier: CGFloat = 1.0) -> (index: Int, shadeMap: [RGBAColor]) {
         let (h, s, _) = self.toHSL()
         let modifiedS = s * saturationMultiplier
         var modifiedH = h * hueMultiplier
@@ -184,12 +184,12 @@ struct RGBAColor: Codable, Equatable {
             modifiedH += 1.0
         }
 
-        var shadesHSL: [(h: Double, s: Double, l: Double)] = []
+        var shadesHSL: [(h: CGFloat, s: CGFloat, l: CGFloat)] = []
         for i in 0..<numShades {
-            let newL = 0.94 - Double(i) * (0.88 / Double(numShades - 1))
+            let newL = 0.94 - CGFloat(i) * (0.88 / CGFloat(numShades - 1))
             let newS = modifiedS < 0.0005
                 ? 0
-                : min(1.0, max(0.0, modifiedS - 0.06 + (0.12 * Double(i)) / Double(numShades - 1)))
+                : min(1.0, max(0.0, modifiedS - 0.06 + (0.12 * CGFloat(i)) / CGFloat(numShades - 1)))
 
             shadesHSL.append((h: modifiedH, s: newS, l: newL))
         }
@@ -198,7 +198,7 @@ struct RGBAColor: Codable, Equatable {
             RGBAColor.fromHSL(h: $0.h, s: $0.s, l: $0.l)
         }
 
-        var minDistance = Double.infinity
+        var minDistance = CGFloat.infinity
         var closestIndex = -1
 
         for (index, shade) in shadesRGB.enumerated() {

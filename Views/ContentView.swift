@@ -169,7 +169,7 @@ struct ContentView: View {
 
         let numberOfItems = filteredThemes.count + 1
 
-        let rows = ceil(Double(numberOfItems) / 5)
+        let rows = ceil(CGFloat(numberOfItems) / 5)
 
         let totalItemHeight = CGFloat(rows) * 36
         let totalSpacing = CGFloat(Int(rows) + 1) * 16

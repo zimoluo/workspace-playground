@@ -2,15 +2,15 @@ import SwiftData
 import SwiftUI
 
 struct CodableUnitPoint: Codable, Equatable {
-    var x: Double
-    var y: Double
+    var x: CGFloat
+    var y: CGFloat
 
     init(from point: UnitPoint) {
         self.x = point.x
         self.y = point.y
     }
 
-    init(x: Double = 0, y: Double = 0) {
+    init(x: CGFloat = 0, y: CGFloat = 0) {
         self.x = x
         self.y = y
     }
@@ -25,7 +25,7 @@ struct CodableUnitPoint: Codable, Equatable {
 }
 
 struct CodableAngle: Codable, Equatable {
-    var degrees: Double
+    var degrees: CGFloat
 
     init(from angle: Angle) {
         self.degrees = angle.degrees
@@ -42,7 +42,7 @@ struct CodableAngle: Codable, Equatable {
 
 struct GradientStop: Codable, Equatable {
     var color: RGBAColor
-    var position: Double
+    var position: CGFloat
 
     func toSwiftUIStop(in colorScheme: ColorScheme = .light) -> Gradient.Stop {
         Gradient.Stop(color: color.toThemeGradientColor(in: colorScheme), location: position)

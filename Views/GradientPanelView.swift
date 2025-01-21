@@ -23,8 +23,8 @@ struct DraggablePoint: View {
                         .onChanged { value in
                             let newX = min(max(value.location.x / width, 0), 1)
                             let newY = min(max(value.location.y / height, 0), 1)
-                            point.x = Double(newX)
-                            point.y = Double(newY)
+                            point.x = CGFloat(newX)
+                            point.y = CGFloat(newY)
                         }
                 )
                 .shadow(color: shadowColor, radius: 6, y: 3)
@@ -64,14 +64,14 @@ struct ConnectPointsPanel: View {
 
     let rows: Int = 7
     let columns: Int = 7
-    let snappingThreshold: Double = 0.03
+    let snappingThreshold: CGFloat = 0.03
 
     var gridPoints: [CodableUnitPoint] {
         var points = [CodableUnitPoint]()
         for row in 0..<rows {
             for column in 0..<columns {
-                let x = Double(column) / Double(columns - 1)
-                let y = Double(row) / Double(rows - 1)
+                let x = CGFloat(column) / CGFloat(columns - 1)
+                let y = CGFloat(row) / CGFloat(rows - 1)
                 points.append(CodableUnitPoint(x: x, y: y))
             }
         }
@@ -80,7 +80,7 @@ struct ConnectPointsPanel: View {
 
     func snapPoint(_ point: CodableUnitPoint) -> CodableUnitPoint {
         var closestPoint: CodableUnitPoint?
-        var minDistance = Double.infinity
+        var minDistance = CGFloat.infinity
 
         for gridPoint in gridPoints {
             let distance = hypot(point.x - gridPoint.x, point.y - gridPoint.y)
