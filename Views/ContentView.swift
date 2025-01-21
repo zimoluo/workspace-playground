@@ -31,17 +31,25 @@ struct ContentView: View {
                         SectionView(header: "Spaces") {
                             ScrollView {
                                 VStack(alignment: .leading, spacing: 10) {
-                                    Text("Until we meet again")
+                                    Button(action: {
+                                        withAnimation(.spring(duration: 0.2)) {
+                                            selectedScreen.type = .space
+                                        }
+                                    }) {
+                                        HStack {
+                                            Text("Until we meet again")
+                                                .foregroundColor(
+                                                    selectedScreen.type == .space ? themeColor(from: theme, for: .primary, in: colorScheme, level: 5) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                                                )
+                                        }
                                         .padding(16)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .background(
-                                            themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
+                                            selectedScreen.type == .space ? themeColor(from: theme, for: .primary, in: colorScheme, level: 1) : themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
                                         )
                                         .cornerRadius(16)
-                                        .foregroundColor(
-                                            themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
-                                        )
                                         .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                                    }
                                 }
                             }
                             .frame(maxHeight: .infinity)
