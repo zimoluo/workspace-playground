@@ -40,7 +40,6 @@ struct SpaceView: View {
                                 dragVelocity = incrementalTranslation
                             }
                             .onEnded { _ in
-                                // Reset drag translation when gesture ends
                                 lastDragTranslation = .zero
                                 applyMomentum()
                             }
