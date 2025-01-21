@@ -29,11 +29,8 @@ class Space: ObservableObject {
     }
 
     func renderDots(viewSize: CGSize, color: Color = .blue) -> some View {
-        let originDotMultiplier: CGFloat = 1.25
-
         let scaledDistance = Space.dotBaseDistance * cameraZoom
         let scaledDotDiameter = Space.dotBaseDiameter * cameraZoom
-        let scaledOriginDotDiameter = scaledDotDiameter * originDotMultiplier
 
         let halfViewWidth = viewSize.width / 2
         let halfViewHeight = viewSize.height / 2
@@ -59,9 +56,8 @@ class Space: ObservableObject {
 
         return Canvas { context, _ in
             for dot in dots {
-                let isOriginPoint = (dot.x == halfViewWidth && dot.y == halfViewHeight)
-                let dotDiameter = isOriginPoint ? scaledOriginDotDiameter : scaledDotDiameter
-                let dotColor = isOriginPoint ? color.opacity(0.25) : color.opacity(0.5)
+                let dotDiameter = scaledDotDiameter
+                let dotColor = color.opacity(0.4)
 
                 context.fill(
                     Circle().path(in: CGRect(x: dot.x - dotDiameter / 2, y: dot.y - dotDiameter / 2, width: dotDiameter, height: dotDiameter)),
