@@ -73,10 +73,10 @@ struct WindowView: View {
                             let deltaX = value.location.x - rs.startDragLocation.x
                             let deltaY = value.location.y - rs.startDragLocation.y
 
-                            let leftBoundary = space.cameraCenterX - parentSize.width/2 + 12
-                            let rightBoundary = space.cameraCenterX + parentSize.width/2 - 12
-                            let topBoundary = space.cameraCenterY - parentSize.height/2 + 12
-                            let bottomBoundary = space.cameraCenterY + parentSize.height/2 - 12
+                            let leftBoundary = space.cameraCenterX - (parentSize.width/2)/space.cameraZoom + 12
+                            let rightBoundary = space.cameraCenterX + (parentSize.width/2)/space.cameraZoom - 12
+                            let topBoundary = space.cameraCenterY - (parentSize.height/2)/space.cameraZoom + 12
+                            let bottomBoundary = space.cameraCenterY + (parentSize.height/2)/space.cameraZoom - 12
 
                             var isAdaptiveOnX = false
                             var isAdaptiveOnY = false
