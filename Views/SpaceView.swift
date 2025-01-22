@@ -34,8 +34,8 @@ struct SpaceView: View {
                                 )
                                 lastDragTranslation = value.translation
 
-                                let newCenterX = space.cameraCenterX - incrementalTranslation.width
-                                let newCenterY = space.cameraCenterY - incrementalTranslation.height
+                                let newCenterX = space.cameraCenterX - incrementalTranslation.width / space.cameraZoom
+                                let newCenterY = space.cameraCenterY - incrementalTranslation.height / space.cameraZoom
 
                                 space.cameraCenterX = newCenterX.clamped(to: minCameraX ... maxCameraX)
                                 space.cameraCenterY = newCenterY.clamped(to: minCameraY ... maxCameraY)
@@ -66,10 +66,8 @@ struct SpaceView: View {
                                 let newZoom = currentZoom * zoomFactor
                                 let clampedZoom = newZoom.clamped(to: 0.8 ... 1.25)
 
-                                let zoomChange = clampedZoom / currentZoom
-
-                                let adjustedCenterX = initialCameraCenter.x - (initialPinchPoint.x * (1 - zoomChange))
-                                let adjustedCenterY = initialCameraCenter.y - (initialPinchPoint.y * (1 - zoomChange))
+                                let adjustedCenterX = initialCameraCenter.x + (initialPinchPoint.x / currentZoom - initialPinchPoint.x / clampedZoom)
+                                let adjustedCenterY = initialCameraCenter.y + (initialPinchPoint.y / currentZoom - initialPinchPoint.y / clampedZoom)
 
                                 space.cameraZoom = clampedZoom
                                 space.cameraCenterX = adjustedCenterX.clamped(to: minCameraX ... maxCameraX)
