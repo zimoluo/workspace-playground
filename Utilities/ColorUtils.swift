@@ -230,7 +230,7 @@ let shadeIndexMapDark: [Int: Int] = [
     2: 14,
     3: 19,
     4: 26,
-    5: 29
+    5: 28
 ]
 
 func themeColor(
