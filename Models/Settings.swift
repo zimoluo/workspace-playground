@@ -11,10 +11,10 @@ import SwiftUI
 @Model
 class Settings: ObservableObject {
     var theme: Theme
-    var notificationsEnabled: Bool
+    var selectedSpaceId: UUID
 
-    init(theme: Theme = BuiltinThemes.whim, notificationsEnabled: Bool = true) {
+    init(theme: Theme = BuiltinThemes.whim) {
         self.theme = theme
-        self.notificationsEnabled = notificationsEnabled
+        self.selectedSpaceId = UUID()
     }
 }

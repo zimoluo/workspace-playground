@@ -4,8 +4,9 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Theme.dateCreated, order: .reverse) var themes: [Theme]
-    @Query() var spaces: [Space]
+    @Query(sort: \Space.dateModified, order: .reverse) var spaces: [Space]
     @Environment(\.theme) private var theme
+    @Environment(\.settings) private var settings
     @Environment(\.colorScheme) private var colorScheme
 
     @State private var selectedScreen: Screen = .init(type: .space)
@@ -194,6 +195,10 @@ struct ContentView: View {
         theme.secondary = copiedTheme.secondary
         theme.tertiary = copiedTheme.tertiary
         theme.mainGradient = copiedTheme.mainGradient
+    }
+
+    private func addSpace() {
+        modelContext.insert(Space())
     }
 
     // idk why mac catalyst doesnt have that padding so i'll just... do it i guess

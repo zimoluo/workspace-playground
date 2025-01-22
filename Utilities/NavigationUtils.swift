@@ -2,11 +2,9 @@ import SwiftUI
 
 struct Screen: Equatable {
     var type: ScreenType
-    var spaceId: UUID // reserved for the uuid of a workspace
 
-    init(type: ScreenType = .empty, spaceId: UUID = UUID()) {
+    init(type: ScreenType = .empty) {
         self.type = type
-        self.spaceId = spaceId
     }
 }
 
