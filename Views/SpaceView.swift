@@ -19,10 +19,29 @@ struct SpaceView: View {
     @State private var initialPinchPoint: CGPoint = .zero
     @State private var initialCameraCenter: CGPoint = .zero
 
-    private var maxCameraX: CGFloat = 200
-    private var maxCameraY: CGFloat = 200
-    private var minCameraX: CGFloat = -200
-    private var minCameraY: CGFloat = -200
+    private var maxCameraCenterX: CGFloat {
+        let maxRightEdge = space.windows.map { $0.state.x + $0.state.width / 2 }.max() ?? 0
+        let calculatedMax = max(maxRightEdge + 100, 200)
+        return min(calculatedMax, 1_000_000_000)
+    }
+
+    private var minCameraCenterX: CGFloat {
+        let minLeftEdge = space.windows.map { $0.state.x - $0.state.width / 2 }.min() ?? 0
+        let calculatedMin = min(minLeftEdge - 100, -200)
+        return max(calculatedMin, -1_000_000_000)
+    }
+
+    private var maxCameraCenterY: CGFloat {
+        let maxBottomEdge = space.windows.map { $0.state.y + $0.state.height / 2 }.max() ?? 0
+        let calculatedMax = max(maxBottomEdge + 100, 200)
+        return min(calculatedMax, 1_000_000_000)
+    }
+
+    private var minCameraCenterY: CGFloat {
+        let minTopEdge = space.windows.map { $0.state.y - $0.state.height / 2 }.min() ?? 0
+        let calculatedMin = min(minTopEdge - 100, -200)
+        return max(calculatedMin, -1_000_000_000)
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -43,8 +62,8 @@ struct SpaceView: View {
                                 let newCenterX = space.cameraCenterX - incrementalTranslation.width * sqrt(space.cameraZoom)
                                 let newCenterY = space.cameraCenterY - incrementalTranslation.height * sqrt(space.cameraZoom)
 
-                                space.cameraCenterX = newCenterX.clamped(to: minCameraX ... maxCameraX)
-                                space.cameraCenterY = newCenterY.clamped(to: minCameraY ... maxCameraY)
+                                space.cameraCenterX = newCenterX.clamped(to: minCameraCenterX ... maxCameraCenterX)
+                                space.cameraCenterY = newCenterY.clamped(to: minCameraCenterY ... maxCameraCenterY)
 
                                 dragVelocity = incrementalTranslation
                             }
@@ -76,8 +95,8 @@ struct SpaceView: View {
                                 let adjustedCenterY = initialCameraCenter.y + (initialPinchPoint.y / currentZoom - initialPinchPoint.y / clampedZoom)
 
                                 space.cameraZoom = clampedZoom
-                                space.cameraCenterX = adjustedCenterX.clamped(to: minCameraX ... maxCameraX)
-                                space.cameraCenterY = adjustedCenterY.clamped(to: minCameraY ... maxCameraY)
+                                space.cameraCenterX = adjustedCenterX.clamped(to: minCameraCenterX ... maxCameraCenterX)
+                                space.cameraCenterY = adjustedCenterY.clamped(to: minCameraCenterY ... maxCameraCenterY)
                             }
                             .onEnded { _ in
                                 currentZoom = space.cameraZoom
@@ -104,8 +123,8 @@ struct SpaceView: View {
                 height: dragVelocity.height * deceleration
             )
 
-            space.cameraCenterX = (space.cameraCenterX - dragVelocity.width).clamped(to: minCameraX ... maxCameraX)
-            space.cameraCenterY = (space.cameraCenterY - dragVelocity.height).clamped(to: minCameraY ... maxCameraY)
+            space.cameraCenterX = (space.cameraCenterX - dragVelocity.width).clamped(to: minCameraCenterX ... maxCameraCenterX)
+            space.cameraCenterY = (space.cameraCenterY - dragVelocity.height).clamped(to: minCameraCenterY ... maxCameraCenterY)
 
             if abs(dragVelocity.width) < minVelocity && abs(dragVelocity.height) < minVelocity {
                 timer.invalidate()
