@@ -12,7 +12,7 @@ struct WindowView: View {
     @State private var dragOffset: CGSize = .zero
     @State private var resizeOffset: CGSize = .zero
 
-    private static let snapDetectDistance: CGFloat = 36
+    private static let snapDetectDistance: CGFloat = 30
     private static let snapDistance: CGFloat = 12
     private static let snapObstructDistance: CGFloat = 9
 
