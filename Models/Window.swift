@@ -36,8 +36,9 @@ struct WindowData: Codable {
     var minWidth: CGFloat
     var maxHeight: CGFloat
     var maxWidth: CGFloat
+    var minAspectRatio: CGFloat
+    var maxAspectRatio: CGFloat
     var layer: Int
-    var order: Int
 
     init(
         type: WindowType = .blank,
@@ -46,8 +47,9 @@ struct WindowData: Codable {
         minWidth: CGFloat = 0,
         maxHeight: CGFloat = 1_000_000_000,
         maxWidth: CGFloat = 1_000_000_000,
-        layer: Int = 0,
-        order: Int = 0
+        minAspectRatio: CGFloat = 0,
+        maxAspectRatio: CGFloat = 1_000_000_000,
+        layer: Int = 0
     ) {
         self.type = type
         self.saveData = saveData
@@ -55,8 +57,9 @@ struct WindowData: Codable {
         self.minWidth = minWidth
         self.maxHeight = maxHeight
         self.maxWidth = maxWidth
+        self.minAspectRatio = minAspectRatio
+        self.maxAspectRatio = maxAspectRatio
         self.layer = layer
-        self.order = order
     }
 
     static func applyDefaults(baseData: WindowData) -> WindowData {
