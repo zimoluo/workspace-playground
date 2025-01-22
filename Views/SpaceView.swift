@@ -1,10 +1,16 @@
+import SwiftData
 import SwiftUI
 
 struct SpaceView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Space.dateModified, order: .reverse) var spaces: [Space]
+    @Environment(\.settings) private var settings
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
 
-    @StateObject var space = Space()
+    var space: Space {
+        spaces.first(where: { $0.id == settings.selectedSpaceId }) ?? Space()
+    }
 
     @State private var lastDragTranslation: CGSize = .zero
     @State private var dragVelocity: CGSize = .zero

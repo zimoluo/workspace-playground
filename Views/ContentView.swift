@@ -195,15 +195,8 @@ struct ContentView: View {
                             .onTapGesture {
                                 addSpace()
                             }
-                        } else if let selectedSpace = spaces.first(where: { $0.id == settings.selectedSpaceId }) {
-                            SpaceView()
                         } else {
-                            VStack {
-                                Text("No Space Selected")
-                                    .font(.largeTitle)
-                                    .fontWeight(.bold)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            SpaceView()
                         }
 
                     default:
