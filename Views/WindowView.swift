@@ -192,7 +192,6 @@ struct WindowView: View {
                             }
                         }
                         .onEnded { _ in
-                            // End the resize session
                             resizeSession = nil
                         }
                 )
