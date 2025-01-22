@@ -43,8 +43,8 @@ struct WindowData: Codable {
         saveData: [String: String] = [:],
         minHeight: CGFloat = 0,
         minWidth: CGFloat = 0,
-        maxHeight: CGFloat = .infinity,
-        maxWidth: CGFloat = .infinity,
+        maxHeight: CGFloat = 1_000_000_000,
+        maxWidth: CGFloat = 1_000_000_000,
         layer: Int = 0,
         order: Int = 0
     ) {

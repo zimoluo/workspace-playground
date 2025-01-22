@@ -29,30 +29,54 @@ struct ContentView: View {
                     .background(themeColor(from: theme, for: .primary, in: colorScheme, level: 5))
 
                     VStack(spacing: 8) {
-                        SectionView(header: "Spaces") {
-                            ScrollView {
-                                VStack(alignment: .leading, spacing: 10) {
+                        SectionView(header: "Spaces", trailing: {
+                            Button(action: {
+                                withAnimation(.spring(duration: 0.2)) {
+                                    addSpace()
+                                }
+                            }) {
+                                Image(systemName: "plus")
+                                    .foregroundColor(
+                                        themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                                    )
+                            }
+                        }) {
+                            List {
+                                ForEach(spaces) { space in
                                     Button(action: {
                                         withAnimation(.spring(duration: 0.2)) {
                                             selectedScreen.type = .space
+                                            settings.selectedSpaceId = space.id
                                         }
                                     }) {
                                         HStack {
-                                            Text("Until we meet again")
+                                            Text("New Space")
                                                 .foregroundColor(
-                                                    selectedScreen.type == .space ? themeColor(from: theme, for: .primary, in: colorScheme, level: 5) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                                                    selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
+                                                        themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
+                                                        themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                                                 )
                                         }
                                         .padding(16)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .background(
-                                            selectedScreen.type == .space ? themeColor(from: theme, for: .primary, in: colorScheme, level: 1) : themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
+                                            selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
+                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 1) :
+                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
                                         )
                                         .cornerRadius(16)
                                         .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                                     }
+                                    .swipeActions {
+                                        Button(role: .destructive, action: {
+                                            deleteSpace(space)
+                                        }) {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
                                 }
                             }
+                            .listStyle(.plain)
                             .frame(maxHeight: .infinity)
                         }
 
@@ -70,7 +94,8 @@ struct ContentView: View {
                                                 .overlay(
                                                     Circle()
                                                         .stroke(themeColor(from: theme, for: .primary, in: .light, level: 5), lineWidth: 3)
-                                                        .frame(width: 33, height: 33))
+                                                        .frame(width: 33, height: 33)
+                                                )
                                         }
                                         .buttonStyle(PlainButtonStyle())
                                         .scrollTransition { content, phase in
@@ -80,7 +105,6 @@ struct ContentView: View {
                                                 .blur(radius: phase.isIdentity ? 0 : 10)
                                         }
                                     }
-
                                     Button(action: {
                                         withAnimation(.spring(duration: 0.2)) {
                                             selectedScreen.type = .themeMaker
@@ -90,9 +114,11 @@ struct ContentView: View {
                                             .stroke(themeColor(from: theme, for: .primary, in: colorScheme, level: 1), style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [4, 6.2]))
                                             .frame(width: 33, height: 33)
                                             .contentShape(Circle())
-                                            .overlay(Image(systemName: "plus")
-                                                .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
-                                                .fontWeight(.bold))
+                                            .overlay(
+                                                Image(systemName: "plus")
+                                                    .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
+                                                    .fontWeight(.bold)
+                                            )
                                             .scrollTransition { content, phase in
                                                 content
                                                     .opacity(phase.isIdentity ? 1 : 0)
@@ -138,10 +164,16 @@ struct ContentView: View {
                     }
                     .safeAreaPadding(.horizontal, 20)
                     .safeAreaPadding(.vertical, macCatalystSpecificPadding)
-                    .background(LinearGradient(colors: [
-                        themeColor(from: theme, for: .primary, in: colorScheme, level: 4),
-                        themeColor(from: theme, for: .primary, in: colorScheme, level: 5)
-                    ], startPoint: .bottom, endPoint: .top))
+                    .background(
+                        LinearGradient(
+                            colors: [
+                                themeColor(from: theme, for: .primary, in: colorScheme, level: 4),
+                                themeColor(from: theme, for: .primary, in: colorScheme, level: 5)
+                            ],
+                            startPoint: .bottom,
+                            endPoint: .top
+                        )
+                    )
                 }
             } detail: {
                 ZStack {
@@ -150,10 +182,21 @@ struct ContentView: View {
                     switch selectedScreen.type {
                     case .themeMaker:
                         ThemeMakerView()
-
                     case .space:
-                        SpaceView()
-
+                        if spaces.isEmpty {
+                            VStack {
+                                Text("No Spaces Yet. Tap anywhere to create one.")
+                                    .font(.largeTitle)
+                                    .fontWeight(.bold)
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                addSpace()
+                            }
+                        } else {
+                            SpaceView()
+                        }
                     default:
                         EmptyView()
                     }
@@ -167,16 +210,11 @@ struct ContentView: View {
 
     private var themesGridHeight: CGFloat {
         let filteredThemes = themes.filter { $0.id != theme.id }
-
         let numberOfItems = filteredThemes.count + 1
-
         let rows = ceil(CGFloat(numberOfItems) / 5)
-
         let totalItemHeight = CGFloat(rows) * 36
         let totalSpacing = CGFloat(Int(rows) + 1) * 16
-
         let requiredHeight = totalItemHeight + totalSpacing
-
         return min(requiredHeight, maxThemesGridHeight)
     }
 
@@ -186,11 +224,8 @@ struct ContentView: View {
         else {
             return
         }
-
         guard matchingTheme.id != theme.id else { return }
-
         let copiedTheme = matchingTheme.deepCopy()
-
         theme.primary = copiedTheme.primary
         theme.secondary = copiedTheme.secondary
         theme.tertiary = copiedTheme.tertiary
@@ -198,10 +233,15 @@ struct ContentView: View {
     }
 
     private func addSpace() {
-        modelContext.insert(Space())
+        let newSpace = Space()
+        modelContext.insert(newSpace)
+        settings.selectedSpaceId = newSpace.id
     }
 
-    // idk why mac catalyst doesnt have that padding so i'll just... do it i guess
+    private func deleteSpace(_ space: Space) {
+        modelContext.delete(space)
+    }
+
     private var macCatalystSpecificPadding: CGFloat {
         #if targetEnvironment(macCatalyst)
         20
@@ -211,24 +251,30 @@ struct ContentView: View {
     }
 }
 
-struct SectionView<Content: View>: View {
+struct SectionView<Content: View, Trailing: View>: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
 
     let header: String
+    let trailing: Trailing?
     let content: Content
 
-    init(header: String, @ViewBuilder content: () -> Content) {
+    init(header: String, @ViewBuilder trailing: () -> Trailing = { EmptyView() }, @ViewBuilder content: () -> Content) {
         self.header = header
+        self.trailing = trailing()
         self.content = content()
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
-            Text(header)
-                .font(.headline)
-                .padding(.bottom, 5)
-                .themedForeground(using: theme, in: colorScheme)
+            HStack {
+                Text(header)
+                    .font(.headline)
+                    .themedForeground(using: theme, in: colorScheme)
+                Spacer()
+                trailing
+            }
+            .padding(.bottom, 5)
             content
         }
         .padding(.vertical, 16)
