@@ -48,10 +48,11 @@ struct WindowView: View {
                 .offset(x: adjustedWidth/2 - 6, y: adjustedHeight/2 - 6)
                 .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(0.6))
                 .gesture(
-                    DragGesture()
+                    DragGesture(coordinateSpace: .global)
                         .onChanged { value in
                             if window.id != space.windows.last?.id {
                                 space.bringToFront(window)
+                                return
                             }
 
                             if resizeSession == nil {
@@ -70,8 +71,8 @@ struct WindowView: View {
 
                             guard let rs = resizeSession else { return }
 
-                            let deltaX = value.location.x - rs.startDragLocation.x
-                            let deltaY = value.location.y - rs.startDragLocation.y
+                            let deltaX = (value.location.x - rs.startDragLocation.x)/space.cameraZoom
+                            let deltaY = (value.location.y - rs.startDragLocation.y)/space.cameraZoom
 
                             let leftBoundary = space.cameraCenterX - (parentSize.width/2)/space.cameraZoom + 12
                             let rightBoundary = space.cameraCenterX + (parentSize.width/2)/space.cameraZoom - 12
@@ -157,14 +158,14 @@ struct WindowView: View {
                                     if !(rs.beginTopLeftX - newDeltaX < leftBoundary) {
                                         isAdaptiveOnX = false
                                     }
-                                }
 
-                                if projectedWidth/projectedHeight < window.data.minAspectRatio {
-                                    let heightToCalculate = max(reprojectedWidth/window.data.minAspectRatio, window.data.minHeight)
-                                    let newDeltaY = heightToCalculate - rs.startHeight - (rs.beginTopLeftY - topBoundary)
+                                    if projectedWidth/projectedHeight < window.data.minAspectRatio {
+                                        let heightToCalculate = max(reprojectedWidth/window.data.minAspectRatio, window.data.minHeight)
+                                        let newDeltaY = heightToCalculate - rs.startHeight - (rs.beginTopLeftY - topBoundary)
 
-                                    if !(rs.beginTopLeftY - newDeltaY < topBoundary) {
-                                        isAdaptiveOnY = false
+                                        if !(rs.beginTopLeftY - newDeltaY < topBoundary) {
+                                            isAdaptiveOnY = false
+                                        }
                                     }
                                 }
                             }
@@ -179,21 +180,16 @@ struct WindowView: View {
                                 finalDimensions.finalDy*(isAdaptiveOnY ? 1 : 2) +
                                 (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0)
 
-                            var newX = rs.beginCenterX
-                            var newY = rs.beginCenterY
+                            window.state.width = finalWidth
+                            window.state.height = finalHeight
 
                             if isAdaptiveOnX {
-                                newX = leftBoundary + finalWidth/2
+                                window.state.x = leftBoundary + finalWidth/2
                             }
 
                             if isAdaptiveOnY {
-                                newY = topBoundary + finalHeight/2
+                                window.state.y = topBoundary + finalHeight/2
                             }
-
-                            window.state.width = finalWidth
-                            window.state.height = finalHeight
-                            window.state.x = newX
-                            window.state.y = newY
                         }
                         .onEnded { _ in
                             // End the resize session
