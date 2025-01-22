@@ -31,9 +31,7 @@ struct ContentView: View {
                     VStack(spacing: 8) {
                         SectionView(header: "Spaces", trailing: {
                             Button(action: {
-                                withAnimation(.spring(duration: 0.2)) {
-                                    addSpace()
-                                }
+                                addSpace()
                             }) {
                                 Image(systemName: "plus")
                                     .foregroundColor(
@@ -41,42 +39,44 @@ struct ContentView: View {
                                     )
                             }
                         }) {
-                            List {
-                                ForEach(spaces) { space in
-                                    Button(action: {
-                                        withAnimation(.spring(duration: 0.2)) {
-                                            selectedScreen.type = .space
-                                            settings.selectedSpaceId = space.id
-                                        }
-                                    }) {
-                                        HStack {
-                                            Text("New Space")
-                                                .foregroundColor(
-                                                    selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
-                                                        themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
-                                                        themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
-                                                )
-                                        }
-                                        .padding(16)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .background(
-                                            selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
-                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 1) :
-                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
-                                        )
-                                        .cornerRadius(16)
-                                        .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
-                                    }
-                                    .swipeActions {
-                                        Button(role: .destructive, action: {
-                                            deleteSpace(space)
+                            ScrollView {
+                                LazyVStack(alignment: .leading, spacing: 15) {
+                                    ForEach(spaces) { space in
+                                        Button(action: {
+                                            withAnimation(.spring(duration: 0.2)) {
+                                                selectedScreen.type = .space
+                                                settings.selectedSpaceId = space.id
+                                            }
                                         }) {
-                                            Label("Delete", systemImage: "trash")
+                                            HStack {
+                                                Text("New Space")
+                                                    .foregroundColor(
+                                                        selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
+                                                            themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
+                                                            themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                                                    )
+                                            }
+                                            .padding(16)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .background(
+                                                selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
+                                                    themeColor(from: theme, for: .primary, in: colorScheme, level: 1) :
+                                                    themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
+                                            )
+                                            .cornerRadius(16)
+                                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                                        }
+                                        .scrollTransition { content, phase in
+                                            content
+                                                .opacity(phase.isIdentity ? 1 : 0)
+                                                .scaleEffect(phase.isIdentity ? 1 : 0.6)
+                                                .blur(radius: phase.isIdentity ? 0 : 10)
                                         }
                                     }
                                 }
                             }
-                            .listStyle(.plain)
+                            .safeAreaPadding(.top, 5)
+                            .safeAreaPadding(.bottom, 15)
                             .frame(maxHeight: .infinity)
                         }
 
@@ -182,6 +182,7 @@ struct ContentView: View {
                     switch selectedScreen.type {
                     case .themeMaker:
                         ThemeMakerView()
+
                     case .space:
                         if spaces.isEmpty {
                             VStack {
@@ -194,9 +195,17 @@ struct ContentView: View {
                             .onTapGesture {
                                 addSpace()
                             }
-                        } else {
+                        } else if let selectedSpace = spaces.first(where: { $0.id == settings.selectedSpaceId }) {
                             SpaceView()
+                        } else {
+                            VStack {
+                                Text("No Space Selected")
+                                    .font(.largeTitle)
+                                    .fontWeight(.bold)
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
+
                     default:
                         EmptyView()
                     }
