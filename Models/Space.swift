@@ -77,4 +77,18 @@ class Space: ObservableObject {
             }
         }
     }
+
+    func bringToFront(_ window: Window) {
+        if let index = windows.firstIndex(where: { $0.id == window.id }) {
+            let movedWindow = windows.remove(at: index)
+            windows.append(movedWindow)
+        }
+    }
+
+    func bringToFront(_ id: UUID) {
+        if let index = windows.firstIndex(where: { $0.id == id }) {
+            let movedWindow = windows.remove(at: index)
+            windows.append(movedWindow)
+        }
+    }
 }

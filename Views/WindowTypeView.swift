@@ -8,7 +8,18 @@ struct WindowTypeView: View {
         case .blank:
             Color.clear
         case .notes:
-            Text("Notes Window")
+            ScrollView {
+                VStack {
+                    Text("Notes Window")
+                    Text("Notes Window")
+                    Text("Notes Window")
+                    Text("Notes Window")
+                    Text("Notes Window")
+                    Text("Notes Window")
+                    Text("Notes Window")
+                    Text("Notes Window")
+                }
+            }
         }
     }
 }

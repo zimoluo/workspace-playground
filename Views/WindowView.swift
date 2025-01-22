@@ -25,6 +25,9 @@ struct WindowView: View {
         .gesture(
             DragGesture()
                 .onChanged { value in
+                    if window.id != space.windows.last?.id {
+                        space.bringToFront(window)
+                    }
                     dragOffset = value.translation
                 }
                 .onEnded { value in
@@ -35,5 +38,8 @@ struct WindowView: View {
                     dragOffset = .zero
                 }
         )
+        .onTapGesture {
+            space.bringToFront(window)
+        }
     }
 }

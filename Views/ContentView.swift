@@ -215,6 +215,7 @@ struct ContentView: View {
                         EmptyView()
                     }
                 }
+                .toolbar(.hidden, for: .navigationBar)
             }
             .accentColor(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
 
