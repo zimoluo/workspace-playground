@@ -30,17 +30,30 @@ struct ContentView: View {
 
                     VStack(spacing: 8) {
                         SectionView(header: "Spaces", trailing: {
-                            Button(action: {
-                                addSpace()
-                            }) {
-                                Image(systemName: "plus")
-                                    .foregroundColor(
-                                        themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
-                                    )
+                            HStack(spacing: 8) {
+                                if !spaces.isEmpty {
+                                    Button(action: {
+                                        deleteSpace(settings.selectedSpaceId)
+                                    }) {
+                                        Image(systemName: "trash")
+                                            .foregroundColor(
+                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                                            )
+                                    }
+                                }
+
+                                Button(action: {
+                                    addSpace()
+                                }) {
+                                    Image(systemName: "plus")
+                                        .foregroundColor(
+                                            themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                                        )
+                                }
                             }
                         }) {
                             ScrollView {
-                                LazyVStack(alignment: .leading, spacing: 15) {
+                                LazyVStack(alignment: .leading, spacing: 20) {
                                     ForEach(spaces) { space in
                                         Button(action: {
                                             withAnimation(.spring(duration: 0.2)) {
@@ -75,8 +88,6 @@ struct ContentView: View {
                                     }
                                 }
                             }
-                            .safeAreaPadding(.top, 5)
-                            .safeAreaPadding(.bottom, 15)
                             .frame(maxHeight: .infinity)
                         }
 
@@ -163,7 +174,7 @@ struct ContentView: View {
                         }
                     }
                     .safeAreaPadding(.horizontal, 20)
-                    .safeAreaPadding(.vertical, macCatalystSpecificPadding)
+                    .safeAreaPadding(.bottom, macCatalystSpecificPadding)
                     .background(
                         LinearGradient(
                             colors: [
@@ -186,9 +197,10 @@ struct ContentView: View {
                     case .space:
                         if spaces.isEmpty {
                             VStack {
-                                Text("No Spaces Yet. Tap anywhere to create one.")
+                                Text("Tap to create a Space!")
                                     .font(.largeTitle)
                                     .fontWeight(.bold)
+                                    .themedForeground(using: theme, in: colorScheme, category: .secondary)
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .contentShape(Rectangle())
@@ -244,6 +256,13 @@ struct ContentView: View {
         modelContext.delete(space)
     }
 
+    private func deleteSpace(_ id: UUID) {
+        guard let space = spaces.first(where: { $0.id == id })
+        else { return }
+
+        modelContext.delete(space)
+    }
+
     private var macCatalystSpecificPadding: CGFloat {
         #if targetEnvironment(macCatalyst)
         20
@@ -276,9 +295,9 @@ struct SectionView<Content: View, Trailing: View>: View {
                 Spacer()
                 trailing
             }
-            .padding(.bottom, 5)
+            .safeAreaPadding(.bottom, 5)
             content
         }
-        .padding(.vertical, 16)
+        .safeAreaPadding(.vertical, 16)
     }
 }
