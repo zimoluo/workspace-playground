@@ -22,11 +22,11 @@ struct ClockWidget: View {
                         let longerSide = max(width, height)
 
                         ForEach(0 ..< 12) { tick in
-                            Rectangle()
+                            RoundedRectangle(cornerRadius: 9999)
                                 .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1).opacity(0.8))
                                 .frame(width: sqrt(longerSide / shorterSide) * 2.6, height: longerSide * 0.075)
                                 .offset(y: -longerSide * 0.4)
-                                .rotationEffect(.degrees(Double(tick) * 30))
+                                .rotationEffect(.degrees(ellipseAngle(originalAngle: Double(tick) * 30, aspect: width / height)))
                                 .scaleEffect(x: width / longerSide, y: height / longerSide)
                         }
 
@@ -90,8 +90,23 @@ struct ClockWidget: View {
         let calendar = Calendar.current
         let second = calendar.component(.second, from: currentTime)
         let nanosecond = calendar.component(.nanosecond, from: currentTime)
-        let fractionalSecond = Double(second) + Double(nanosecond) / 1_000_000_000
+        let fractionalSecond = Double(second) + Double(nanosecond) / 1000000000
         return .degrees(fractionalSecond * 6)
+    }
+
+    private func ellipseAngle(originalAngle: CGFloat, aspect: CGFloat) -> CGFloat {
+        let theta = originalAngle * .pi / 180.0
+
+        let tanPhi = tan(theta) / aspect
+        let phi = atan(tanPhi)
+
+        if originalAngle > 90 && originalAngle <= 270 {
+            return (phi + .pi) * 180.0 / .pi
+        } else if originalAngle > 270 {
+            return (phi + 2 * .pi) * 180.0 / .pi
+        }
+
+        return phi * 180.0 / .pi
     }
 }
 
