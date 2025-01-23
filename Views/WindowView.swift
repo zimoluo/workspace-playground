@@ -32,7 +32,7 @@ struct WindowView: View {
                 .frame(width: window.state.width, height: window.state.height)
                 .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                 .cornerRadius(16)
-                .shadow(color: theme.secondary.toShadow(), radius: window.state.width/8.33, y: window.state.width/12.5)
+                .shadow(color: theme.secondary.toShadow(), radius: min(window.state.width, window.state.height)/8.33, y: window.state.height/12.5)
 
             Image("WindowHandle")
                 .resizable()
