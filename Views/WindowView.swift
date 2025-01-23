@@ -34,6 +34,16 @@ struct WindowView: View {
                 .cornerRadius(16)
                 .shadow(color: theme.secondary.toShadow(), radius: min(window.state.width, window.state.height)/8.33, y: min(window.state.width, window.state.height)/12.5)
 
+            Circle()
+                .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(0.6))
+                .frame(width: 12, height: 12)
+                .offset(x: -window.state.width/2 + 8, y: -window.state.height/2 + 8)
+                .onTapGesture {
+                    withAnimation(.spring(duration: 0.15)) {
+                        space.removeWindow(window)
+                    }
+                }
+
             Image("WindowHandle")
                 .resizable()
                 .frame(width: 27, height: 27)
