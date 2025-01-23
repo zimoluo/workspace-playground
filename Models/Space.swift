@@ -78,17 +78,24 @@ class Space: ObservableObject {
         }
     }
 
-    func bringToFront(_ window: Window) {
-        if let index = windows.firstIndex(where: { $0.id == window.id }) {
-            let movedWindow = windows.remove(at: index)
-            windows.append(movedWindow)
-        }
-    }
-
     func bringToFront(_ id: UUID) {
         if let index = windows.firstIndex(where: { $0.id == id }) {
             let movedWindow = windows.remove(at: index)
             windows.append(movedWindow)
         }
+    }
+
+    func bringToFront(_ window: Window) {
+        bringToFront(window.id)
+    }
+
+    func removeWindow(_ id: UUID) {
+        if let index = windows.firstIndex(where: { $0.id == id }) {
+            windows.remove(at: index)
+        }
+    }
+
+    func removeWindow(_ window: Window) {
+        removeWindow(window.id)
     }
 }
