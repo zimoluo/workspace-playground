@@ -47,8 +47,8 @@ class Space: ObservableObject {
         let startRow = Int(floor(minY / Space.dotBaseDistance))
         let endRow = Int(ceil(maxY / Space.dotBaseDistance))
 
-        let dots = (startRow...endRow).flatMap { row in
-            (startColumn...endColumn).map { column -> CGPoint in
+        let dots = (startRow ... endRow).flatMap { row in
+            (startColumn ... endColumn).map { column -> CGPoint in
                 let xRelative = CGFloat(column) * Space.dotBaseDistance - cameraCenterX
                 let yRelative = CGFloat(row) * Space.dotBaseDistance - cameraCenterY
 
@@ -61,7 +61,7 @@ class Space: ObservableObject {
 
         return Canvas { context, _ in
             for dot in dots {
-                let dotDiameter = scaledDotDiameter
+                let dotDiameter = scaledDotDiameter.clamped(to: 2.25 ... 4)
                 let dotColor = color.opacity(0.4)
 
                 let circle = Path { path in
