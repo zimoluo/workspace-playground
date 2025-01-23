@@ -5,7 +5,7 @@ struct ClockWidget: View {
     @Environment(\.colorScheme) private var colorScheme
 
     @State private var currentTime = Date()
-    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    private let timer = Timer.publish(every: 1 / 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
         GeometryReader { geometry in
@@ -30,7 +30,7 @@ struct ClockWidget: View {
 
                         HandView(length: geometry.size.width * 0.4, width: 1.6, rotation: secondRotation(), color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 2), shadowColor: theme.secondary.toShadow())
 
-                        Circle() // Center Circle
+                        Circle()
                             .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                             .frame(width: 12, height: 12)
                     }
@@ -40,9 +40,7 @@ struct ClockWidget: View {
                 }
             }
             .onReceive(timer) { _ in
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    currentTime = Date()
-                }
+                currentTime = Date()
             }
         }
     }
@@ -51,20 +49,25 @@ struct ClockWidget: View {
         let calendar = Calendar.current
         let hour = calendar.component(.hour, from: currentTime) % 12
         let minute = calendar.component(.minute, from: currentTime)
-        return .degrees(Double(hour) * 30 + Double(minute) / 2)
+        let second = calendar.component(.second, from: currentTime)
+        let fractionalHour = Double(hour) + Double(minute) / 60 + Double(second) / 3600
+        return .degrees(fractionalHour * 30)
     }
 
     private func minuteRotation() -> Angle {
         let calendar = Calendar.current
         let minute = calendar.component(.minute, from: currentTime)
         let second = calendar.component(.second, from: currentTime)
-        return .degrees(Double(minute) * 6 + Double(second) / 10)
+        let fractionalMinute = Double(minute) + Double(second) / 60
+        return .degrees(fractionalMinute * 6)
     }
 
     private func secondRotation() -> Angle {
         let calendar = Calendar.current
         let second = calendar.component(.second, from: currentTime)
-        return .degrees(Double(second) * 6)
+        let nanosecond = calendar.component(.nanosecond, from: currentTime)
+        let fractionalSecond = Double(second) + Double(nanosecond) / 1_000_000_000
+        return .degrees(fractionalSecond * 6)
     }
 }
 
