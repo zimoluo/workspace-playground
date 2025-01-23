@@ -16,14 +16,6 @@ struct WindowView: View {
     private static let snapDistance: CGFloat = 12
     private static let snapObstructDistance: CGFloat = 9
 
-    private var adjustedWidth: CGFloat {
-        window.state.width
-    }
-
-    private var adjustedHeight: CGFloat {
-        window.state.height
-    }
-
     private struct ResizeSession {
         let startDragLocation: CGPoint
         let beginCenterX: CGFloat
@@ -37,15 +29,15 @@ struct WindowView: View {
     var body: some View {
         ZStack {
             WindowTypeView(windowData: window.data)
-                .frame(width: adjustedWidth, height: adjustedHeight)
+                .frame(width: window.state.width, height: window.state.height)
                 .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
                 .cornerRadius(16)
-                .shadow(color: theme.secondary.toShadow(), radius: adjustedWidth/8.33, y: adjustedWidth/12.5)
+                .shadow(color: theme.secondary.toShadow(), radius: window.state.width/8.33, y: window.state.width/12.5)
 
             Image("WindowHandle")
                 .resizable()
                 .frame(width: 27, height: 27)
-                .offset(x: adjustedWidth/2 - 6, y: adjustedHeight/2 - 6)
+                .offset(x: window.state.width/2 - 6, y: window.state.height/2 - 6)
                 .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(0.6))
                 .gesture(
                     DragGesture(coordinateSpace: .global)
