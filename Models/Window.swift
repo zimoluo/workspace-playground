@@ -81,8 +81,8 @@ struct WindowData: Codable {
             updatedData.maxWidth = 300
             updatedData.minHeight = 150
             updatedData.minWidth = 150
-            updatedData.minAspectRatio = 1
-            updatedData.maxAspectRatio = 1
+            updatedData.minAspectRatio = 0.5
+            updatedData.maxAspectRatio = 2
         }
 
         return updatedData

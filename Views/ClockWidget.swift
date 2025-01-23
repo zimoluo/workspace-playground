@@ -16,25 +16,49 @@ struct ClockWidget: View {
                     Spacer()
 
                     ZStack {
+                        let width = geometry.size.width
+                        let height = geometry.size.height
+                        let shorterSide = min(width, height)
+                        let longerSide = max(width, height)
+
                         ForEach(0 ..< 12) { tick in
                             Rectangle()
                                 .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1).opacity(0.8))
-                                .frame(width: 2.6, height: geometry.size.width * 0.075)
-                                .offset(y: -geometry.size.width * 0.4)
+                                .frame(width: sqrt(longerSide / shorterSide) * 2.6, height: longerSide * 0.075)
+                                .offset(y: -longerSide * 0.4)
                                 .rotationEffect(.degrees(Double(tick) * 30))
+                                .scaleEffect(x: width / longerSide, y: height / longerSide)
                         }
 
-                        HandView(length: geometry.size.width * 0.25, width: 6, rotation: hourRotation(), color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 1), shadowColor: theme.secondary.toShadow())
+                        HandView(
+                            length: shorterSide * 0.25,
+                            width: 6,
+                            rotation: hourRotation(),
+                            color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 1),
+                            shadowColor: theme.secondary.toShadow()
+                        )
 
-                        HandView(length: geometry.size.width * 0.35, width: 3.6, rotation: minuteRotation(), color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 1), shadowColor: theme.secondary.toShadow())
+                        HandView(
+                            length: shorterSide * 0.35,
+                            width: 3.6,
+                            rotation: minuteRotation(),
+                            color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 1),
+                            shadowColor: theme.secondary.toShadow()
+                        )
 
-                        HandView(length: geometry.size.width * 0.4, width: 1.6, rotation: secondRotation(), color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 2), shadowColor: theme.secondary.toShadow())
+                        HandView(
+                            length: shorterSide * 0.4,
+                            width: 1.6,
+                            rotation: secondRotation(),
+                            color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 2),
+                            shadowColor: theme.secondary.toShadow()
+                        )
 
                         Circle()
                             .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                             .frame(width: 12, height: 12)
                     }
-                    .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
+                    .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.8)
 
                     Spacer()
                 }
