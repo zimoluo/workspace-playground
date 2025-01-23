@@ -26,6 +26,14 @@ struct WindowView: View {
         let startHeight: CGFloat
     }
 
+    @State private var isCloseButtonActive = false
+    @State private var isResizeHandlePressed = false
+    @State private var isResizeHandleHovered = false
+
+    private var isResizeHandleActive: Bool {
+        isResizeHandleHovered || isResizeHandlePressed
+    }
+
     var body: some View {
         ZStack {
             WindowTypeView(windowData: window.data)
@@ -35,26 +43,53 @@ struct WindowView: View {
                 .shadow(color: theme.secondary.toShadow(), radius: min(window.state.width, window.state.height)/8.33, y: min(window.state.width, window.state.height)/12.5)
 
             Circle()
-                .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(0.6))
-                .frame(width: 12, height: 12)
-                .offset(x: -window.state.width/2 + 8, y: -window.state.height/2 + 8)
+                .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isCloseButtonActive ? 0.75 : 0.6))
+                .frame(width: isCloseButtonActive ? 18 : 12, height: isCloseButtonActive ? 18 : 12)
+                .offset(
+                    x: -window.state.width/2 + (isCloseButtonActive ? 9 : 8),
+                    y: -window.state.height/2 + (isCloseButtonActive ? 9 : 8)
+                )
+                .onHover { hovering in
+                    withAnimation(.spring(duration: 0.3)) {
+                        isCloseButtonActive = hovering
+                    }
+                }
                 .onTapGesture {
                     withAnimation(.spring(duration: 0.15)) {
                         space.removeWindow(window)
                     }
                 }
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { _ in
+                            isCloseButtonActive = true
+                        }
+                        .onEnded { _ in
+                            isCloseButtonActive = false
+                        }
+                )
 
             Image("WindowHandle")
                 .resizable()
                 .frame(width: 27, height: 27)
+                .scaleEffect(isResizeHandleActive ? 1.12 : 1)
                 .offset(x: window.state.width/2 - 6, y: window.state.height/2 - 6)
-                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(0.6))
+                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isResizeHandleActive ? 0.75 : 0.6))
+                .onHover { hovering in
+                    withAnimation(.spring(duration: 0.3)) {
+                        isResizeHandleHovered = hovering
+                    }
+                }
                 .gesture(
-                    DragGesture(coordinateSpace: .global)
+                    DragGesture(minimumDistance: 0, coordinateSpace: .global)
                         .onChanged { value in
                             if window.id != space.windows.last?.id {
                                 space.bringToFront(window)
                                 return
+                            }
+
+                            withAnimation(.spring(duration: 0.3)) {
+                                isResizeHandlePressed = true
                             }
 
                             if resizeSession == nil {
@@ -195,6 +230,9 @@ struct WindowView: View {
                         }
                         .onEnded { _ in
                             resizeSession = nil
+                            withAnimation(.spring(duration: 0.3)) {
+                                isResizeHandlePressed = false
+                            }
                         }
                 )
         }
