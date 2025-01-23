@@ -5,6 +5,10 @@ struct ClockWidget: View {
     @Environment(\.colorScheme) private var colorScheme
 
     @State private var currentTime = Date()
+    @State private var previousSecondAngle: Double = 0
+    @State private var previousMinuteAngle: Double = 0
+    @State private var previousHourAngle: Double = 0
+
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -24,13 +28,31 @@ struct ClockWidget: View {
                                 .rotationEffect(.degrees(Double(tick) * 30))
                         }
 
-                        HandView(length: geometry.size.width * 0.25, width: 6, rotation: hourRotation(), color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 1), shadowColor: theme.secondary.toShadow())
+                        HandView(
+                            length: geometry.size.width * 0.25,
+                            width: 6,
+                            rotation: hourRotation(),
+                            color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 1),
+                            shadowColor: theme.secondary.toShadow()
+                        )
 
-                        HandView(length: geometry.size.width * 0.35, width: 3.6, rotation: minuteRotation(), color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 1), shadowColor: theme.secondary.toShadow())
+                        HandView(
+                            length: geometry.size.width * 0.35,
+                            width: 3.6,
+                            rotation: minuteRotation(),
+                            color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 1),
+                            shadowColor: theme.secondary.toShadow()
+                        )
 
-                        HandView(length: geometry.size.width * 0.4, width: 1.6, rotation: secondRotation(), color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 2), shadowColor: theme.secondary.toShadow())
+                        HandView(
+                            length: geometry.size.width * 0.4,
+                            width: 1.6,
+                            rotation: secondRotation(),
+                            color: themeColor(from: theme, for: .secondary, in: colorScheme, level: 2),
+                            shadowColor: theme.secondary.toShadow()
+                        )
 
-                        Circle() // Center Circle
+                        Circle()
                             .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                             .frame(width: 12, height: 12)
                     }
@@ -41,30 +63,59 @@ struct ClockWidget: View {
             }
             .onReceive(timer) { _ in
                 withAnimation(.easeInOut(duration: 0.3)) {
+                    updateAngles()
                     currentTime = Date()
                 }
             }
         }
     }
 
+    private func updateAngles() {
+        previousSecondAngle = calculateContinuousAngle(from: previousSecondAngle, to: calculateSecondAngle())
+        previousMinuteAngle = calculateContinuousAngle(from: previousMinuteAngle, to: calculateMinuteAngle())
+        previousHourAngle = calculateContinuousAngle(from: previousHourAngle, to: calculateHourAngle())
+    }
+
+    private func calculateContinuousAngle(from previous: Double, to current: Double) -> Double {
+        if current < previous && (previous - current) > 180 {
+            return current + 360 // Smooth forward transition
+        } else if current > previous && (current - previous) > 180 {
+            return current - 360 // Smooth backward transition
+        }
+        return current
+    }
+
     private func hourRotation() -> Angle {
-        let calendar = Calendar.current
-        let hour = calendar.component(.hour, from: currentTime) % 12
-        let minute = calendar.component(.minute, from: currentTime)
-        return .degrees(Double(hour) * 30 + Double(minute) / 2)
+        return .degrees(previousHourAngle)
     }
 
     private func minuteRotation() -> Angle {
-        let calendar = Calendar.current
-        let minute = calendar.component(.minute, from: currentTime)
-        let second = calendar.component(.second, from: currentTime)
-        return .degrees(Double(minute) * 6 + Double(second) / 10)
+        return .degrees(previousMinuteAngle)
     }
 
     private func secondRotation() -> Angle {
+        return .degrees(previousSecondAngle)
+    }
+
+    private func calculateHourAngle() -> Double {
         let calendar = Calendar.current
-        let second = calendar.component(.second, from: currentTime)
-        return .degrees(Double(second) * 6)
+        let hour = Double(calendar.component(.hour, from: currentTime) % 12)
+        let minute = Double(calendar.component(.minute, from: currentTime))
+        return (hour + minute / 60.0) * 30
+    }
+
+    private func calculateMinuteAngle() -> Double {
+        let calendar = Calendar.current
+        let minute = Double(calendar.component(.minute, from: currentTime))
+        let second = Double(calendar.component(.second, from: currentTime))
+        return (minute + second / 60.0) * 6
+    }
+
+    private func calculateSecondAngle() -> Double {
+        let calendar = Calendar.current
+        let second = Double(calendar.component(.second, from: currentTime))
+        let nanosecond = Double(calendar.component(.nanosecond, from: currentTime))
+        return (second + nanosecond / 1_000_000_000.0) * 6
     }
 }
 
