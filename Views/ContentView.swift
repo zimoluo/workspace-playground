@@ -11,12 +11,14 @@ struct ContentView: View {
 
     @State private var selectedScreen: Screen = .init(type: .space)
 
+    @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
+
     private let columns: [GridItem] = Array(repeating: .init(.fixed(36), spacing: 16), count: 5)
     private let maxThemesGridHeight: CGFloat = 120
 
     var body: some View {
         ZStack {
-            NavigationSplitView {
+            NavigationSplitView(columnVisibility: $columnVisibility) {
                 VStack(spacing: 0) {
                     HStack {
                         Text("WorkSpace")
@@ -26,7 +28,7 @@ struct ContentView: View {
                         Spacer()
                     }
                     .padding(20)
-                    .background(themeColor(from: theme, for: .primary, in: colorScheme, level: 5))
+                    .padding(.top, 32)
 
                     VStack(spacing: 8) {
                         SectionView(header: "Spaces", trailing: {
@@ -175,17 +177,18 @@ struct ContentView: View {
                     }
                     .safeAreaPadding(.horizontal, 20)
                     .safeAreaPadding(.bottom, macCatalystSpecificPadding)
-                    .background(
-                        LinearGradient(
-                            colors: [
-                                themeColor(from: theme, for: .primary, in: colorScheme, level: 4),
-                                themeColor(from: theme, for: .primary, in: colorScheme, level: 5)
-                            ],
-                            startPoint: .bottom,
-                            endPoint: .top
-                        )
-                    )
                 }
+                .toolbar(.hidden, for: .navigationBar)
+                .background(
+                    LinearGradient(
+                        colors: [
+                            themeColor(from: theme, for: .primary, in: colorScheme, level: 4),
+                            themeColor(from: theme, for: .primary, in: colorScheme, level: 5)
+                        ],
+                        startPoint: .bottom,
+                        endPoint: .top
+                    )
+                )
             } detail: {
                 ZStack {
                     theme.mainGradient.toGradient(in: colorScheme).ignoresSafeArea()
@@ -218,6 +221,22 @@ struct ContentView: View {
                 .toolbar(.hidden, for: .navigationBar)
             }
             .accentColor(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+
+            Button(action: {
+                withAnimation(.spring(duration: 0.3)) {
+                    if columnVisibility == .detailOnly {
+                        columnVisibility = .doubleColumn
+                    } else {
+                        columnVisibility = .detailOnly
+                    }
+                }
+            }) {
+                Image(systemName: "sidebar.leading")
+                    .font(.system(size: 24))
+                    .padding(16)
+                    .foregroundColor(columnVisibility == .detailOnly ? themeColor(from: theme, for: .secondary, in: colorScheme, level: 0) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+            }
+            .position(x: columnVisibility == .detailOnly ? 36 : 32, y: 24)
 
             PopUpView().ignoresSafeArea()
         }
