@@ -45,10 +45,6 @@ struct WindowView: View {
             Circle()
                 .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isCloseButtonActive ? 0.75 : 0.6))
                 .frame(width: isCloseButtonActive ? 18 : 12, height: isCloseButtonActive ? 18 : 12)
-                .offset(
-                    x: -window.state.width/2 + (isCloseButtonActive ? 9 : 8),
-                    y: -window.state.height/2 + (isCloseButtonActive ? 9 : 8)
-                )
                 .onHover { hovering in
                     withAnimation(.spring(duration: 0.3)) {
                         isCloseButtonActive = hovering
@@ -68,12 +64,15 @@ struct WindowView: View {
                             isCloseButtonActive = false
                         }
                 )
+                .offset(
+                    x: -window.state.width/2 + (isCloseButtonActive ? 9 : 8),
+                    y: -window.state.height/2 + (isCloseButtonActive ? 9 : 8)
+                )
 
             Image("WindowHandle")
                 .resizable()
                 .frame(width: 27, height: 27)
                 .scaleEffect(isResizeHandleActive ? 1.12 : 1)
-                .offset(x: window.state.width/2 - 6, y: window.state.height/2 - 6)
                 .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isResizeHandleActive ? 0.75 : 0.6))
                 .onHover { hovering in
                     withAnimation(.spring(duration: 0.3)) {
@@ -235,6 +234,7 @@ struct WindowView: View {
                             }
                         }
                 )
+                .offset(x: window.state.width/2 - 6, y: window.state.height/2 - 6)
         }
         .position(x: window.state.x + dragOffset.width, y: window.state.y + dragOffset.height)
         .gesture(
