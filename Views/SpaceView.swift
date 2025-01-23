@@ -46,7 +46,7 @@ struct SpaceView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                space.renderDots(viewSize: geometry.size, color: theme.secondary.shadeMap(numShades: 19).shadeMap[7].color)
+                space.renderDots(viewSize: geometry.size, color: colorScheme == .light ? theme.secondary.shadeMap(numShades: 19).shadeMap[7].color : theme.secondary.shadeMap(numShades: 19).shadeMap[5].color)
 
                 Color.clear
                     .contentShape(Rectangle())
