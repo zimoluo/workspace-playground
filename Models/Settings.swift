@@ -1,10 +1,3 @@
-//
-//  Settings.swift
-//  workspace-playground
-//
-//  Created by Zimo Luo on 1/9/25.
-//
-
 import SwiftData
 import SwiftUI
 
