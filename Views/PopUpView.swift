@@ -18,11 +18,11 @@ struct PopUpView: View {
                     .ignoresSafeArea()
                     .transition(
                         AnyTransition.asymmetric(
-                            insertion: .opacity.combined(with: .offset(y: 70)),
+                            insertion: .opacity.combined(with: .offset(y: 120)),
                             removal: .opacity.combined(with: .offset(y: -40))
                         )
                     )
-                    .animation(.spring(duration: 0.2), value: popUp.type)
+                    .animation(.spring(duration: 0.4), value: popUp.type)
             }
         }
         .animation(.spring(duration: 0.2), value: popUp.type)

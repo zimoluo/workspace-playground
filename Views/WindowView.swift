@@ -30,7 +30,7 @@ struct WindowView: View {
         ZStack {
             WindowTypeView(windowData: window.data)
                 .frame(width: window.state.width, height: window.state.height)
-                .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                .background(LinearGradient(colors: [themeColor(from: theme, for: .secondary, in: colorScheme, level: 4), themeColor(from: theme, for: .secondary, in: colorScheme, level: 5)], startPoint: .bottom, endPoint: .top))
                 .cornerRadius(16)
                 .shadow(color: theme.secondary.toShadow(), radius: min(window.state.width, window.state.height)/8.33, y: min(window.state.width, window.state.height)/12.5)
 

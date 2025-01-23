@@ -20,6 +20,8 @@ struct WindowTypeView: View {
                     Text("Notes Window")
                 }
             }
+        case .clock:
+            ClockWidget()
         }
     }
 }

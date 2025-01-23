@@ -72,7 +72,17 @@ struct WindowData: Codable {
             updatedData.minHeight = 200
             updatedData.minWidth = 300
         case .blank:
-            break
+            updatedData.maxHeight = 800
+            updatedData.maxWidth = 800
+            updatedData.minHeight = 100
+            updatedData.minWidth = 100
+        case .clock:
+            updatedData.maxHeight = 300
+            updatedData.maxWidth = 300
+            updatedData.minHeight = 150
+            updatedData.minWidth = 150
+            updatedData.minAspectRatio = 1
+            updatedData.maxAspectRatio = 1
         }
 
         return updatedData
@@ -82,4 +92,5 @@ struct WindowData: Codable {
 enum WindowType: String, Codable {
     case blank
     case notes
+    case clock
 }
