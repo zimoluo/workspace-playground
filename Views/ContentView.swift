@@ -219,6 +219,7 @@ struct ContentView: View {
                     }
                 }
                 .toolbar(.hidden, for: .navigationBar)
+                .accentColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
             }
             .accentColor(themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
 

@@ -2,18 +2,14 @@ import SwiftUI
 
 struct RichTextEditor: UIViewRepresentable {
     @Binding var text: NSAttributedString
-    @Environment(\.theme) private var theme
-    @Environment(\.colorScheme) private var colorScheme
-    
+
     func makeUIView(context: Context) -> UITextView {
         let textView = UITextView()
         textView.isEditable = true
         textView.isScrollEnabled = true
         textView.backgroundColor = .clear
-        textView.textColor = UIColor(themeColor(from: theme, for: .secondary, in: colorScheme))
         textView.textContainerInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         textView.delegate = context.coordinator
-        textView.font = UIFont.systemFont(ofSize: 24)
         
         textView.allowsEditingTextAttributes = true
         textView.isUserInteractionEnabled = true
@@ -42,7 +38,13 @@ struct RichTextEditor: UIViewRepresentable {
 }
 
 struct RichTextEditorView: View {
-    @State private var text: NSAttributedString = .init(string: "Start typing here...")
+    @State private var text: NSAttributedString = {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 18),
+            .foregroundColor: UIColor(.accentColor)
+        ]
+        return NSAttributedString(string: "Start typing here...", attributes: attributes)
+    }()
     
     var body: some View {
         RichTextEditor(text: $text)
