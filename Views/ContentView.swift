@@ -98,7 +98,9 @@ struct ContentView: View {
                                 LazyVGrid(columns: columns, spacing: 16) {
                                     ForEach(themes.filter { $0.id != theme.id }) { eachTheme in
                                         Button(action: {
-                                            applyTheme(eachTheme.id)
+                                            withAnimation(.spring(duration: 0.2)) {
+                                                applyTheme(eachTheme.id)
+                                            }
                                         }) {
                                             Circle()
                                                 .fill(eachTheme.thumbnail)
