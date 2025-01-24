@@ -176,7 +176,6 @@ struct ContentView: View {
                         }
                     }
                     .safeAreaPadding(.horizontal, 20)
-                    .safeAreaPadding(.bottom, macCatalystSpecificPadding)
                 }
                 .toolbar(.hidden, for: .navigationBar)
                 .background(
@@ -189,6 +188,8 @@ struct ContentView: View {
                         endPoint: .top
                     )
                 )
+                .safeAreaPadding(.vertical, 20)
+                .ignoresSafeArea(edges: .vertical)
             } detail: {
                 ZStack {
                     theme.mainGradient.toGradient(in: colorScheme).ignoresSafeArea()
@@ -282,14 +283,6 @@ struct ContentView: View {
         else { return }
 
         modelContext.delete(space)
-    }
-
-    private var macCatalystSpecificPadding: CGFloat {
-        #if targetEnvironment(macCatalyst)
-        20
-        #else
-        0
-        #endif
     }
 }
 

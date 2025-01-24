@@ -41,6 +41,7 @@ struct WindowView: View {
                 .background(LinearGradient(colors: [themeColor(from: theme, for: .secondary, in: colorScheme, level: 4), themeColor(from: theme, for: .secondary, in: colorScheme, level: 5)], startPoint: .bottom, endPoint: .top))
                 .cornerRadius(16)
                 .shadow(color: theme.secondary.toShadow(), radius: min(window.state.width, window.state.height)/8.33, y: min(window.state.width, window.state.height)/12.5)
+                .environmentObject(space)
 
             Circle()
                 .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isCloseButtonActive ? 0.75 : 0.6))
