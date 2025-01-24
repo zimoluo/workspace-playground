@@ -117,7 +117,9 @@ struct SpaceView: View {
         let deceleration: CGFloat = 0.885
         let minVelocity: CGFloat = 0.1
 
-        Timer.scheduledTimer(withTimeInterval: 0.016, repeats: true) { timer in
+        var displayLink: CADisplayLink?
+
+        displayLink = CADisplayLink(target: BlockOperation {
             dragVelocity = CGSize(
                 width: dragVelocity.width * deceleration,
                 height: dragVelocity.height * deceleration
@@ -126,9 +128,12 @@ struct SpaceView: View {
             space.cameraCenterX = (space.cameraCenterX - dragVelocity.width).clamped(to: minCameraCenterX ... maxCameraCenterX)
             space.cameraCenterY = (space.cameraCenterY - dragVelocity.height).clamped(to: minCameraCenterY ... maxCameraCenterY)
 
-            if abs(dragVelocity.width) < minVelocity && abs(dragVelocity.height) < minVelocity {
-                timer.invalidate()
+            if abs(dragVelocity.width) <= minVelocity && abs(dragVelocity.height) <= minVelocity {
+                displayLink?.invalidate()
+                displayLink = nil
             }
-        }
+        }, selector: #selector(Operation.main))
+
+        displayLink?.add(to: .current, forMode: .common)
     }
 }
