@@ -42,6 +42,7 @@ struct WindowView: View {
                 .cornerRadius(16)
                 .shadow(color: theme.secondary.toShadow(), radius: min(window.state.width, window.state.height)/8.33, y: min(window.state.width, window.state.height)/12.5)
                 .environmentObject(space)
+                .environment(\.window, window)
 
             Circle()
                 .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isCloseButtonActive ? 0.75 : 0.6))
@@ -656,5 +657,16 @@ struct WindowView: View {
                                           otherRight: CGFloat) -> Bool
     {
         return max(0, min(ownRight, otherRight) - max(ownLeft, otherLeft)) > 0
+    }
+}
+
+struct WindowKey: EnvironmentKey {
+    static let defaultValue: Window? = nil
+}
+
+extension EnvironmentValues {
+    var window: Window? {
+        get { self[WindowKey.self] }
+        set { self[WindowKey.self] = newValue }
     }
 }
