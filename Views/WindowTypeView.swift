@@ -8,18 +8,7 @@ struct WindowTypeView: View {
         case .blank:
             Color.clear
         case .notes:
-            ScrollView {
-                VStack {
-                    Text("Notes Window")
-                    Text("Notes Window")
-                    Text("Notes Window")
-                    Text("Notes Window")
-                    Text("Notes Window")
-                    Text("Notes Window")
-                    Text("Notes Window")
-                    Text("Notes Window")
-                }
-            }
+            RichTextEditorView()
         case .clock:
             ClockWidget()
         }
