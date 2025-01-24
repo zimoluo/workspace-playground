@@ -11,7 +11,7 @@ struct ContentView: View {
 
     @State private var selectedScreen: Screen = .init(type: .space)
 
-    @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
+    @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
 
     private let columns: [GridItem] = Array(repeating: .init(.fixed(36), spacing: 16), count: 5)
     private let maxThemesGridHeight: CGFloat = 120

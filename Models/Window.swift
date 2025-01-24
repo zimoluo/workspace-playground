@@ -104,8 +104,8 @@ enum WindowType: String, Codable {
     var defaultSize: (width: CGFloat, height: CGFloat) {
         switch self {
         case .blank: return (200, 200)
-        case .notes: return (300, 200)
-        case .clock: return (400, 200)
+        case .notes: return (200, 200)
+        case .clock: return (200, 200)
         }
     }
 }
