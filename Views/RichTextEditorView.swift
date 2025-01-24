@@ -38,8 +38,6 @@ struct RichTextEditor: UIViewRepresentable {
 }
 
 struct RichTextEditorView: View {
-    @Environment(\.window) private var window
-    
     @State private var text: NSAttributedString = {
         let attributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 18),
