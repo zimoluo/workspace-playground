@@ -38,7 +38,7 @@ struct WindowView: View {
         ZStack {
             WindowTypeView(windowData: window.data)
                 .frame(width: window.state.width, height: window.state.height)
-                .background(LinearGradient(colors: [themeColor(from: theme, for: .secondary, in: colorScheme, level: 4), themeColor(from: theme, for: .secondary, in: colorScheme, level: 5)], startPoint: .bottom, endPoint: .top))
+                .background(LinearGradient(colors: [colorScheme == .light ?theme.secondary.shadeMap(numShades: 26).shadeMap[1].color : theme.secondary.shadeMap(numShades: 40).shadeMap[35].color, colorScheme == .light ? theme.secondary.shadeMap(numShades: 26).shadeMap[0].color : theme.secondary.shadeMap(numShades: 40).shadeMap[33].color], startPoint: .bottom, endPoint: .top))
                 .cornerRadius(16)
                 .shadow(color: theme.secondary.toShadow(), radius: min(window.state.width, window.state.height)/8.33, y: min(window.state.width, window.state.height)/12.5)
                 .environmentObject(space)
