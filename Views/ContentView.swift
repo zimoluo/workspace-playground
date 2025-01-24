@@ -274,15 +274,21 @@ struct ContentView: View {
         settings.selectedSpaceId = newSpace.id
     }
 
-    private func deleteSpace(_ space: Space) {
-        modelContext.delete(space)
+    private func deleteSpace(_ id: UUID) {
+        guard let index = spaces.firstIndex(where: { $0.id == id }) else { return }
+
+        let nextIndex = index < spaces.count - 1 ? index + 1 : (index > 0 ? index - 1 : nil)
+        let nextSelectedSpaceId = nextIndex != nil ? spaces[nextIndex!].id : UUID()
+
+        if let space = spaces.first(where: { $0.id == id }) {
+            modelContext.delete(space)
+        }
+
+        settings.selectedSpaceId = nextSelectedSpaceId
     }
 
-    private func deleteSpace(_ id: UUID) {
-        guard let space = spaces.first(where: { $0.id == id })
-        else { return }
-
-        modelContext.delete(space)
+    private func deleteSpace(_ space: Space) {
+        deleteSpace(space.id)
     }
 }
 
