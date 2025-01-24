@@ -12,8 +12,8 @@ struct Window: Codable {
         data: WindowData = .init()
     ) {
         self.id = UUID()
-        self.state = state
         self.data = WindowData.applyDefaults(baseData: data)
+        self.state = WindowState.applyDefaults(type: data.type, baseState: state)
     }
 }
 
@@ -25,6 +25,13 @@ struct WindowState: Codable {
     var y: CGFloat = 0
     var width: CGFloat = 100
     var height: CGFloat = 100
+
+    static func applyDefaults(type: WindowType, baseState: WindowState) -> WindowState {
+        var updatedState = baseState
+        updatedState.width = type.defaultSize.width
+        updatedState.height = type.defaultSize.height
+        return updatedState
+    }
 }
 
 // WindowData is directly tied to the model context, meaning that individual windows won't keep their own version of the window data, and every change happens directly at the app data level. It's still mutable, but much less needed compared to WindowState, so the performance impact is minimal.
@@ -93,4 +100,12 @@ enum WindowType: String, Codable {
     case blank
     case notes
     case clock
+
+    var defaultSize: (width: CGFloat, height: CGFloat) {
+        switch self {
+        case .blank: return (200, 200)
+        case .notes: return (300, 200)
+        case .clock: return (400, 200)
+        }
+    }
 }
