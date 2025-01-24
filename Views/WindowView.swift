@@ -42,7 +42,7 @@ struct WindowView: View {
                 .cornerRadius(16)
                 .shadow(color: theme.secondary.toShadow(), radius: min(window.state.width, window.state.height)/8.33, y: min(window.state.width, window.state.height)/12.5)
                 .environmentObject(space)
-                .environment(\.window, window)
+                .environment(\.windowId, window.id)
 
             Circle()
                 .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isCloseButtonActive ? 0.75 : 0.6))
@@ -660,13 +660,13 @@ struct WindowView: View {
     }
 }
 
-struct WindowKey: EnvironmentKey {
-    static let defaultValue: Window? = nil
+struct WindowIdKey: EnvironmentKey {
+    static let defaultValue: UUID = .init()
 }
 
 extension EnvironmentValues {
-    var window: Window? {
-        get { self[WindowKey.self] }
-        set { self[WindowKey.self] = newValue }
+    var windowId: UUID {
+        get { self[WindowIdKey.self] }
+        set { self[WindowIdKey.self] = newValue }
     }
 }
