@@ -8,13 +8,13 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "workspace-playground",
+    name: "WorkSpace",
     platforms: [
         .iOS("18.0")
     ],
     products: [
         .iOSApplication(
-            name: "workspace-playground",
+            name: "WorkSpace",
             targets: ["AppModule"],
             bundleIdentifier: "kawarage.workspace-playground",
             teamIdentifier: "DY9X92M8C7",
