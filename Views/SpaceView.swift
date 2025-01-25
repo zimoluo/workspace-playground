@@ -75,6 +75,10 @@ struct SpaceView: View {
                     .gesture(
                         MagnifyGesture()
                             .onChanged { value in
+                                if dragVelocity != .zero {
+                                    dragVelocity = .zero
+                                }
+
                                 let zoomFactor = value.magnification
 
                                 if initialPinchPoint == .zero {
