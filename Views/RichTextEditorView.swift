@@ -60,7 +60,7 @@ struct RichTextEditorView: View {
             } else {
                 let attributes: [NSAttributedString.Key: Any] = [
                     .font: UIFont.systemFont(ofSize: 18),
-                    .foregroundColor: UIColor(themeColor(from: theme, for: .secondary, in: colorScheme))
+                    .foregroundColor: UIColor(.accentColor)
                 ]
                 return NSAttributedString(string: "Start typing here...", attributes: attributes)
             }

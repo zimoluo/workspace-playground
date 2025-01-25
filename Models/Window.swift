@@ -74,10 +74,10 @@ struct WindowData: Codable {
 
         switch updatedData.type {
         case .notes:
-            updatedData.maxHeight = 500
+            updatedData.maxHeight = 800
             updatedData.maxWidth = 800
             updatedData.minHeight = 200
-            updatedData.minWidth = 300
+            updatedData.minWidth = 200
         case .blank:
             updatedData.maxHeight = 800
             updatedData.maxWidth = 800
