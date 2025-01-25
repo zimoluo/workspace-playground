@@ -1,7 +1,13 @@
 import SwiftUI
 
+extension NSAttributedString.Key {
+    static let isDefaultTextColor = NSAttributedString.Key("isDefaultTextColor")
+}
+
 struct RichTextEditor: UIViewRepresentable {
     @Binding var text: NSAttributedString
+    @Environment(\.theme) var theme
+    @Environment(\.colorScheme) var colorScheme
 
     func makeUIView(context: Context) -> UITextView {
         let textView = UITextView()
@@ -17,9 +23,18 @@ struct RichTextEditor: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UITextView, context: Context) {
-        if uiView.attributedText != text {
+        let themeUIColor = UIColor(themeColor(from: theme, for: .secondary, in: colorScheme))
+        let mutableAttributedText = NSMutableAttributedString(attributedString: text)
+
+        mutableAttributedText.enumerateAttribute(.isDefaultTextColor, in: NSRange(location: 0, length: mutableAttributedText.length), options: []) { value, range, _ in
+            if let isDefault = value as? Bool, isDefault {
+                mutableAttributedText.addAttribute(.foregroundColor, value: themeUIColor, range: range)
+            }
+        }
+
+        if uiView.attributedText != mutableAttributedText {
             let selectedRange = uiView.selectedRange
-            uiView.attributedText = text
+            uiView.attributedText = mutableAttributedText
             uiView.selectedRange = selectedRange
         }
     }
@@ -30,13 +45,35 @@ struct RichTextEditor: UIViewRepresentable {
 
     class Coordinator: NSObject, UITextViewDelegate {
         var parent: RichTextEditor
+        private var isUpdating = false
 
         init(_ parent: RichTextEditor) {
             self.parent = parent
         }
 
         func textViewDidChange(_ textView: UITextView) {
-            parent.text = textView.attributedText
+            guard !isUpdating else { return }
+            isUpdating = true
+
+            let themeUIColor = UIColor(themeColor(from: parent.theme, for: .secondary, in: parent.colorScheme))
+            let mutableAttributedText = NSMutableAttributedString(attributedString: textView.attributedText)
+
+            mutableAttributedText.enumerateAttribute(.foregroundColor, in: NSRange(location: 0, length: mutableAttributedText.length), options: []) { value, range, _ in
+                if let color = value as? UIColor {
+                    if color == themeUIColor {
+                        mutableAttributedText.addAttribute(.isDefaultTextColor, value: true, range: range)
+                    } else {
+                        mutableAttributedText.addAttribute(.isDefaultTextColor, value: false, range: range)
+                    }
+                }
+            }
+
+            let selectedRange = textView.selectedRange
+            textView.attributedText = mutableAttributedText
+            textView.selectedRange = selectedRange
+            parent.text = mutableAttributedText
+
+            isUpdating = false
         }
     }
 }
@@ -60,7 +97,8 @@ struct RichTextEditorView: View {
             } else {
                 let attributes: [NSAttributedString.Key: Any] = [
                     .font: UIFont.systemFont(ofSize: 18),
-                    .foregroundColor: UIColor(themeColor(from: theme, for: .secondary, in: colorScheme))
+                    .foregroundColor: UIColor(themeColor(from: theme, for: .secondary, in: colorScheme)),
+                    .isDefaultTextColor: true
                 ]
                 return NSAttributedString(string: "Start typing here...", attributes: attributes)
             }
@@ -71,7 +109,18 @@ struct RichTextEditorView: View {
                 initialText
             },
             set: { newValue in
-                guard let encodedData = try? NSKeyedArchiver.archivedData(withRootObject: newValue, requiringSecureCoding: false) else {
+                let mutableAttributedString = NSMutableAttributedString(attributedString: newValue)
+                let themeUIColor = UIColor(themeColor(from: theme, for: .secondary, in: colorScheme))
+
+                mutableAttributedString.enumerateAttribute(.foregroundColor, in: NSRange(location: 0, length: mutableAttributedString.length), options: []) { value, range, _ in
+                    if let color = value as? UIColor, color == themeUIColor {
+                        mutableAttributedString.addAttribute(.isDefaultTextColor, value: true, range: range)
+                    } else {
+                        mutableAttributedString.addAttribute(.isDefaultTextColor, value: false, range: range)
+                    }
+                }
+
+                guard let encodedData = try? NSKeyedArchiver.archivedData(withRootObject: mutableAttributedString, requiringSecureCoding: false) else {
                     return
                 }
                 let base64String = encodedData.base64EncodedString()
