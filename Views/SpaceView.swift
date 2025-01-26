@@ -12,6 +12,13 @@ struct SpaceView: View {
         spaces.first(where: { $0.id == settings.selectedSpaceId }) ?? Space()
     }
 
+    @State private var isNameEditing: Bool = false
+    @FocusState private var focusedField: FocusField?
+
+    enum FocusField: Hashable {
+        case name
+    }
+
     @State private var lastDragTranslation: CGSize = .zero
     @State private var dragVelocity: CGSize = .zero
     @State private var currentZoom: CGFloat = 1.0
@@ -112,6 +119,68 @@ struct SpaceView: View {
                     space: space,
                     parentSize: geometry.size
                 )
+
+                VStack {
+                    HStack(spacing: 24) {
+                        Spacer()
+
+                        TextField("", text: Binding(
+                            get: { space.name },
+                            set: { newValue in
+                                space.name = newValue
+                            }
+                        ),
+                        prompt: Text("Name...").foregroundColor(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 2).opacity(0.67)))
+                            .focused($focusedField, equals: .name)
+                            .onChange(of: focusedField) {
+                                withAnimation(.spring(duration: 0.3)) {
+                                    if focusedField == .name {
+                                        isNameEditing = true
+                                    } else {
+                                        isNameEditing = false
+                                    }
+                                }
+                            }
+                            .font(.headline)
+                            .multilineTextAlignment(.trailing)
+                            .themedForeground(using: theme, in: colorScheme, category: .tertiary)
+                            .background(isNameEditing ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4) : .clear)
+                            .safeAreaPadding(.horizontal, 16)
+                            .safeAreaPadding(.vertical, 12)
+                            .frame(maxWidth: 200)
+                            .cornerRadius(16)
+                            .shadow(color: isNameEditing ? theme.tertiary.toShadow() : Color.clear, radius: isNameEditing ? 8 : 0, y: isNameEditing ? 4 : 0)
+                            .padding(.trailing, isNameEditing ? 24 : 0)
+
+                        Button(action: {
+                            withAnimation(.spring(duration: 0.5)) {
+                                space.clusterWindows()
+                            }
+                        }) {
+                            Image(systemName: "wand.and.stars")
+                                .font(.title2)
+                                .themedForeground(using: theme, in: colorScheme, category: .tertiary)
+                                .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                        }
+
+                        Button(action: {
+                            withAnimation(.spring(duration: 0.2)) {
+                                let newSpace = Space()
+                                modelContext.insert(newSpace)
+                                settings.selectedSpaceId = newSpace.id
+                            }
+                        }) {
+                            Image(systemName: "square.and.pencil")
+                                .font(.title2)
+                                .themedForeground(using: theme, in: colorScheme, category: .tertiary)
+                                .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                        }
+                    }
+                    .safeAreaPadding(.horizontal, 20)
+                    .safeAreaPadding(.vertical, 24)
+
+                    Spacer()
+                }
             }
         }
         .ignoresSafeArea()
