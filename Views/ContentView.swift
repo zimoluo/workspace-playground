@@ -64,7 +64,7 @@ struct ContentView: View {
                                             }
                                         }) {
                                             HStack {
-                                                Text("New Space")
+                                                Text(space.name)
                                                     .foregroundColor(
                                                         selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
                                                             themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
