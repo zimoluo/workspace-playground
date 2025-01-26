@@ -21,6 +21,8 @@ struct SpaceView: View {
 
     @State private var isWindowMenuOpen: Bool = false
 
+    @State private var menuDragOffset: CGSize = .zero
+
     @State private var lastDragTranslation: CGSize = .zero
     @State private var dragVelocity: CGSize = .zero
     @State private var currentZoom: CGFloat = 1.0
@@ -202,11 +204,38 @@ struct SpaceView: View {
                     Spacer()
                 }
 
+                let anchor = menuAnchorPosition(
+                    for: settings.windowsMenuButtonsPosition,
+                    in: geometry.size
+                )
+
                 WindowMenuView(
                     isWindowMenuOpen: $isWindowMenuOpen,
                     space: space
                 )
-                .position(x: geometry.size.width - 68, y: geometry.size.height - 68)
+                .position(x: anchor.x + menuDragOffset.width, y: anchor.y + menuDragOffset.height)
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            menuDragOffset = value.translation
+                        }
+                        .onEnded { value in
+                            let predictedTranslation = value.predictedEndTranslation
+                            let predictedX = anchor.x + predictedTranslation.width
+                            let predictedY = anchor.y + predictedTranslation.height
+                            let predictedPosition = CGPoint(x: predictedX, y: predictedY)
+
+                            let newPosition = nearestMenuPosition(
+                                for: predictedPosition,
+                                in: geometry.size
+                            )
+
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                                menuDragOffset = .zero
+                                settings.windowsMenuButtonsPosition = newPosition
+                            }
+                        }
+                )
             }
         }
         .ignoresSafeArea()
@@ -236,6 +265,62 @@ struct SpaceView: View {
         }, selector: #selector(Operation.main))
 
         displayLink?.add(to: .current, forMode: .common)
+    }
+
+    private func menuAnchorPosition(
+        for position: WindowsMenuButtonPosition,
+        in size: CGSize
+    ) -> CGPoint {
+        let offset: CGFloat = 68
+        let menuPillOffset: CGFloat = 166
+
+        switch position {
+        case .bottomTrailing:
+            return CGPoint(x: size.width - offset, y: size.height - offset)
+        case .bottomLeading:
+            return CGPoint(x: offset, y: size.height - offset)
+        case .leading:
+            return CGPoint(x: offset, y: size.height / 2)
+        case .trailing:
+            return CGPoint(x: size.width - offset, y: size.height / 2)
+        case .bottomCenterLeading:
+            return CGPoint(
+                x: size.width / 2 - menuPillOffset,
+                y: size.height - offset
+            )
+        case .bottomCenterTrailing:
+            return CGPoint(
+                x: size.width / 2 + menuPillOffset,
+                y: size.height - offset
+            )
+        }
+    }
+
+    private func nearestMenuPosition(
+        for point: CGPoint,
+        in size: CGSize
+    ) -> WindowsMenuButtonPosition {
+        let candidates: [WindowsMenuButtonPosition] = [
+            .bottomTrailing, .bottomLeading,
+            .leading, .trailing,
+            .bottomCenterLeading, .bottomCenterTrailing
+        ]
+
+        var bestPosition = candidates.first!
+        var bestDistance = CGFloat.greatestFiniteMagnitude
+
+        for candidate in candidates {
+            let anchorPoint = menuAnchorPosition(for: candidate, in: size)
+            let dx = anchorPoint.x - point.x
+            let dy = anchorPoint.y - point.y
+            let distance = (dx * dx + dy * dy).squareRoot()
+            if distance < bestDistance {
+                bestDistance = distance
+                bestPosition = candidate
+            }
+        }
+
+        return bestPosition
     }
 }
 
