@@ -27,7 +27,7 @@ struct SpaceView: View {
     }
 
     let menuButtonDiameter: CGFloat = 64
-    let menuPillPadding: CGFloat = 8
+    let menuPillPadding: CGFloat = 12
     let menuPillExtendedLength: CGFloat = 420
 
     var menuPillWidth: CGFloat {
@@ -203,8 +203,56 @@ struct SpaceView: View {
 
                 Group {
                     ZStack {
-                        RoundedRectangle(cornerRadius: menuPillWidth / 2)
+                        RoundedRectangle(cornerRadius: isWindowMenuOpen ? 16 : menuPillWidth / 2)
                             .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+
+                        ZStack {
+                            RoundedRectangle(cornerRadius: isWindowMenuOpen ? 16 : menuPillWidth / 2)
+                                .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5))
+
+                            let itemColor = themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1)
+
+                            ScrollView(menuPillDirection == .top || menuPillDirection == .bottom ? .vertical : .horizontal) {
+                                if menuPillDirection == .top || menuPillDirection == .bottom {
+                                    LazyVStack(spacing: 36) {
+                                        ForEach(["pencil", "clock", "doc", "trash"], id: \.self) { glyph in
+                                            Image(systemName: glyph)
+                                                .font(.system(size: 32))
+                                                .foregroundColor(itemColor)
+                                                .scrollTransition { content, phase in
+                                                    content
+                                                        .opacity(phase.isIdentity ? 1 : 0)
+                                                        .scaleEffect(phase.isIdentity ? 1 : 0.6)
+                                                        .blur(radius: phase.isIdentity ? 0 : 10)
+                                                }
+                                        }
+                                    }
+                                    .safeAreaPadding(.vertical, 24)
+                                } else {
+                                    LazyHStack(spacing: 36) {
+                                        ForEach(["pencil", "clock", "doc", "trash"], id: \.self) { glyph in
+                                            Image(systemName: glyph)
+                                                .font(.system(size: 32))
+                                                .foregroundColor(itemColor)
+                                                .scrollTransition { content, phase in
+                                                    content
+                                                        .opacity(phase.isIdentity ? 1 : 0)
+                                                        .scaleEffect(phase.isIdentity ? 1 : 0.6)
+                                                        .blur(radius: phase.isIdentity ? 0 : 10)
+                                                }
+                                        }
+                                    }
+                                    .safeAreaPadding(.horizontal, 24)
+                                }
+                            }
+                            .opacity(isWindowMenuOpen ? 1 : 0)
+                        }
+                        .padding(EdgeInsets(
+                            top: isWindowMenuOpen ? (menuPillDirection == .bottom ? menuPillWidth : menuPillPadding) : 0,
+                            leading: isWindowMenuOpen ? (menuPillDirection == .trailing ? menuPillWidth : menuPillPadding) : 0,
+                            bottom: isWindowMenuOpen ? (menuPillDirection == .top ? menuPillWidth : menuPillPadding) : 0,
+                            trailing: isWindowMenuOpen ? (menuPillDirection == .leading ? menuPillWidth : menuPillPadding) : 0
+                        ))
                     }
                     .shadow(color: theme.tertiary.toShadow(), radius: 12, y: 8)
                     .frame(width: isWindowMenuOpen ? (menuPillDirection == .trailing || menuPillDirection == .leading ? menuPillExtendedLength : menuPillWidth) : menuButtonDiameter,
@@ -222,7 +270,7 @@ struct SpaceView: View {
                             .foregroundColor(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1))
                             .frame(width: menuButtonDiameter, height: menuButtonDiameter)
                             .background(
-                                Circle()
+                                RoundedRectangle(cornerRadius: isWindowMenuOpen ? 16 : menuPillWidth / 2)
                                     .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5))
                                     .shadow(color: theme.tertiary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
                             )

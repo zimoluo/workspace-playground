@@ -102,6 +102,13 @@ class Space: ObservableObject {
         removeWindow(window.id)
     }
 
+    func addWindow(type: WindowType, x: CGFloat, y: CGFloat) {
+        let newWindowState = WindowState(x: x, y: y, width: type.defaultSize.width, height: type.defaultSize.height)
+        let newWindowData = WindowData.applyDefaults(baseData: WindowData(type: type))
+        let newWindow = Window(state: newWindowState, data: newWindowData)
+        windows.append(newWindow)
+    }
+
     func clusterWindows() {
         let minGap: CGFloat = 12.0
         let angleIncrement: CGFloat = 0.1
