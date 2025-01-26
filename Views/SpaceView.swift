@@ -350,7 +350,7 @@ struct WindowMenuView: View {
     @ObservedObject var space: Space
 
     var body: some View {
-        Group {
+        ZStack {
             ZStack {
                 RoundedRectangle(cornerRadius: isWindowMenuOpen ? 16 : menuPillWidth / 2)
                     .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
@@ -383,7 +383,7 @@ struct WindowMenuView: View {
                     trailing: isWindowMenuOpen ? (menuPillDirection == .leading ? menuPillWidth : menuPillPadding) : 0
                 ))
             }
-            .shadow(color: theme.tertiary.toShadow(), radius: 12, y: 8)
+            .shadow(color: isWindowMenuOpen ? theme.tertiary.toShadow() : .clear, radius: 12, y: 8)
             .frame(
                 width: isWindowMenuOpen
                     ? (menuPillDirection == .trailing || menuPillDirection == .leading ? menuPillExtendedLength : menuPillWidth)
@@ -401,30 +401,29 @@ struct WindowMenuView: View {
                     : 0
             )
 
-            Button(action: {
-                withAnimation(.spring(duration: 0.3)) {
-                    isWindowMenuOpen.toggle()
+            Image(systemName: "plus")
+                .rotationEffect(.degrees(isWindowMenuOpen ? 45 : 0))
+                .font(.system(size: 30, weight: .semibold))
+                .foregroundColor(
+                    themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1)
+                )
+                .frame(width: menuButtonDiameter, height: menuButtonDiameter)
+                .background(
+                    RoundedRectangle(cornerRadius: isWindowMenuOpen ? 16 : menuPillWidth / 2)
+                        .fill(
+                            themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5)
+                        )
+                        .shadow(
+                            color: theme.tertiary.toShadow(opacityMultiplier: 0.8),
+                            radius: 8,
+                            y: 6
+                        )
+                )
+                .onTapGesture {
+                    withAnimation(.spring(duration: 0.3)) {
+                        isWindowMenuOpen.toggle()
+                    }
                 }
-            }) {
-                Image(systemName: "plus")
-                    .rotationEffect(.degrees(isWindowMenuOpen ? 45 : 0))
-                    .font(.system(size: 30, weight: .semibold))
-                    .foregroundColor(
-                        themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1)
-                    )
-                    .frame(width: menuButtonDiameter, height: menuButtonDiameter)
-                    .background(
-                        RoundedRectangle(cornerRadius: isWindowMenuOpen ? 16 : menuPillWidth / 2)
-                            .fill(
-                                themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5)
-                            )
-                            .shadow(
-                                color: theme.tertiary.toShadow(opacityMultiplier: 0.8),
-                                radius: 8,
-                                y: 6
-                            )
-                    )
-            }
         }
     }
 
