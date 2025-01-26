@@ -215,31 +215,43 @@ struct SpaceView: View {
                             ScrollView(menuPillDirection == .top || menuPillDirection == .bottom ? .vertical : .horizontal) {
                                 if menuPillDirection == .top || menuPillDirection == .bottom {
                                     LazyVStack(spacing: 36) {
-                                        ForEach(["pencil", "clock", "doc", "trash"], id: \.self) { glyph in
-                                            Image(systemName: glyph)
-                                                .font(.system(size: 32))
-                                                .foregroundColor(itemColor)
-                                                .scrollTransition { content, phase in
-                                                    content
-                                                        .opacity(phase.isIdentity ? 1 : 0)
-                                                        .scaleEffect(phase.isIdentity ? 1 : 0.6)
-                                                        .blur(radius: phase.isIdentity ? 0 : 10)
+                                        ForEach(WindowType.allCases, id: \.self) { windowType in
+                                            Button(action: {
+                                                withAnimation(.spring(duration: 0.3)) {
+                                                    space.addWindow(type: windowType)
                                                 }
+                                            }) {
+                                                Image(systemName: windowType.glyph)
+                                                    .font(.system(size: 32))
+                                                    .foregroundColor(itemColor)
+                                                    .scrollTransition { content, phase in
+                                                        content
+                                                            .opacity(phase.isIdentity ? 1 : 0)
+                                                            .scaleEffect(phase.isIdentity ? 1 : 0.6)
+                                                            .blur(radius: phase.isIdentity ? 0 : 10)
+                                                    }
+                                            }
                                         }
                                     }
                                     .safeAreaPadding(.vertical, 24)
                                 } else {
                                     LazyHStack(spacing: 36) {
-                                        ForEach(["pencil", "clock", "doc", "trash"], id: \.self) { glyph in
-                                            Image(systemName: glyph)
-                                                .font(.system(size: 32))
-                                                .foregroundColor(itemColor)
-                                                .scrollTransition { content, phase in
-                                                    content
-                                                        .opacity(phase.isIdentity ? 1 : 0)
-                                                        .scaleEffect(phase.isIdentity ? 1 : 0.6)
-                                                        .blur(radius: phase.isIdentity ? 0 : 10)
+                                        ForEach(WindowType.allCases, id: \.self) { windowType in
+                                            Button(action: {
+                                                withAnimation(.spring(duration: 0.3)) {
+                                                    space.addWindow(type: windowType)
                                                 }
+                                            }) {
+                                                Image(systemName: windowType.glyph)
+                                                    .font(.system(size: 32))
+                                                    .foregroundColor(itemColor)
+                                                    .scrollTransition { content, phase in
+                                                        content
+                                                            .opacity(phase.isIdentity ? 1 : 0)
+                                                            .scaleEffect(phase.isIdentity ? 1 : 0.6)
+                                                            .blur(radius: phase.isIdentity ? 0 : 10)
+                                                    }
+                                            }
                                         }
                                     }
                                     .safeAreaPadding(.horizontal, 24)
@@ -266,7 +278,7 @@ struct SpaceView: View {
                     }) {
                         Image(systemName: "plus")
                             .rotationEffect(.degrees(isWindowMenuOpen ? 45 : 0))
-                            .font(.system(size: 30, weight: .bold))
+                            .font(.system(size: 30, weight: .semibold))
                             .foregroundColor(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1))
                             .frame(width: menuButtonDiameter, height: menuButtonDiameter)
                             .background(

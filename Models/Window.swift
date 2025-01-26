@@ -96,7 +96,7 @@ struct WindowData: Codable {
     }
 }
 
-enum WindowType: String, Codable {
+enum WindowType: String, Codable, CaseIterable {
     case blank
     case notes
     case clock
@@ -106,6 +106,14 @@ enum WindowType: String, Codable {
         case .blank: return (200, 200)
         case .notes: return (200, 200)
         case .clock: return (200, 200)
+        }
+    }
+
+    var glyph: String {
+        switch self {
+        case .blank: return "square.dashed"
+        case .notes: return "pencil"
+        case .clock: return "clock"
         }
     }
 }

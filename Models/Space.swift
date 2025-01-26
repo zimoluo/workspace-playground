@@ -102,8 +102,10 @@ class Space: ObservableObject {
         removeWindow(window.id)
     }
 
-    func addWindow(type: WindowType, x: CGFloat, y: CGFloat) {
-        let newWindowState = WindowState(x: x, y: y, width: type.defaultSize.width, height: type.defaultSize.height)
+    func addWindow(type: WindowType, x: CGFloat? = nil, y: CGFloat? = nil) {
+        let newX = x ?? cameraCenterX
+        let newY = y ?? cameraCenterY
+        let newWindowState = WindowState(x: newX, y: newY, width: type.defaultSize.width, height: type.defaultSize.height)
         let newWindowData = WindowData.applyDefaults(baseData: WindowData(type: type))
         let newWindow = Window(state: newWindowState, data: newWindowData)
         windows.append(newWindow)
