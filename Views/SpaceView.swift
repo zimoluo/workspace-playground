@@ -361,20 +361,23 @@ struct WindowMenuView: View {
 
                     let itemColor = themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1)
 
-                    ScrollView((menuPillDirection == .top || menuPillDirection == .bottom) ? .vertical : .horizontal) {
-                        if menuPillDirection == .top || menuPillDirection == .bottom {
+                    if menuPillDirection == .top || menuPillDirection == .bottom {
+                        ScrollView(.vertical) {
                             LazyVStack(spacing: 36) {
                                 windowTypeButtons(itemColor: itemColor)
                             }
                             .safeAreaPadding(.vertical, 24)
-                        } else {
+                        }
+                        .opacity(isWindowMenuOpen ? 1 : 0)
+                    } else {
+                        ScrollView(.horizontal) {
                             LazyHStack(spacing: 36) {
                                 windowTypeButtons(itemColor: itemColor)
                             }
                             .safeAreaPadding(.horizontal, 24)
                         }
+                        .opacity(isWindowMenuOpen ? 1 : 0)
                     }
-                    .opacity(isWindowMenuOpen ? 1 : 0)
                 }
                 .padding(EdgeInsets(
                     top: isWindowMenuOpen ? (menuPillDirection == .bottom ? menuPillWidth : menuPillPadding) : 0,
