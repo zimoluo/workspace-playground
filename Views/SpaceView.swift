@@ -19,6 +19,25 @@ struct SpaceView: View {
         case name
     }
 
+    @State private var menuPillDirection: Direction = .top
+    @State private var isWindowMenuOpen: Bool = false
+
+    enum Direction {
+        case top, bottom, leading, trailing
+    }
+
+    let menuButtonDiameter: CGFloat = 64
+    let menuPillPadding: CGFloat = 8
+    let menuPillExtendedLength: CGFloat = 420
+
+    var menuPillWidth: CGFloat {
+        menuButtonDiameter + 2 * menuPillPadding
+    }
+
+    var menuPillPositionOffset: CGFloat {
+        (menuPillExtendedLength - menuPillWidth) / 2
+    }
+
     @State private var lastDragTranslation: CGSize = .zero
     @State private var dragVelocity: CGSize = .zero
     @State private var currentZoom: CGFloat = 1.0
@@ -181,6 +200,35 @@ struct SpaceView: View {
 
                     Spacer()
                 }
+
+                Group {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: menuPillWidth / 2)
+                            .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+                    }
+                    .shadow(color: theme.tertiary.toShadow(), radius: 12, y: 8)
+                    .frame(width: isWindowMenuOpen ? (menuPillDirection == .trailing || menuPillDirection == .leading ? menuPillExtendedLength : menuPillWidth) : menuButtonDiameter,
+                           height: isWindowMenuOpen ? (menuPillDirection == .top || menuPillDirection == .bottom ? menuPillExtendedLength : menuPillWidth) : menuButtonDiameter)
+                    .offset(x: isWindowMenuOpen ? (menuPillDirection == .trailing ? menuPillPositionOffset : menuPillDirection == .leading ? -menuPillPositionOffset : 0) : 0, y: isWindowMenuOpen ? (menuPillDirection == .bottom ? menuPillPositionOffset : menuPillDirection == .top ? -menuPillPositionOffset : 0) : 0)
+
+                    Button(action: {
+                        withAnimation(.spring(duration: 0.3)) {
+                            isWindowMenuOpen.toggle()
+                        }
+                    }) {
+                        Image(systemName: "plus")
+                            .rotationEffect(.degrees(isWindowMenuOpen ? 45 : 0))
+                            .font(.system(size: 30, weight: .bold))
+                            .foregroundColor(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1))
+                            .frame(width: menuButtonDiameter, height: menuButtonDiameter)
+                            .background(
+                                Circle()
+                                    .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5))
+                                    .shadow(color: theme.tertiary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
+                            )
+                    }
+                }
+                .position(x: geometry.size.width - 68, y: geometry.size.height - 68)
             }
         }
         .ignoresSafeArea()
