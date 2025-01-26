@@ -93,7 +93,7 @@ struct SpaceView: View {
                                 }
 
                                 let newZoom = currentZoom * zoomFactor
-                                let clampedZoom = newZoom.clamped(to: 2 / 3 ... 1.5)
+                                let clampedZoom = newZoom.clamped(to: 0.75 ... 4 / 3)
 
                                 let adjustedCenterX = initialCameraCenter.x + (initialPinchPoint.x / currentZoom - initialPinchPoint.x / clampedZoom)
                                 let adjustedCenterY = initialCameraCenter.y + (initialPinchPoint.y / currentZoom - initialPinchPoint.y / clampedZoom)
