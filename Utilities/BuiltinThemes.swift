@@ -5,7 +5,7 @@ enum BuiltinThemes {
             secondary: RGBAColor(red: 0.769, green: 0.102, blue: 0.525),
             tertiary: RGBAColor(red: 0.812, green: 0.831, blue: 0.773),
             mainGradient: ColorGradient(
-                type: .linear,
+                type: .radial,
                 stops: [
                     GradientStop(color: RGBAColor(red: 0.812, green: 0.831, blue: 0.773, alpha: 1.0), position: 0.0),
                     GradientStop(color: RGBAColor(red: 0.812, green: 0.831, blue: 0.773, alpha: 1.0), position: 0.2),
@@ -18,9 +18,9 @@ enum BuiltinThemes {
                     GradientStop(color: RGBAColor(red: 0.761, green: 0.529, blue: 0.964, alpha: 1.0), position: 0.8001),
                     GradientStop(color: RGBAColor(red: 0.761, green: 0.529, blue: 0.964, alpha: 1.0), position: 1.0)
                 ],
-                linearAttributes: LinearGradientAttributes(
-                    startPoint: CodableUnitPoint(x: 0.0, y: 0.833),
-                    endPoint: CodableUnitPoint(x: 1.0, y: 0.167)
+                radialAttributes: RadialGradientAttributes(
+                    center: CodableUnitPoint(x: 0.5, y: 1.0),
+                    edgePoint: CodableUnitPoint(x: 1.0, y: 0.0)
                 )
             )
         )
