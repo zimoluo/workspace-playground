@@ -271,7 +271,7 @@ struct SpaceView: View {
         for position: WindowsMenuButtonPosition,
         in size: CGSize
     ) -> CGPoint {
-        let offset: CGFloat = 68
+        let offset: CGFloat = 72
         let menuPillOffset: CGFloat = 166
 
         switch position {
