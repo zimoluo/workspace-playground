@@ -17,7 +17,7 @@ class Space: ObservableObject {
     static let dotBaseDistance: CGFloat = 36
     static let dotBaseDiameter: CGFloat = 3
 
-    init(windows: [Window] = [Window(), Window(data: WindowData(type: .clock)), Window(data: WindowData(type: .clock)), Window(data: WindowData(type: .notes))], cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1) {
+    init(windows: [Window] = [Window(), Window(), Window(), Window(), Window(), Window(), Window(), Window(), Window(), Window(), Window(), Window(), Window(), Window(data: WindowData(type: .clock)), Window(data: WindowData(type: .clock)), Window(data: WindowData(type: .notes))], cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1) {
         self.id = UUID()
         self.dateCreated = Date()
         self.dateModified = Date()
@@ -97,5 +97,67 @@ class Space: ObservableObject {
 
     func removeWindow(_ window: Window) {
         removeWindow(window.id)
+    }
+
+    func clusterWindows() {
+        let minGap: CGFloat = 12.0
+        let angleIncrement: CGFloat = 0.1
+        let spiralSpacing: CGFloat = 20.0
+        let maxSpiralRadius: CGFloat = 10000.0
+
+        let sortedWindowIndices = windows.indices.sorted {
+            let windowA = windows[$0]
+            let windowB = windows[$1]
+            let areaA = windowA.state.width * windowA.state.height
+            let areaB = windowB.state.width * windowB.state.height
+            return areaA > areaB
+        }
+
+        var placedRects: [CGRect] = []
+
+        for index in sortedWindowIndices {
+            let window = windows[index]
+            var placed = false
+            var angle: CGFloat = 0.0
+            var radius: CGFloat = 0.0
+
+            while !placed && radius < maxSpiralRadius {
+                let x = cameraCenterX + radius * cos(angle)
+                let y = cameraCenterY + radius * sin(angle)
+
+                let windowRect = CGRect(
+                    x: x - window.state.width / 2,
+                    y: y - window.state.height / 2,
+                    width: window.state.width,
+                    height: window.state.height
+                )
+
+                var hasCollision = false
+                for placedRect in placedRects {
+                    if windowRect.intersects(with: placedRect, gap: minGap) {
+                        hasCollision = true
+                        break
+                    }
+                }
+
+                if !hasCollision {
+                    windows[index].state.x = x
+                    windows[index].state.y = y
+                    placedRects.append(windowRect)
+                    placed = true
+                } else {
+                    angle += angleIncrement
+                    radius = spiralSpacing * angle / (2 * .pi)
+                }
+            }
+        }
+    }
+}
+
+extension CGRect {
+    func intersects(with rect: CGRect, gap: CGFloat) -> Bool {
+        let expandedSelf = insetBy(dx: -gap / 2, dy: -gap / 2)
+        let expandedRect = rect.insetBy(dx: -gap / 2, dy: -gap / 2)
+        return expandedSelf.intersects(expandedRect)
     }
 }
