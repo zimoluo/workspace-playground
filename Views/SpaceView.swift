@@ -21,25 +21,25 @@ struct SpaceView: View {
 
     private var maxCameraCenterX: CGFloat {
         let maxRightEdge = space.windows.map { $0.state.x + $0.state.width / 2 }.max() ?? 0
-        let calculatedMax = max(maxRightEdge + 100, 200)
+        let calculatedMax = max(maxRightEdge + 150, 300)
         return min(calculatedMax, 1_000_000_000)
     }
 
     private var minCameraCenterX: CGFloat {
         let minLeftEdge = space.windows.map { $0.state.x - $0.state.width / 2 }.min() ?? 0
-        let calculatedMin = min(minLeftEdge - 100, -200)
+        let calculatedMin = min(minLeftEdge - 150, -300)
         return max(calculatedMin, -1_000_000_000)
     }
 
     private var maxCameraCenterY: CGFloat {
         let maxBottomEdge = space.windows.map { $0.state.y + $0.state.height / 2 }.max() ?? 0
-        let calculatedMax = max(maxBottomEdge + 100, 200)
+        let calculatedMax = max(maxBottomEdge + 150, 300)
         return min(calculatedMax, 1_000_000_000)
     }
 
     private var minCameraCenterY: CGFloat {
         let minTopEdge = space.windows.map { $0.state.y - $0.state.height / 2 }.min() ?? 0
-        let calculatedMin = min(minTopEdge - 100, -200)
+        let calculatedMin = min(minTopEdge - 150, -300)
         return max(calculatedMin, -1_000_000_000)
     }
 
