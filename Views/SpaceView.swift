@@ -149,8 +149,8 @@ struct SpaceView: View {
                             .safeAreaPadding(.vertical, 12)
                             .frame(maxWidth: 200)
                             .cornerRadius(16)
-                            .shadow(color: isNameEditing ? theme.tertiary.toShadow() : Color.clear, radius: isNameEditing ? 8 : 0, y: isNameEditing ? 4 : 0)
-                            .padding(.trailing, isNameEditing ? 24 : 0)
+                            .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                            .padding(.trailing, isNameEditing ? 16 : 0)
 
                         Button(action: {
                             withAnimation(.spring(duration: 0.5)) {
