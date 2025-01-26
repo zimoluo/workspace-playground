@@ -44,199 +44,207 @@ struct WindowView: View {
                 .environmentObject(space)
                 .environment(\.windowId, window.id)
 
-            Circle()
-                .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isCloseButtonActive ? 0.75 : 0.6))
-                .frame(width: isCloseButtonActive ? 18 : 12, height: isCloseButtonActive ? 18 : 12)
-                .onHover { hovering in
-                    withAnimation(.spring(duration: 0.3)) {
-                        isCloseButtonActive = hovering
-                    }
+            Group {
+                Circle()
+                    .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isCloseButtonActive ? 0.75 : 0.6))
+                    .frame(width: isCloseButtonActive ? 18 : 12, height: isCloseButtonActive ? 18 : 12)
+            }
+            .frame(width: 30, height: 30)
+            .contentShape(Circle())
+            .onHover { hovering in
+                withAnimation(.spring(duration: 0.3)) {
+                    isCloseButtonActive = hovering
                 }
-                .onTapGesture {
-                    withAnimation(.spring(duration: 0.15)) {
-                        space.removeWindow(window)
-                    }
+            }
+            .onTapGesture {
+                withAnimation(.spring(duration: 0.15)) {
+                    space.removeWindow(window)
                 }
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { _ in
-                            isCloseButtonActive = true
-                        }
-                        .onEnded { _ in
-                            isCloseButtonActive = false
-                        }
-                )
-                .offset(
-                    x: -window.state.width/2 + (isCloseButtonActive ? 9 : 8),
-                    y: -window.state.height/2 + (isCloseButtonActive ? 9 : 8)
-                )
-
-            Image("WindowHandle")
-                .resizable()
-                .frame(width: 27, height: 27)
-                .scaleEffect(isResizeHandleActive ? 1.12 : 1)
-                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isResizeHandleActive ? 0.75 : 0.6))
-                .onHover { hovering in
-                    withAnimation(.spring(duration: 0.3)) {
-                        isResizeHandleHovered = hovering
+            }
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        isCloseButtonActive = true
                     }
+                    .onEnded { _ in
+                        isCloseButtonActive = false
+                    }
+            )
+            .offset(
+                x: -window.state.width/2 + (isCloseButtonActive ? 9 : 8),
+                y: -window.state.height/2 + (isCloseButtonActive ? 9 : 8)
+            )
+
+            Group {
+                Image("WindowHandle")
+                    .resizable()
+                    .scaleEffect(isResizeHandleActive ? 1.12 : 1)
+                    .frame(width: 27, height: 27)
+            }
+            .frame(width: 48, height: 48)
+            .contentShape(Circle())
+            .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isResizeHandleActive ? 0.75 : 0.6))
+            .onHover { hovering in
+                withAnimation(.spring(duration: 0.3)) {
+                    isResizeHandleHovered = hovering
                 }
-                .gesture(
-                    DragGesture(minimumDistance: 0, coordinateSpace: .global)
-                        .onChanged { value in
-                            if window.id != space.windows.last?.id {
-                                space.bringToFront(window)
-                                return
+            }
+            .gesture(
+                DragGesture(minimumDistance: 0, coordinateSpace: .global)
+                    .onChanged { value in
+                        if window.id != space.windows.last?.id {
+                            space.bringToFront(window)
+                            return
+                        }
+
+                        withAnimation(.spring(duration: 0.3)) {
+                            isResizeHandlePressed = true
+                        }
+
+                        if resizeSession == nil {
+                            let w = window.state.width
+                            let h = window.state.height
+                            resizeSession = ResizeSession(
+                                startDragLocation: value.startLocation,
+                                beginCenterX: window.state.x,
+                                beginCenterY: window.state.y,
+                                beginTopLeftX: window.state.x - w/2,
+                                beginTopLeftY: window.state.y - h/2,
+                                startWidth: w,
+                                startHeight: h
+                            )
+                        }
+
+                        guard let rs = resizeSession else { return }
+
+                        let deltaX = (value.location.x - rs.startDragLocation.x)/space.cameraZoom
+                        let deltaY = (value.location.y - rs.startDragLocation.y)/space.cameraZoom
+
+                        let leftBoundary = space.cameraCenterX - (parentSize.width/2)/space.cameraZoom + 12
+                        let rightBoundary = space.cameraCenterX + (parentSize.width/2)/space.cameraZoom - 12
+                        let topBoundary = space.cameraCenterY - (parentSize.height/2)/space.cameraZoom + 12
+                        let bottomBoundary = space.cameraCenterY + (parentSize.height/2)/space.cameraZoom - 12
+
+                        var isAdaptiveOnX = false
+                        var isAdaptiveOnY = false
+
+                        func processDeltasAndGetDimensions(
+                            _ rawDx: CGFloat,
+                            _ rawDy: CGFloat
+                        ) -> (finalDx: CGFloat, finalDy: CGFloat) {
+                            var px = rawDx
+                            var py = rawDy
+
+                            let factorX: CGFloat = (isAdaptiveOnX ? 1 : 2)
+                            let factorY: CGFloat = (isAdaptiveOnY ? 1 : 2)
+
+                            px = px.clamped(to: ((window.data.minWidth - rs.startWidth - (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0))/factorX) ... ((window.data.maxWidth - rs.startWidth - (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0))/factorX))
+
+                            py = py.clamped(to: ((window.data.minHeight - rs.startHeight - (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0))/factorY) ... ((window.data.maxHeight - rs.startHeight - (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0))/factorY))
+
+                            let bottomRightX = rs.beginCenterX + rs.startWidth/2 + px
+                            let bottomRightY = rs.beginCenterY + rs.startHeight/2 + py
+
+                            if bottomRightX > rightBoundary {
+                                px = rightBoundary - rs.beginCenterX - rs.startWidth/2
+                            } else if bottomRightX < leftBoundary {
+                                px = leftBoundary - rs.beginCenterX - rs.startWidth/2
                             }
 
-                            withAnimation(.spring(duration: 0.3)) {
-                                isResizeHandlePressed = true
+                            if bottomRightY > bottomBoundary {
+                                py = bottomBoundary - rs.beginCenterY - rs.startHeight/2
+                            } else if bottomRightY < topBoundary {
+                                py = topBoundary - rs.beginCenterY - rs.startHeight/2
                             }
 
-                            if resizeSession == nil {
-                                let w = window.state.width
-                                let h = window.state.height
-                                resizeSession = ResizeSession(
-                                    startDragLocation: value.startLocation,
-                                    beginCenterX: window.state.x,
-                                    beginCenterY: window.state.y,
-                                    beginTopLeftX: window.state.x - w/2,
-                                    beginTopLeftY: window.state.y - h/2,
-                                    startWidth: w,
-                                    startHeight: h
-                                )
-                            }
+                            let newWidth = rs.startWidth + px*factorX + (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0)
+                            let newHeight = rs.startHeight + py*factorY + (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0)
 
-                            guard let rs = resizeSession else { return }
+                            if newWidth/newHeight > window.data.maxAspectRatio {
+                                px = ((newHeight*window.data.maxAspectRatio - rs.startWidth - (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0))/factorX)
 
-                            let deltaX = (value.location.x - rs.startDragLocation.x)/space.cameraZoom
-                            let deltaY = (value.location.y - rs.startDragLocation.y)/space.cameraZoom
-
-                            let leftBoundary = space.cameraCenterX - (parentSize.width/2)/space.cameraZoom + 12
-                            let rightBoundary = space.cameraCenterX + (parentSize.width/2)/space.cameraZoom - 12
-                            let topBoundary = space.cameraCenterY - (parentSize.height/2)/space.cameraZoom + 12
-                            let bottomBoundary = space.cameraCenterY + (parentSize.height/2)/space.cameraZoom - 12
-
-                            var isAdaptiveOnX = false
-                            var isAdaptiveOnY = false
-
-                            func processDeltasAndGetDimensions(
-                                _ rawDx: CGFloat,
-                                _ rawDy: CGFloat
-                            ) -> (finalDx: CGFloat, finalDy: CGFloat) {
-                                var px = rawDx
-                                var py = rawDy
-
-                                let factorX: CGFloat = (isAdaptiveOnX ? 1 : 2)
-                                let factorY: CGFloat = (isAdaptiveOnY ? 1 : 2)
-
-                                px = px.clamped(to: ((window.data.minWidth - rs.startWidth - (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0))/factorX) ... ((window.data.maxWidth - rs.startWidth - (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0))/factorX))
-
-                                py = py.clamped(to: ((window.data.minHeight - rs.startHeight - (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0))/factorY) ... ((window.data.maxHeight - rs.startHeight - (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0))/factorY))
-
-                                let bottomRightX = rs.beginCenterX + rs.startWidth/2 + px
-                                let bottomRightY = rs.beginCenterY + rs.startHeight/2 + py
-
-                                if bottomRightX > rightBoundary {
-                                    px = rightBoundary - rs.beginCenterX - rs.startWidth/2
-                                } else if bottomRightX < leftBoundary {
-                                    px = leftBoundary - rs.beginCenterX - rs.startWidth/2
+                                if rs.startWidth + px*factorX + (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0) < window.data.minWidth {
+                                    py = ((window.data.minWidth/window.data.maxAspectRatio - rs.startHeight - (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0))/factorY)
+                                    px = ((window.data.minWidth - rs.startWidth - (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0))/factorX)
                                 }
+                            } else if newWidth/newHeight < window.data.minAspectRatio {
+                                py = ((newWidth/window.data.minAspectRatio - rs.startHeight - (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0))/factorY)
 
-                                if bottomRightY > bottomBoundary {
-                                    py = bottomBoundary - rs.beginCenterY - rs.startHeight/2
-                                } else if bottomRightY < topBoundary {
-                                    py = topBoundary - rs.beginCenterY - rs.startHeight/2
-                                }
-
-                                let newWidth = rs.startWidth + px*factorX + (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0)
-                                let newHeight = rs.startHeight + py*factorY + (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0)
-
-                                if newWidth/newHeight > window.data.maxAspectRatio {
-                                    px = ((newHeight*window.data.maxAspectRatio - rs.startWidth - (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0))/factorX)
-
-                                    if rs.startWidth + px*factorX + (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0) < window.data.minWidth {
-                                        py = ((window.data.minWidth/window.data.maxAspectRatio - rs.startHeight - (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0))/factorY)
-                                        px = ((window.data.minWidth - rs.startWidth - (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0))/factorX)
-                                    }
-                                } else if newWidth/newHeight < window.data.minAspectRatio {
-                                    py = ((newWidth/window.data.minAspectRatio - rs.startHeight - (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0))/factorY)
-
-                                    if rs.startHeight + py*factorY + (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0) < window.data.minHeight {
-                                        px = ((window.data.minHeight*window.data.minAspectRatio - rs.startWidth - (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0))/factorX)
-                                        py = ((window.data.minHeight - rs.startHeight - (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0))/factorY)
-                                    }
-                                }
-
-                                return (px, py)
-                            }
-
-                            let projection = processDeltasAndGetDimensions(deltaX, deltaY)
-
-                            if rs.beginTopLeftX >= leftBoundary, rs.beginTopLeftX - projection.finalDx < leftBoundary {
-                                isAdaptiveOnX = true
-                            }
-
-                            if rs.beginTopLeftY >= topBoundary, rs.beginTopLeftY - projection.finalDy < topBoundary {
-                                isAdaptiveOnY = true
-                            }
-
-                            if isAdaptiveOnX, isAdaptiveOnY {
-                                let projectedWidth = rs.startWidth + projection.finalDx + rs.beginTopLeftX - leftBoundary
-                                let projectedHeight = rs.startHeight + projection.finalDy + rs.beginTopLeftY - topBoundary
-
-                                let reprojection = processDeltasAndGetDimensions(deltaX, deltaY)
-                                let reprojectedWidth = rs.startWidth + reprojection.finalDx + rs.beginTopLeftX - leftBoundary
-                                let reprojectedHeight = rs.startHeight + reprojection.finalDy + rs.beginTopLeftY - topBoundary
-
-                                if projectedWidth/projectedHeight > window.data.maxAspectRatio {
-                                    let widthToCalculate = max(reprojectedHeight*window.data.maxAspectRatio, window.data.minWidth)
-                                    let newDeltaX = widthToCalculate - rs.startWidth - (rs.beginTopLeftX - leftBoundary)
-
-                                    if !(rs.beginTopLeftX - newDeltaX < leftBoundary) {
-                                        isAdaptiveOnX = false
-                                    }
-
-                                    if projectedWidth/projectedHeight < window.data.minAspectRatio {
-                                        let heightToCalculate = max(reprojectedWidth/window.data.minAspectRatio, window.data.minHeight)
-                                        let newDeltaY = heightToCalculate - rs.startHeight - (rs.beginTopLeftY - topBoundary)
-
-                                        if !(rs.beginTopLeftY - newDeltaY < topBoundary) {
-                                            isAdaptiveOnY = false
-                                        }
-                                    }
+                                if rs.startHeight + py*factorY + (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0) < window.data.minHeight {
+                                    px = ((window.data.minHeight*window.data.minAspectRatio - rs.startWidth - (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0))/factorX)
+                                    py = ((window.data.minHeight - rs.startHeight - (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0))/factorY)
                                 }
                             }
 
-                            let finalDimensions = processDeltasAndGetDimensions(deltaX, deltaY)
+                            return (px, py)
+                        }
 
-                            let finalWidth = rs.startWidth +
-                                finalDimensions.finalDx*(isAdaptiveOnX ? 1 : 2) +
-                                (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0)
+                        let projection = processDeltasAndGetDimensions(deltaX, deltaY)
 
-                            let finalHeight = rs.startHeight +
-                                finalDimensions.finalDy*(isAdaptiveOnY ? 1 : 2) +
-                                (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0)
+                        if rs.beginTopLeftX >= leftBoundary, rs.beginTopLeftX - projection.finalDx < leftBoundary {
+                            isAdaptiveOnX = true
+                        }
 
-                            window.state.width = finalWidth
-                            window.state.height = finalHeight
+                        if rs.beginTopLeftY >= topBoundary, rs.beginTopLeftY - projection.finalDy < topBoundary {
+                            isAdaptiveOnY = true
+                        }
 
-                            if isAdaptiveOnX {
-                                window.state.x = leftBoundary + finalWidth/2
-                            }
+                        if isAdaptiveOnX, isAdaptiveOnY {
+                            let projectedWidth = rs.startWidth + projection.finalDx + rs.beginTopLeftX - leftBoundary
+                            let projectedHeight = rs.startHeight + projection.finalDy + rs.beginTopLeftY - topBoundary
 
-                            if isAdaptiveOnY {
-                                window.state.y = topBoundary + finalHeight/2
+                            let reprojection = processDeltasAndGetDimensions(deltaX, deltaY)
+                            let reprojectedWidth = rs.startWidth + reprojection.finalDx + rs.beginTopLeftX - leftBoundary
+                            let reprojectedHeight = rs.startHeight + reprojection.finalDy + rs.beginTopLeftY - topBoundary
+
+                            if projectedWidth/projectedHeight > window.data.maxAspectRatio {
+                                let widthToCalculate = max(reprojectedHeight*window.data.maxAspectRatio, window.data.minWidth)
+                                let newDeltaX = widthToCalculate - rs.startWidth - (rs.beginTopLeftX - leftBoundary)
+
+                                if !(rs.beginTopLeftX - newDeltaX < leftBoundary) {
+                                    isAdaptiveOnX = false
+                                }
+
+                                if projectedWidth/projectedHeight < window.data.minAspectRatio {
+                                    let heightToCalculate = max(reprojectedWidth/window.data.minAspectRatio, window.data.minHeight)
+                                    let newDeltaY = heightToCalculate - rs.startHeight - (rs.beginTopLeftY - topBoundary)
+
+                                    if !(rs.beginTopLeftY - newDeltaY < topBoundary) {
+                                        isAdaptiveOnY = false
+                                    }
+                                }
                             }
                         }
-                        .onEnded { _ in
-                            resizeSession = nil
-                            withAnimation(.spring(duration: 0.3)) {
-                                isResizeHandlePressed = false
-                            }
+
+                        let finalDimensions = processDeltasAndGetDimensions(deltaX, deltaY)
+
+                        let finalWidth = rs.startWidth +
+                            finalDimensions.finalDx*(isAdaptiveOnX ? 1 : 2) +
+                            (isAdaptiveOnX ? rs.beginTopLeftX - leftBoundary : 0)
+
+                        let finalHeight = rs.startHeight +
+                            finalDimensions.finalDy*(isAdaptiveOnY ? 1 : 2) +
+                            (isAdaptiveOnY ? rs.beginTopLeftY - topBoundary : 0)
+
+                        window.state.width = finalWidth
+                        window.state.height = finalHeight
+
+                        if isAdaptiveOnX {
+                            window.state.x = leftBoundary + finalWidth/2
                         }
-                )
-                .offset(x: window.state.width/2 - 6, y: window.state.height/2 - 6)
+
+                        if isAdaptiveOnY {
+                            window.state.y = topBoundary + finalHeight/2
+                        }
+                    }
+                    .onEnded { _ in
+                        resizeSession = nil
+                        withAnimation(.spring(duration: 0.3)) {
+                            isResizeHandlePressed = false
+                        }
+                    }
+            )
+            .offset(x: window.state.width/2 - 6, y: window.state.height/2 - 6)
         }
         .position(x: window.state.x + dragOffset.width, y: window.state.y + dragOffset.height)
         .gesture(
