@@ -190,7 +190,8 @@ struct ContentView: View {
                         endPoint: .top
                     )
                 )
-                .safeAreaPadding(.vertical, 20)
+                .safeAreaPadding(.top, 24)
+                .safeAreaPadding(.bottom, 40)
                 .ignoresSafeArea(edges: .vertical)
             } detail: {
                 ZStack {
