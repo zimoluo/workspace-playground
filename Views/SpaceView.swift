@@ -361,7 +361,7 @@ struct WindowMenuView: View {
 
                     let itemColor = themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1)
 
-                    ScrollView(menuPillDirection == .top || menuPillDirection == .bottom ? .vertical : .horizontal) {
+                    ScrollView((menuPillDirection == .top || menuPillDirection == .bottom) ? .vertical : .horizontal) {
                         if menuPillDirection == .top || menuPillDirection == .bottom {
                             LazyVStack(spacing: 36) {
                                 windowTypeButtons(itemColor: itemColor)
