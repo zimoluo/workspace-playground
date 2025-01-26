@@ -12,6 +12,7 @@ struct WindowsOverlayView: View {
                 WindowView(window: $window, space: space, parentSize: parentSize)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .offset(x: totalOffset.x + parentSize.width / 2,
                 y: totalOffset.y + parentSize.height / 2)
         .scaleEffect(space.cameraZoom)
