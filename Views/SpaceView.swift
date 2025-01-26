@@ -164,7 +164,7 @@ struct SpaceView: View {
                         .themedForeground(using: theme, in: colorScheme, category: .tertiary)
                         .background(
                             isNameEditing
-                                ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4)
+                                ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5)
                                 : .clear
                         )
                         .safeAreaPadding(.horizontal, 16)
