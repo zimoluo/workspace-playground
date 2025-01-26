@@ -358,10 +358,13 @@ struct WindowMenuView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: isWindowMenuOpen ? 16 : menuPillWidth / 2)
                     .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+                    .opacity(isWindowMenuOpen ? 1 : 0)
 
                 ZStack {
                     RoundedRectangle(cornerRadius: isWindowMenuOpen ? 16 : menuPillWidth / 2)
                         .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5))
+                        .frame(maxWidth: isWindowMenuOpen ? .infinity : menuButtonDiameter, maxHeight: isWindowMenuOpen ? .infinity : menuButtonDiameter)
+                        .opacity(isWindowMenuOpen ? 1 : 0)
 
                     let itemColor = themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1)
 
