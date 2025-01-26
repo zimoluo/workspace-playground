@@ -19,12 +19,7 @@ struct SpaceView: View {
         case name
     }
 
-    @State private var menuPillDirection: Direction = .top
     @State private var isWindowMenuOpen: Bool = false
-
-    enum Direction {
-        case top, bottom, leading, trailing
-    }
 
     @State private var lastDragTranslation: CGSize = .zero
     @State private var dragVelocity: CGSize = .zero
@@ -209,7 +204,6 @@ struct SpaceView: View {
 
                 WindowMenuView(
                     isWindowMenuOpen: $isWindowMenuOpen,
-                    menuPillDirection: $menuPillDirection,
                     space: space
                 )
                 .position(x: geometry.size.width - 68, y: geometry.size.height - 68)
@@ -246,8 +240,12 @@ struct SpaceView: View {
 }
 
 struct WindowMenuView: View {
+    @Environment(\.settings) private var settings
+
     @Binding var isWindowMenuOpen: Bool
-    @Binding var menuPillDirection: SpaceView.Direction
+    var menuPillDirection: WindowsMenuDirection {
+        settings.windowsMenuButtonsPosition.menuDirection
+    }
 
     let menuButtonDiameter: CGFloat = 64
     let menuPillPadding: CGFloat = 12
