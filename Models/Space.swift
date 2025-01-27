@@ -35,30 +35,17 @@ class Space: ObservableObject {
     }
 
     func renderDots(viewSize: CGSize, color: Color = .blue) -> some View {
-        let scaledDotDiameter = Space.dotBaseDiameter * cameraZoom
-        let halfViewWidth = viewSize.width / 2
-        let halfViewHeight = viewSize.height / 2
+        let zoom = cameraZoom
+        let baseDistance = Space.dotBaseDistance
+        let scaledDotDiameter = Space.dotBaseDiameter * zoom
 
-        let visibleWidth = viewSize.width / cameraZoom
-        let visibleHeight = viewSize.height / cameraZoom
-
-        let minX = cameraCenterX - visibleWidth / 2
-        let maxX = cameraCenterX + visibleWidth / 2
-        let minY = cameraCenterY - visibleHeight / 2
-        let maxY = cameraCenterY + visibleHeight / 2
-
-        let startColumn = Int(floor(minX / Space.dotBaseDistance))
-        let endColumn = Int(ceil(maxX / Space.dotBaseDistance))
-        let startRow = Int(floor(minY / Space.dotBaseDistance))
-        let endRow = Int(ceil(maxY / Space.dotBaseDistance))
-
-        let dots = (startRow ... endRow).flatMap { row in
-            (startColumn ... endColumn).map { column -> CGPoint in
-                let x = CGFloat(column) * Space.dotBaseDistance * cameraZoom + halfViewWidth - cameraCenterX * cameraZoom
-                let y = CGFloat(row) * Space.dotBaseDistance * cameraZoom + halfViewHeight - cameraCenterY * cameraZoom
-                return CGPoint(x: x, y: y)
-            }
-        }
+        let metrics = ViewMetrics(
+            viewSize: viewSize,
+            cameraCenterX: cameraCenterX,
+            cameraCenterY: cameraCenterY,
+            zoom: zoom,
+            baseDistance: baseDistance
+        )
 
         return Canvas { context, _ in
             let dotDiameter = scaledDotDiameter.clamped(to: 2.25 ... 4)
@@ -67,18 +54,41 @@ class Space: ObservableObject {
             context.withCGContext { cgContext in
                 cgContext.setFillColor(dotColor)
 
-                let path = CGMutablePath()
-                for dot in dots {
-                    let rect = CGRect(
-                        x: dot.x - dotDiameter / 2,
-                        y: dot.y - dotDiameter / 2,
-                        width: dotDiameter,
-                        height: dotDiameter
-                    )
-                    path.addEllipse(in: rect)
+                let startRow = metrics.startRow
+                let endRow = metrics.endRow
+                let startCol = metrics.startColumn
+                let endCol = metrics.endColumn
+
+                let halfWidth = metrics.halfViewWidth
+                let halfHeight = metrics.halfViewHeight
+                let cameraOffsetX = metrics.cameraCenterX * zoom
+                let cameraOffsetY = metrics.cameraCenterY * zoom
+                let scaledBaseDistance = baseDistance * zoom
+                let radius = dotDiameter / 2
+
+                var points = [CGPoint]()
+                points.reserveCapacity((endRow - startRow + 1) * (endCol - startCol + 1))
+
+                for row in stride(from: startRow, through: endRow, by: 1) {
+                    let baseY = CGFloat(row) * scaledBaseDistance + halfHeight - cameraOffsetY
+
+                    for col in stride(from: startCol, through: endCol, by: 1) {
+                        let x = CGFloat(col) * scaledBaseDistance + halfWidth - cameraOffsetX
+                        points.append(CGPoint(x: x, y: baseY))
+                    }
                 }
 
-                cgContext.addPath(path)
+                points.withUnsafeBufferPointer { buffer in
+                    for point in buffer {
+                        cgContext.addEllipse(in: CGRect(
+                            x: point.x - radius,
+                            y: point.y - radius,
+                            width: dotDiameter,
+                            height: dotDiameter
+                        ))
+                    }
+                }
+
                 cgContext.fillPath()
             }
         }
@@ -174,5 +184,36 @@ extension CGRect {
         let expandedSelf = insetBy(dx: -gap / 2, dy: -gap / 2)
         let expandedRect = rect.insetBy(dx: -gap / 2, dy: -gap / 2)
         return expandedSelf.intersects(expandedRect)
+    }
+}
+
+private struct ViewMetrics {
+    let halfViewWidth: CGFloat
+    let halfViewHeight: CGFloat
+    let startRow: Int
+    let endRow: Int
+    let startColumn: Int
+    let endColumn: Int
+    let cameraCenterX: CGFloat
+    let cameraCenterY: CGFloat
+
+    init(viewSize: CGSize, cameraCenterX: CGFloat, cameraCenterY: CGFloat, zoom: CGFloat, baseDistance: CGFloat) {
+        self.halfViewWidth = viewSize.width / 2
+        self.halfViewHeight = viewSize.height / 2
+        self.cameraCenterX = cameraCenterX
+        self.cameraCenterY = cameraCenterY
+
+        let visibleWidth = viewSize.width / zoom
+        let visibleHeight = viewSize.height / zoom
+
+        let minX = cameraCenterX - visibleWidth / 2
+        let maxX = cameraCenterX + visibleWidth / 2
+        let minY = cameraCenterY - visibleHeight / 2
+        let maxY = cameraCenterY + visibleHeight / 2
+
+        self.startColumn = Int(floor(minX / baseDistance))
+        self.endColumn = Int(ceil(maxX / baseDistance))
+        self.startRow = Int(floor(minY / baseDistance))
+        self.endRow = Int(ceil(maxY / baseDistance))
     }
 }
