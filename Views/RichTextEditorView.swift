@@ -100,7 +100,7 @@ struct RichTextEditorView: View {
                     .foregroundColor: UIColor(themeColor(from: theme, for: .secondary, in: colorScheme)),
                     .isDefaultTextColor: true
                 ]
-                return NSAttributedString(string: "Start typing here...", attributes: attributes)
+                return NSAttributedString(string: "Notes...", attributes: attributes)
             }
         }()
 
