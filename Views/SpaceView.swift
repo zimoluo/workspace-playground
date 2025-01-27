@@ -97,6 +97,7 @@ struct SpaceView: View {
                                     lastDragTranslation = .zero
                                     isDragging = false
                                     applyMomentum()
+                                    space.updateDateModified()
                                 }
                         )
                         .gesture(
@@ -136,6 +137,7 @@ struct SpaceView: View {
                                 .onEnded { _ in
                                     currentZoom = space.cameraZoom
                                     initialPinchPoint = .zero
+                                    space.updateDateModified()
                                 }
                         )
 
@@ -188,6 +190,7 @@ struct SpaceView: View {
                             Button(action: {
                                 withAnimation(.spring(duration: 0.5)) {
                                     space.disableDots.toggle()
+                                    space.updateDateModified()
                                 }
                             }) {
                                 Image(systemName: "squareshape.dotted.squareshape")

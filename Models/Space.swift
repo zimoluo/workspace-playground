@@ -94,11 +94,17 @@ class Space: ObservableObject {
         }
     }
 
+    func updateDateModified() {
+        dateModified = Date()
+    }
+
     func bringToFront(_ id: UUID) {
         if let index = windows.firstIndex(where: { $0.id == id }) {
             let movedWindow = windows.remove(at: index)
             windows.append(movedWindow)
         }
+
+        updateDateModified()
     }
 
     func bringToFront(_ window: Window) {
@@ -109,6 +115,8 @@ class Space: ObservableObject {
         if let index = windows.firstIndex(where: { $0.id == id }) {
             windows.remove(at: index)
         }
+
+        updateDateModified()
     }
 
     func removeWindow(_ window: Window) {
@@ -122,6 +130,7 @@ class Space: ObservableObject {
         let newWindowData = WindowData.applyDefaults(baseData: WindowData(type: type))
         let newWindow = Window(state: newWindowState, data: newWindowData)
         windows.append(newWindow)
+        updateDateModified()
     }
 
     func clusterWindows() {
@@ -176,6 +185,8 @@ class Space: ObservableObject {
                 }
             }
         }
+
+        updateDateModified()
     }
 
     func thumbnail(canvasSize: CGSize, color: Color = .blue) -> some View {

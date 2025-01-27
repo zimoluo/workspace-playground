@@ -128,6 +128,8 @@ struct RichTextEditorView: View {
                 if let index = space.windows.firstIndex(where: { $0.id == windowId }) {
                     space.windows[index].data.saveData[key] = base64String
                 }
+
+                space.updateDateModified()
             }
         ))
         .padding(16)

@@ -242,6 +242,8 @@ struct WindowView: View {
                         withAnimation(.spring(duration: 0.3)) {
                             isResizeHandlePressed = false
                         }
+
+                        space.updateDateModified()
                     }
             )
             .offset(x: window.state.width/2 - 6, y: window.state.height/2 - 6)
@@ -261,6 +263,8 @@ struct WindowView: View {
                     dragOffset = .zero
 
                     snapToClosestWindow()
+
+                    space.updateDateModified()
                 }
         )
         .onTapGesture {
