@@ -61,12 +61,14 @@ struct SpaceView: View {
         } else {
             GeometryReader { geometry in
                 ZStack {
-                    space.renderDots(
-                        viewSize: geometry.size,
-                        color: colorScheme == .light
-                            ? theme.secondary.shadeMap(numShades: 19).shadeMap[7].color
-                            : theme.secondary.shadeMap(numShades: 19).shadeMap[5].color
-                    )
+                    if !space.disableDots {
+                        space.renderDots(
+                            viewSize: geometry.size,
+                            color: colorScheme == .light
+                                ? theme.secondary.shadeMap(numShades: 19).shadeMap[7].color
+                                : theme.secondary.shadeMap(numShades: 19).shadeMap[5].color
+                        )
+                    }
 
                     Color.clear
                         .contentShape(Rectangle())
@@ -182,6 +184,17 @@ struct SpaceView: View {
                             .cornerRadius(16)
                             .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
                             .padding(.trailing, isNameEditing ? 16 : 0)
+
+                            Button(action: {
+                                withAnimation(.spring(duration: 0.5)) {
+                                    space.disableDots.toggle()
+                                }
+                            }) {
+                                Image(systemName: "squareshape.dotted.squareshape")
+                                    .font(.title2)
+                                    .themedForeground(using: theme, in: colorScheme, category: .tertiary)
+                                    .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                            }
 
                             Button(action: {
                                 withAnimation(.spring(duration: 0.5)) {

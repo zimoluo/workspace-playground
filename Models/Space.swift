@@ -16,10 +16,12 @@ class Space: ObservableObject {
     var cameraCenterY: CGFloat
     var cameraZoom: CGFloat
 
+    var disableDots: Bool
+
     static let dotBaseDistance: CGFloat = 36
     static let dotBaseDiameter: CGFloat = 3
 
-    init(windows: [Window] = [], name: String = "New Space", cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1) {
+    init(windows: [Window] = [], name: String = "New Space", cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1, disableDots: Bool = false) {
         self.id = UUID()
         self.dateCreated = Date()
         self.dateModified = Date()
@@ -29,6 +31,7 @@ class Space: ObservableObject {
         self.cameraCenterX = cameraCenterX
         self.cameraCenterY = cameraCenterY
         self.cameraZoom = cameraZoom
+        self.disableDots = disableDots
     }
 
     func renderDots(viewSize: CGSize, color: Color = .blue) -> some View {
