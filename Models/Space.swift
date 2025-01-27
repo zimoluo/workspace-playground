@@ -198,13 +198,14 @@ class Space: ObservableObject {
         updateDateModified()
     }
 
-    func thumbnail(canvasSize: CGSize, color: Color = .blue) -> some View {
+    func thumbnail(canvasSize: CGSize, color: Color = .blue, windowCornerRadius: CGFloat = 4) -> some View {
         let zoom = cameraZoom
         let scale = canvasSize.width / (600 / zoom)
         let halfRegionSize = 300 / zoom
 
         let bgColor = color.opacity(0.33)
         let windowColor = color
+        let windowCornerRadius: CGFloat = windowCornerRadius
 
         let regionMinX = cameraCenterX - halfRegionSize
         let regionMinY = cameraCenterY - halfRegionSize
@@ -257,7 +258,7 @@ class Space: ObservableObject {
 
             for (_, scaledRect) in visibleWindows {
                 context.fill(
-                    Path(roundedRect: scaledRect, cornerRadius: 4),
+                    Path(roundedRect: scaledRect, cornerRadius: windowCornerRadius),
                     with: .color(windowColor)
                 )
             }

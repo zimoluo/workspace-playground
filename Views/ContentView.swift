@@ -371,14 +371,6 @@ struct SpaceCardView: View {
             .cornerRadius(16)
             .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
             .contextMenu {
-                HStack {
-                    space.thumbnail(
-                        canvasSize: CGSize(width: 100, height: 100),
-                        color: themeColor(from: theme, for: .primary, in: colorScheme, level: 2)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-
                 Button(role: .destructive) {
                     onDelete()
                 } label: {
@@ -396,6 +388,13 @@ struct SpaceCardView: View {
                 } label: {
                     Label("Organize windows", systemImage: "rectangle.3.group")
                 }
+            } preview: {
+                space.thumbnail(
+                    canvasSize: CGSize(width: 240, height: 240),
+                    color: themeColor(from: theme, for: .primary, in: colorScheme, level: 2),
+                    windowCornerRadius: 12
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 16))
             }
         }
     }
