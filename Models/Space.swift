@@ -177,6 +177,53 @@ class Space: ObservableObject {
             }
         }
     }
+
+    func thumbnail(canvasSize: CGSize, color: Color = .blue) -> some View {
+        let zoom = cameraZoom
+        let regionSize: CGFloat = 600 / zoom
+        let halfRegionSize = regionSize / 2
+
+        let thumbnailRegion = CGRect(
+            x: cameraCenterX - halfRegionSize,
+            y: cameraCenterY - halfRegionSize,
+            width: regionSize,
+            height: regionSize
+        )
+
+        return Canvas { context, _ in
+            let backgroundRect = CGRect(origin: .zero, size: canvasSize)
+            context.fill(
+                Path(roundedRect: backgroundRect, cornerRadius: 8),
+                with: .color(color.opacity(0.25))
+            )
+
+            for window in self.windows {
+                let windowRect = CGRect(
+                    x: window.state.x - window.state.width / 2,
+                    y: window.state.y - window.state.height / 2,
+                    width: window.state.width,
+                    height: window.state.height
+                )
+
+                let intersection = thumbnailRegion.intersection(windowRect)
+
+                if !intersection.isEmpty {
+                    let scale = canvasSize.width / regionSize
+                    let scaledRect = CGRect(
+                        x: (intersection.origin.x - thumbnailRegion.origin.x) * scale,
+                        y: (intersection.origin.y - thumbnailRegion.origin.y) * scale,
+                        width: intersection.width * scale,
+                        height: intersection.height * scale
+                    )
+
+                    let path = Path(roundedRect: scaledRect, cornerRadius: 4)
+                    context.fill(path, with: .color(color))
+                }
+            }
+        }
+        .frame(width: canvasSize.width, height: canvasSize.height)
+        .clipped()
+    }
 }
 
 extension CGRect {

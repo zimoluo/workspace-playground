@@ -63,16 +63,40 @@ struct ContentView: View {
                                                 settings.selectedSpaceId = space.id
                                             }
                                         }) {
-                                            HStack {
-                                                Text(space.name)
-                                                    .foregroundColor(
-                                                        selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
-                                                            themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
-                                                            themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
-                                                    )
+                                            HStack(spacing: 8) {
+                                                VStack(alignment: .leading, spacing: 8) {
+                                                    Text(space.name.isEmpty ? "New Space" : space.name)
+                                                        .foregroundColor(
+                                                            selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
+                                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
+                                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                                                        )
+                                                        .lineLimit(1)
+                                                        .fontWeight(.bold)
+
+                                                    Text(formattedDateString(for: space.dateModified))
+                                                        .foregroundColor(
+                                                            selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
+                                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
+                                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                                                        )
+                                                        .lineLimit(1)
+                                                        .font(.subheadline)
+                                                        .opacity(0.75)
+                                                        .fontWeight(.semibold)
+                                                }
+
+                                                Spacer()
+
+                                                space.thumbnail(canvasSize: CGSize(width: 64, height: 64), color: selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
+                                                    themeColor(from: theme, for: .primary, in: colorScheme, level: 4) :
+                                                    themeColor(from: theme, for: .primary, in: colorScheme, level: 2))
                                             }
-                                            .padding(16)
+                                            .padding(.leading, 16)
+                                            .padding(.trailing, 8)
+                                            .padding(.vertical, 8)
                                             .frame(maxWidth: .infinity, alignment: .leading)
+                                            .frame(height: 80)
                                             .background(
                                                 selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
                                                     themeColor(from: theme, for: .primary, in: colorScheme, level: 1) :
@@ -292,6 +316,28 @@ struct ContentView: View {
 
     private func deleteSpace(_ space: Space) {
         deleteSpace(space.id)
+    }
+
+    private func formattedDateString(for date: Date, relativeTo referenceDate: Date = Date()) -> String {
+        let calendar = Calendar.current
+        let timeFormatter = DateFormatter()
+        timeFormatter.timeStyle = .short
+
+        if calendar.isDateInToday(date) {
+            return timeFormatter.string(from: date)
+        } else if calendar.isDateInYesterday(date) {
+            return "Yesterday"
+        } else if calendar.isDateInTomorrow(date) {
+            return "Tomorrow"
+        } else if calendar.isDate(date, equalTo: referenceDate, toGranularity: .weekOfYear) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "EEEE"
+            return formatter.string(from: date)
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .short
+            return formatter.string(from: date)
+        }
     }
 }
 
