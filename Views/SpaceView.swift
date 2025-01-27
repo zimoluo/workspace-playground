@@ -145,7 +145,7 @@ struct SpaceView: View {
                     )
 
                     VStack {
-                        HStack(spacing: 24) {
+                        HStack(spacing: 0) {
                             Spacer()
 
                             TextField(
@@ -194,6 +194,8 @@ struct SpaceView: View {
                                     .font(.title2)
                                     .themedForeground(using: theme, in: colorScheme, category: .tertiary)
                                     .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                                    .safeAreaPadding(.horizontal, 12)
+                                    .safeAreaPadding(.vertical, 12)
                             }
 
                             Button(action: {
@@ -205,6 +207,8 @@ struct SpaceView: View {
                                     .font(.title2)
                                     .themedForeground(using: theme, in: colorScheme, category: .tertiary)
                                     .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                                    .safeAreaPadding(.horizontal, 12)
+                                    .safeAreaPadding(.vertical, 12)
                             }
 
                             Button(action: {
@@ -218,9 +222,11 @@ struct SpaceView: View {
                                     .font(.title2)
                                     .themedForeground(using: theme, in: colorScheme, category: .tertiary)
                                     .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                                    .safeAreaPadding(.horizontal, 12)
+                                    .safeAreaPadding(.vertical, 12)
                             }
                         }
-                        .safeAreaPadding(.horizontal, 20)
+                        .safeAreaPadding(.horizontal, 8)
                         .safeAreaPadding(.vertical, 24)
 
                         Spacer()
