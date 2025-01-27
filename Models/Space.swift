@@ -126,8 +126,8 @@ class Space: ObservableObject {
 
     func clusterWindows() {
         let minGap: CGFloat = 12.0
-        let angleIncrement: CGFloat = 0.1
-        let spiralSpacing: CGFloat = 20.0
+        let angleIncrement: CGFloat = 0.08
+        let spiralSpacing: CGFloat = minGap / 1.5
         let maxSpiralRadius: CGFloat = 10000.0
 
         let sortedWindowIndices = windows.indices.sorted {
