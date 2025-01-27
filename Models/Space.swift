@@ -66,6 +66,8 @@ class Space: ObservableObject {
 
             context.withCGContext { cgContext in
                 cgContext.setFillColor(dotColor)
+
+                let path = CGMutablePath()
                 for dot in dots {
                     let rect = CGRect(
                         x: dot.x - dotDiameter / 2,
@@ -73,8 +75,11 @@ class Space: ObservableObject {
                         width: dotDiameter,
                         height: dotDiameter
                     )
-                    cgContext.fillEllipse(in: rect)
+                    path.addEllipse(in: rect)
                 }
+
+                cgContext.addPath(path)
+                cgContext.fillPath()
             }
         }
     }
