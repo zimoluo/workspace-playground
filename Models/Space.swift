@@ -202,7 +202,7 @@ class Space: ObservableObject {
 
         return Canvas { context, _ in
             context.fill(
-                Path(roundedRect: CGRect(origin: .zero, size: canvasSize), cornerRadius: 8),
+                Path(CGRect(origin: .zero, size: canvasSize)),
                 with: .color(bgColor)
             )
 

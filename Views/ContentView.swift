@@ -91,6 +91,7 @@ struct ContentView: View {
                                                 space.thumbnail(canvasSize: CGSize(width: 64, height: 64), color: selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
                                                     themeColor(from: theme, for: .primary, in: colorScheme, level: 4) :
                                                     themeColor(from: theme, for: .primary, in: colorScheme, level: 2))
+                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
                                             }
                                             .padding(.leading, 16)
                                             .padding(.trailing, 8)
