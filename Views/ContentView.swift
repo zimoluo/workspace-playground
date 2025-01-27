@@ -103,7 +103,7 @@ struct ContentView: View {
                                                     themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
                                             )
                                             .cornerRadius(16)
-                                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
                                         }
                                         .scrollTransition { content, phase in
                                             content
@@ -174,7 +174,7 @@ struct ContentView: View {
                                 themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
                             )
                             .cornerRadius(16)
-                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
                         }
 
                         Button(action: {
@@ -199,7 +199,7 @@ struct ContentView: View {
                                 selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 1) : themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
                             )
                             .cornerRadius(16)
-                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
                         }
                     }
                     .safeAreaPadding(.horizontal, 20)
