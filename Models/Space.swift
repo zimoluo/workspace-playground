@@ -33,7 +33,6 @@ class Space: ObservableObject {
 
     func renderDots(viewSize: CGSize, color: Color = .blue) -> some View {
         let scaledDotDiameter = Space.dotBaseDiameter * cameraZoom
-
         let halfViewWidth = viewSize.width / 2
         let halfViewHeight = viewSize.height / 2
 
@@ -52,31 +51,23 @@ class Space: ObservableObject {
 
         let dots = (startRow ... endRow).flatMap { row in
             (startColumn ... endColumn).map { column -> CGPoint in
-                let xRelative = CGFloat(column) * Space.dotBaseDistance - cameraCenterX
-                let yRelative = CGFloat(row) * Space.dotBaseDistance - cameraCenterY
-
-                let x = xRelative * cameraZoom + halfViewWidth
-                let y = yRelative * cameraZoom + halfViewHeight
-
+                let x = CGFloat(column) * Space.dotBaseDistance * cameraZoom + halfViewWidth - cameraCenterX * cameraZoom
+                let y = CGFloat(row) * Space.dotBaseDistance * cameraZoom + halfViewHeight - cameraCenterY * cameraZoom
                 return CGPoint(x: x, y: y)
             }
         }
 
         return Canvas { context, _ in
+            let dotDiameter = scaledDotDiameter.clamped(to: 2.25 ... 4)
+            let dotColor = color.opacity(0.4)
+
             for dot in dots {
-                let dotDiameter = scaledDotDiameter.clamped(to: 2.25 ... 4)
-                let dotColor = color.opacity(0.4)
-
-                let circle = Path { path in
-                    path.addEllipse(in: CGRect(
-                        x: dot.x - dotDiameter / 2,
-                        y: dot.y - dotDiameter / 2,
-                        width: dotDiameter,
-                        height: dotDiameter
-                    ))
-                }
-
-                context.fill(circle, with: .color(dotColor))
+                context.fill(Path(ellipseIn: CGRect(
+                    x: dot.x - dotDiameter / 2,
+                    y: dot.y - dotDiameter / 2,
+                    width: dotDiameter,
+                    height: dotDiameter
+                )), with: .color(dotColor))
             }
         }
     }
