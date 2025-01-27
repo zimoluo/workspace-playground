@@ -113,6 +113,7 @@ struct ContentView: View {
                                         }
                                     }
                                 }
+                                .animation(.spring(duration: 0.15), value: spaces)
                             }
                             .frame(maxHeight: .infinity)
                         }
