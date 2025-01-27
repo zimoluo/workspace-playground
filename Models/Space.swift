@@ -94,6 +94,15 @@ class Space: ObservableObject {
         }
     }
 
+    func copy() -> Space {
+        let copiedWindows = windows.map { window -> Window in
+            var newWindow = window
+            newWindow.id = UUID()
+            return newWindow
+        }
+        return Space(windows: copiedWindows, name: name, cameraCenterX: cameraCenterX, cameraCenterY: cameraCenterY, cameraZoom: cameraZoom, disableDots: disableDots)
+    }
+
     func updateDateModified() {
         dateModified = Date()
     }

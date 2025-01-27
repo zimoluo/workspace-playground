@@ -57,55 +57,23 @@ struct ContentView: View {
                             ScrollView {
                                 LazyVStack(alignment: .leading, spacing: 20) {
                                     ForEach(spaces) { space in
-                                        Button(action: {
-                                            withAnimation(.spring(duration: 0.2)) {
-                                                selectedScreen.type = .space
-                                                settings.selectedSpaceId = space.id
-                                            }
-                                        }) {
-                                            HStack(spacing: 8) {
-                                                VStack(alignment: .leading, spacing: 8) {
-                                                    Text(space.name.isEmpty ? "New Space" : space.name)
-                                                        .foregroundColor(
-                                                            selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
-                                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
-                                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
-                                                        )
-                                                        .lineLimit(1)
-                                                        .fontWeight(.bold)
-
-                                                    Text(formattedDateString(for: space.dateModified))
-                                                        .foregroundColor(
-                                                            selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
-                                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
-                                                                themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
-                                                        )
-                                                        .lineLimit(1)
-                                                        .font(.subheadline)
-                                                        .opacity(0.75)
-                                                        .fontWeight(.semibold)
+                                        SpaceCardView(
+                                            space: space,
+                                            isSelected: selectedScreen.type == .space && settings.selectedSpaceId == space.id,
+                                            onTap: {
+                                                withAnimation(.spring(duration: 0.1)) {
+                                                    selectedScreen.type = .space
+                                                    settings.selectedSpaceId = space.id
                                                 }
-
-                                                Spacer()
-
-                                                space.thumbnail(canvasSize: CGSize(width: 64, height: 64), color: selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
-                                                    themeColor(from: theme, for: .primary, in: colorScheme, level: 4) :
-                                                    themeColor(from: theme, for: .primary, in: colorScheme, level: 2))
-                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                            },
+                                            onDelete: {
+                                                deleteSpace(space)
+                                            },
+                                            onDuplicate: {
+                                                let duplicatedSpace = space.copy()
+                                                modelContext.insert(duplicatedSpace)
                                             }
-                                            .padding(.leading, 16)
-                                            .padding(.trailing, 8)
-                                            .padding(.vertical, 8)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                            .frame(height: 80)
-                                            .background(
-                                                selectedScreen.type == .space && settings.selectedSpaceId == space.id ?
-                                                    themeColor(from: theme, for: .primary, in: colorScheme, level: 1) :
-                                                    themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
-                                            )
-                                            .cornerRadius(16)
-                                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
-                                        }
+                                        )
                                         .scrollTransition { content, phase in
                                             content
                                                 .opacity(phase.isIdentity ? 1 : 0.5)
@@ -317,28 +285,6 @@ struct ContentView: View {
     private func deleteSpace(_ space: Space) {
         deleteSpace(space.id)
     }
-
-    private func formattedDateString(for date: Date, relativeTo referenceDate: Date = Date()) -> String {
-        let calendar = Calendar.current
-        let timeFormatter = DateFormatter()
-        timeFormatter.timeStyle = .short
-
-        if calendar.isDateInToday(date) {
-            return timeFormatter.string(from: date)
-        } else if calendar.isDateInYesterday(date) {
-            return "Yesterday"
-        } else if calendar.isDateInTomorrow(date) {
-            return "Tomorrow"
-        } else if calendar.isDate(date, equalTo: referenceDate, toGranularity: .weekOfYear) {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "EEEE"
-            return formatter.string(from: date)
-        } else {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .short
-            return formatter.string(from: date)
-        }
-    }
 }
 
 struct SectionView<Content: View, Trailing: View>: View {
@@ -368,5 +314,111 @@ struct SectionView<Content: View, Trailing: View>: View {
             content
         }
         .safeAreaPadding(.vertical, 16)
+    }
+}
+
+struct SpaceCardView: View {
+    @ObservedObject var space: Space
+    let isSelected: Bool
+
+    let onTap: () -> Void
+    let onDelete: () -> Void
+    let onDuplicate: () -> Void
+
+    @Environment(\.theme) private var theme
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 8) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(space.name.isEmpty ? "New Space" : space.name)
+                        .foregroundColor(isSelected ?
+                            themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
+                            themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                        )
+                        .fontWeight(.bold)
+
+                    Text(formattedDateString(for: space.dateModified))
+                        .foregroundColor(isSelected ?
+                            themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
+                            themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
+                        )
+                        .font(.subheadline)
+                        .opacity(0.75)
+                }
+
+                Spacer()
+
+                space.thumbnail(
+                    canvasSize: CGSize(width: 64, height: 64),
+                    color: isSelected ?
+                        themeColor(from: theme, for: .primary, in: colorScheme, level: 4) :
+                        themeColor(from: theme, for: .primary, in: colorScheme, level: 2)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .padding(.leading, 16)
+            .padding(.trailing, 8)
+            .padding(.vertical, 8)
+            .frame(height: 80)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                isSelected ?
+                    themeColor(from: theme, for: .primary, in: colorScheme, level: 1) :
+                    themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
+            )
+            .cornerRadius(16)
+            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
+            .contextMenu {
+                HStack {
+                    space.thumbnail(
+                        canvasSize: CGSize(width: 100, height: 100),
+                        color: themeColor(from: theme, for: .primary, in: colorScheme, level: 2)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+
+                Button(role: .destructive) {
+                    onDelete()
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+
+                Button {
+                    onDuplicate()
+                } label: {
+                    Label("Duplicate", systemImage: "doc.on.doc")
+                }
+
+                Button {
+                    space.clusterWindows()
+                } label: {
+                    Label("Organize windows", systemImage: "rectangle.3.group")
+                }
+            }
+        }
+    }
+
+    private func formattedDateString(for date: Date, relativeTo referenceDate: Date = Date()) -> String {
+        let calendar = Calendar.current
+        let timeFormatter = DateFormatter()
+        timeFormatter.timeStyle = .short
+
+        if calendar.isDateInToday(date) {
+            return timeFormatter.string(from: date)
+        } else if calendar.isDateInYesterday(date) {
+            return "Yesterday"
+        } else if calendar.isDateInTomorrow(date) {
+            return "Tomorrow"
+        } else if calendar.isDate(date, equalTo: referenceDate, toGranularity: .weekOfYear) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "EEEE"
+            return formatter.string(from: date)
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .short
+            return formatter.string(from: date)
+        }
     }
 }

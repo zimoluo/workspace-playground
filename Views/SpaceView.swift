@@ -193,7 +193,7 @@ struct SpaceView: View {
                                     space.updateDateModified()
                                 }
                             }) {
-                                Image(systemName: "squareshape.dotted.squareshape")
+                                Image(systemName: "square.grid.3x3")
                                     .font(.title2)
                                     .themedForeground(using: theme, in: colorScheme, category: .tertiary)
                                     .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
@@ -206,7 +206,7 @@ struct SpaceView: View {
                                     space.clusterWindows()
                                 }
                             }) {
-                                Image(systemName: "wand.and.stars")
+                                Image(systemName: "rectangle.3.group")
                                     .font(.title2)
                                     .themedForeground(using: theme, in: colorScheme, category: .tertiary)
                                     .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
