@@ -216,7 +216,7 @@ struct RGBAColor: Codable, Equatable {
 }
 
 let shadeIndexMapLight: [Int: Int] = [
-    0: 27,
+    0: 26,
     1: 21,
     2: 10,
     3: 3,
@@ -229,8 +229,8 @@ let shadeIndexMapDark: [Int: Int] = [
     1: 6,
     2: 14,
     3: 19,
-    4: 26,
-    5: 28
+    4: 25,
+    5: 27
 ]
 
 func themeColor(
