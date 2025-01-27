@@ -59,15 +59,19 @@ class Space: ObservableObject {
 
         return Canvas { context, _ in
             let dotDiameter = scaledDotDiameter.clamped(to: 2.25 ... 4)
-            let dotColor = color.opacity(0.4)
+            let dotColor = color.opacity(0.4).cgColor ?? CGColor(gray: 0.0, alpha: 1.0)
 
-            for dot in dots {
-                context.fill(Path(ellipseIn: CGRect(
-                    x: dot.x - dotDiameter / 2,
-                    y: dot.y - dotDiameter / 2,
-                    width: dotDiameter,
-                    height: dotDiameter
-                )), with: .color(dotColor))
+            context.withCGContext { cgContext in
+                cgContext.setFillColor(dotColor)
+                for dot in dots {
+                    let rect = CGRect(
+                        x: dot.x - dotDiameter / 2,
+                        y: dot.y - dotDiameter / 2,
+                        width: dotDiameter,
+                        height: dotDiameter
+                    )
+                    cgContext.fillEllipse(in: rect)
+                }
             }
         }
     }

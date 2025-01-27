@@ -23,6 +23,7 @@ struct SpaceView: View {
 
     @State private var menuDragOffset: CGSize = .zero
 
+    @State private var isDragging: Bool = false
     @State private var lastDragTranslation: CGSize = .zero
     @State private var dragVelocity: CGSize = .zero
     @State private var currentZoom: CGFloat = 1.0
@@ -72,6 +73,10 @@ struct SpaceView: View {
                         .gesture(
                             DragGesture()
                                 .onChanged { value in
+                                    if !isDragging {
+                                        isDragging = true
+                                    }
+
                                     let incrementalTranslation = CGSize(
                                         width: value.translation.width - lastDragTranslation.width,
                                         height: value.translation.height - lastDragTranslation.height
@@ -88,6 +93,7 @@ struct SpaceView: View {
                                 }
                                 .onEnded { _ in
                                     lastDragTranslation = .zero
+                                    isDragging = false
                                     applyMomentum()
                                 }
                         )
@@ -252,6 +258,11 @@ struct SpaceView: View {
         var displayLink: CADisplayLink?
 
         displayLink = CADisplayLink(target: BlockOperation {
+            if isDragging {
+                displayLink?.invalidate()
+                displayLink = nil
+            }
+
             dragVelocity = CGSize(
                 width: dragVelocity.width * deceleration,
                 height: dragVelocity.height * deceleration
