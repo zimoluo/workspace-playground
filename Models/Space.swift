@@ -183,7 +183,7 @@ class Space: ObservableObject {
         let scale = canvasSize.width / (600 / zoom)
         let halfRegionSize = 300 / zoom
 
-        let bgColor = color.opacity(0.25)
+        let bgColor = color.opacity(0.33)
         let windowColor = color
 
         let regionMinX = cameraCenterX - halfRegionSize
