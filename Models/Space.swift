@@ -180,45 +180,66 @@ class Space: ObservableObject {
 
     func thumbnail(canvasSize: CGSize, color: Color = .blue) -> some View {
         let zoom = cameraZoom
-        let regionSize: CGFloat = 600 / zoom
-        let halfRegionSize = regionSize / 2
+        let scale = canvasSize.width / (600 / zoom)
+        let halfRegionSize = 300 / zoom
 
-        let thumbnailRegion = CGRect(
-            x: cameraCenterX - halfRegionSize,
-            y: cameraCenterY - halfRegionSize,
-            width: regionSize,
-            height: regionSize
-        )
+        let bgColor = color.opacity(0.25)
+        let windowColor = color
+
+        let regionMinX = cameraCenterX - halfRegionSize
+        let regionMinY = cameraCenterY - halfRegionSize
 
         return Canvas { context, _ in
-            let backgroundRect = CGRect(origin: .zero, size: canvasSize)
             context.fill(
-                Path(roundedRect: backgroundRect, cornerRadius: 8),
-                with: .color(color.opacity(0.25))
+                Path(roundedRect: CGRect(origin: .zero, size: canvasSize), cornerRadius: 8),
+                with: .color(bgColor)
             )
 
-            for window in self.windows {
-                let windowRect = CGRect(
-                    x: window.state.x - window.state.width / 2,
-                    y: window.state.y - window.state.height / 2,
-                    width: window.state.width,
-                    height: window.state.height
-                )
+            let visibleWindows = self.windows.lazy
+                .map { window -> (CGRect, CGRect)? in
+                    let windowMinX = window.state.x - window.state.width / 2
+                    let windowMinY = window.state.y - window.state.height / 2
 
-                let intersection = thumbnailRegion.intersection(windowRect)
+                    let windowRect = CGRect(
+                        x: windowMinX,
+                        y: windowMinY,
+                        width: window.state.width,
+                        height: window.state.height
+                    )
 
-                if !intersection.isEmpty {
-                    let scale = canvasSize.width / regionSize
+                    guard windowRect.maxX >= regionMinX,
+                          windowRect.minX <= regionMinX + halfRegionSize * 2,
+                          windowRect.maxY >= regionMinY,
+                          windowRect.minY <= regionMinY + halfRegionSize * 2
+                    else {
+                        return nil
+                    }
+
+                    let intersection = windowRect.intersection(CGRect(
+                        x: regionMinX,
+                        y: regionMinY,
+                        width: halfRegionSize * 2,
+                        height: halfRegionSize * 2
+                    ))
+
+                    guard !intersection.isEmpty else { return nil }
+
                     let scaledRect = CGRect(
-                        x: (intersection.origin.x - thumbnailRegion.origin.x) * scale,
-                        y: (intersection.origin.y - thumbnailRegion.origin.y) * scale,
+                        x: (intersection.origin.x - regionMinX) * scale,
+                        y: (intersection.origin.y - regionMinY) * scale,
                         width: intersection.width * scale,
                         height: intersection.height * scale
                     )
 
-                    let path = Path(roundedRect: scaledRect, cornerRadius: 4)
-                    context.fill(path, with: .color(color))
+                    return (intersection, scaledRect)
                 }
+                .compactMap { $0 }
+
+            for (_, scaledRect) in visibleWindows {
+                context.fill(
+                    Path(roundedRect: scaledRect, cornerRadius: 4),
+                    with: .color(windowColor)
+                )
             }
         }
         .frame(width: canvasSize.width, height: canvasSize.height)
