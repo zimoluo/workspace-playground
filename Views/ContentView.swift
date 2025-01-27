@@ -109,7 +109,7 @@ struct ContentView: View {
                                             content
                                                 .opacity(phase.isIdentity ? 1 : 0)
                                                 .scaleEffect(phase.isIdentity ? 1 : 0.6)
-                                                .blur(radius: phase.isIdentity ? 0 : 10)
+                                                .blur(radius: phase.isIdentity ? 0 : 4)
                                         }
                                     }
                                 }
