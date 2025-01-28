@@ -64,10 +64,14 @@ struct WindowView: View {
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in
-                        isCloseButtonActive = true
+                        withAnimation(.spring(duration: 0.3)) {
+                            isCloseButtonActive = true
+                        }
                     }
                     .onEnded { _ in
-                        isCloseButtonActive = false
+                        withAnimation(.spring(duration: 0.3)) {
+                            isCloseButtonActive = false
+                        }
                     }
             )
             .offset(
