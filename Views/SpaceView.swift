@@ -99,8 +99,8 @@ struct SpaceView: View {
                                     )
                                     lastDragTranslation = value.translation
 
-                                    let newCenterX = space.cameraCenterX - incrementalTranslation.width
-                                    let newCenterY = space.cameraCenterY - incrementalTranslation.height
+                                    let newCenterX = space.cameraCenterX - incrementalTranslation.width / space.cameraZoom
+                                    let newCenterY = space.cameraCenterY - incrementalTranslation.height / space.cameraZoom
 
                                     space.cameraCenterX = newCenterX.clamped(to: minCameraCenterX ... maxCameraCenterX)
                                     space.cameraCenterY = newCenterY.clamped(to: minCameraCenterY ... maxCameraCenterY)
