@@ -101,10 +101,10 @@ struct WindowData: Codable {
             updatedData.minHeight = 676
             updatedData.minWidth = 640
         case .stopwatch:
-            updatedData.maxWidth = 400
+            updatedData.maxWidth = 420
             updatedData.minWidth = 280
             updatedData.maxHeight = 600
-            updatedData.minHeight = 350
+            updatedData.minHeight = 340
         }
 
         return updatedData
