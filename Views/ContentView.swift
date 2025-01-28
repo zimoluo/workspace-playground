@@ -371,10 +371,10 @@ struct SpaceCardView: View {
             .cornerRadius(16)
             .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
             .contextMenu {
-                Button(role: .destructive) {
-                    onDelete()
+                Button {
+                    space.clusterWindows()
                 } label: {
-                    Label("Delete", systemImage: "trash")
+                    Label("Organize windows", systemImage: "rectangle.3.group")
                 }
 
                 Button {
@@ -383,10 +383,10 @@ struct SpaceCardView: View {
                     Label("Duplicate", systemImage: "doc.on.doc")
                 }
 
-                Button {
-                    space.clusterWindows()
+                Button(role: .destructive) {
+                    onDelete()
                 } label: {
-                    Label("Organize windows", systemImage: "rectangle.3.group")
+                    Label("Delete", systemImage: "trash")
                 }
             } preview: {
                 space.thumbnail(
