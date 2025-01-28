@@ -29,7 +29,7 @@ enum BuiltinThemes {
     static var warm: Theme {
         return Theme(
             primary: RGBAColor(red: 0.8901960784313725, green: 0.38823529411764707, blue: 0.3607843137254902),
-            secondary: RGBAColor(red: 0.8666666666666667, green: 0.6470588235294118, blue: 0.27450980392156865),
+            secondary: RGBAColor(red: 0.84313725, green: 0.62352941, blue: 0.21176471),
             tertiary: RGBAColor(red: 0.7333333333333333, green: 0.42745098039215684, blue: 0.5294117647058824),
             mainGradient: ColorGradient(
                 type: .linear,
