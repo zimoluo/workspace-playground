@@ -136,7 +136,7 @@ enum WindowType: String, Codable, CaseIterable {
         switch self {
         case .blank: return WindowGlyph(mode: .system, key: "square.dashed")
         case .notes: return WindowGlyph(mode: .system, key: "note.text")
-        case .clock: return WindowGlyph(mode: .system, key: "clock")
+        case .clock: return WindowGlyph(mode: .system, key: "deskclock")
         case .digitalClock: return WindowGlyph(mode: .custom, key: "DigitalClock")
         case .themeMaker: return WindowGlyph(mode: .system, key: "command")
         case .stopwatch: return WindowGlyph(mode: .system, key: "stopwatch")
