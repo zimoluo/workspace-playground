@@ -76,7 +76,8 @@ struct ContentView: View {
                                         )
                                         .scrollTransition { content, phase in
                                             content
-                                                .opacity(phase.isIdentity ? 1 : 0.5)
+                                                .opacity(phase.isIdentity ? 1 : 0.33)
+                                                .scaleEffect(phase.isIdentity ? 1 : 0.94)
                                         }
                                     }
                                 }
