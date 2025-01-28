@@ -380,6 +380,15 @@ struct SpaceCardView: View {
                 }
 
                 Button {
+                    withAnimation(.spring(duration: 0.3)) {
+                        space.disableDots.toggle()
+                        space.updateDateModified()
+                    }
+                } label: {
+                    Label("Toggle dot grid", systemImage: "square.grid.3x3")
+                }
+
+                Button {
                     onDuplicate()
                 } label: {
                     Label("Duplicate", systemImage: "doc.on.doc")
