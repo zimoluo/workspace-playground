@@ -133,6 +133,8 @@ struct SpaceView: View {
                                             x: space.cameraCenterX,
                                             y: space.cameraCenterY
                                         )
+
+                                        currentZoom = space.cameraZoom
                                     }
 
                                     let newZoom = currentZoom * zoomFactor
