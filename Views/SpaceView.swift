@@ -136,7 +136,7 @@ struct SpaceView: View {
                                     }
 
                                     let newZoom = currentZoom * zoomFactor
-                                    let clampedZoom = newZoom.clamped(to: 0.5 ... 2)
+                                    let clampedZoom = newZoom.clamped(to: 2 / 3 ... 1.5)
 
                                     let deltaX = initialPinchPoint.x / currentZoom - initialPinchPoint.x / clampedZoom
                                     let deltaY = initialPinchPoint.y / currentZoom - initialPinchPoint.y / clampedZoom
