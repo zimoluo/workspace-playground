@@ -11,6 +11,8 @@ struct WindowTypeView: View {
             RichTextEditorView()
         case .clock:
             ClockWidget()
+        case .digitalClock:
+            DigitalClock()
         }
     }
 }

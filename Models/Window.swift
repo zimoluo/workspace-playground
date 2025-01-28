@@ -90,6 +90,11 @@ struct WindowData: Codable {
             updatedData.minWidth = 150
             updatedData.minAspectRatio = (sqrt(5) - 1) / 2
             updatedData.maxAspectRatio = (sqrt(5) + 1) / 2
+        case .digitalClock:
+            updatedData.maxHeight = 300
+            updatedData.maxWidth = 300
+            updatedData.minHeight = 150
+            updatedData.minWidth = 150
         }
 
         return updatedData
@@ -100,12 +105,14 @@ enum WindowType: String, Codable, CaseIterable {
     case blank
     case notes
     case clock
+    case digitalClock
 
     var defaultSize: (width: CGFloat, height: CGFloat) {
         switch self {
-        case .blank: return (200, 200)
-        case .notes: return (200, 200)
-        case .clock: return (200, 200)
+        case .blank: return (180, 180)
+        case .notes: return (220, 280)
+        case .clock: return (190, 190)
+        case .digitalClock: return (190, 190)
         }
     }
 
@@ -114,6 +121,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .blank: return "square.dashed"
         case .notes: return "pencil"
         case .clock: return "clock"
+        case .digitalClock: return "numbers.rectangle"
         }
     }
 }
