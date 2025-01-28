@@ -138,7 +138,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .notes: return WindowGlyph(mode: .system, key: "note.text")
         case .clock: return WindowGlyph(mode: .system, key: "clock")
         case .digitalClock: return WindowGlyph(mode: .system, key: "numbers.rectangle")
-        case .themeMaker: return WindowGlyph(mode: .system, key: "paintpalette")
+        case .themeMaker: return WindowGlyph(mode: .system, key: "command")
         case .stopwatch: return WindowGlyph(mode: .system, key: "stopwatch")
         }
     }

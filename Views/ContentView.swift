@@ -151,7 +151,7 @@ struct ContentView: View {
                             }
                         }) {
                             HStack(spacing: 12) {
-                                Image(systemName: "paintpalette").font(.title2)
+                                Image(systemName: "command").font(.title2)
                                     .frame(width: 24, height: 24)
                                     .foregroundColor(
                                         selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 4) : themeColor(from: theme, for: .primary, in: colorScheme, level: 1)
