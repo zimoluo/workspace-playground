@@ -1,10 +1,3 @@
-//
-//  Vertex.swift
-//  WorkSpace
-//
-//  Created by Zimo Luo on 1/28/25.
-//
-
 import MetalKit
 import SwiftUI
 
@@ -22,6 +15,8 @@ struct Uniforms {
     var cameraCenterX: Float
     var cameraCenterY: Float
     var cameraZoom: Float
+    
+    var _pad: Float = 0
 }
 
 // MARK: - Metal Renderer
@@ -42,7 +37,6 @@ class MetalDotsRenderer {
         self.device = device
         self.commandQueue = commandQueue
         
-        // Create vertices for a quad that covers the entire viewport
         let vertices = [
             Vertex(position: SIMD2<Float>(-1, -1)),
             Vertex(position: SIMD2<Float>(1, -1)),
@@ -58,8 +52,7 @@ class MetalDotsRenderer {
         }
         self.vertexBuffer = vertexBuffer
         
-        // Create the render pipeline
-        let library = try! device.makeDefaultLibrary()
+        let library = device.makeDefaultLibrary()
         let vertexFunction = library?.makeFunction(name: "vertexShader")
         let fragmentFunction = library?.makeFunction(name: "fragmentShader")
         
@@ -75,11 +68,7 @@ class MetalDotsRenderer {
         pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
         pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
         
-        do {
-            self.pipelineState = try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
-        } catch {
-            fatalError("Failed to create pipeline state: \(error)")
-        }
+        self.pipelineState = try! device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
     
     func render(in view: MTKView, color: Color, viewSize: CGSize, cameraCenterX: CGFloat, cameraCenterY: CGFloat, cameraZoom: CGFloat) {
@@ -92,7 +81,7 @@ class MetalDotsRenderer {
         
         var uniforms = Uniforms(
             viewportSize: SIMD2<Float>(Float(viewSize.width), Float(viewSize.height)),
-            dotSpacing: 50.0,
+            dotSpacing: 5.0,
             dotRadius: 1.0,
             color: color.toSIMD4Float(),
             cameraCenterX: Float(cameraCenterX),
@@ -134,7 +123,6 @@ struct MetalView: UIViewRepresentable {
         mtkView.delegate = context.coordinator
         mtkView.enableSetNeedsDisplay = true
         mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
-        mtkView.colorPixelFormat = .bgra8Unorm
         return mtkView
     }
     
@@ -175,6 +163,8 @@ struct MetalView: UIViewRepresentable {
         }
     }
 }
+
+// MARK: - Extensions
 
 extension Color {
     func toSIMD4Float() -> SIMD4<Float> {
