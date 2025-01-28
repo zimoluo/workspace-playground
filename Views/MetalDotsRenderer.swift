@@ -1,8 +1,6 @@
 import MetalKit
 import SwiftUI
 
-// MARK: - Shader Types
-
 struct Vertex {
     var position: SIMD2<Float>
 }
@@ -18,8 +16,6 @@ struct Uniforms {
     
     var _pad: Float = 0
 }
-
-// MARK: - Metal Renderer
 
 class MetalDotsRenderer {
     private var device: MTLDevice
@@ -61,8 +57,8 @@ class MetalDotsRenderer {
         pipelineDescriptor.fragmentFunction = fragmentFunction
         pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         pipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
-        pipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
-        pipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
+        pipelineDescriptor.colorAttachments[0].rgbBlendOperation = .subtract
+        pipelineDescriptor.colorAttachments[0].alphaBlendOperation = .subtract
         pipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
         pipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
         pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
@@ -81,9 +77,9 @@ class MetalDotsRenderer {
         
         var uniforms = Uniforms(
             viewportSize: SIMD2<Float>(Float(viewSize.width), Float(viewSize.height)),
-            dotSpacing: 30.0,
-            dotRadius: 5.0,
-            color: color.toSIMD4Float(),
+            dotSpacing: 36.0,
+            dotRadius: 3.0,
+            color: color.opacity(0.4).toSIMD4Float(),
             cameraCenterX: Float(cameraCenterX),
             cameraCenterY: Float(cameraCenterY),
             cameraZoom: Float(cameraZoom)
@@ -122,6 +118,7 @@ struct MetalView: UIViewRepresentable {
         mtkView.framebufferOnly = true
         mtkView.delegate = context.coordinator
         mtkView.enableSetNeedsDisplay = true
+        mtkView.isOpaque = false
         mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
         return mtkView
     }

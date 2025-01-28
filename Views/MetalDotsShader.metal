@@ -36,7 +36,8 @@ fragment float4 fragmentShader(VertexOut in [[stage_in]],
     float2 worldPos = (uv - uniforms.viewportSize * 0.5) / uniforms.cameraZoom +
     float2(uniforms.cameraCenterX, -uniforms.cameraCenterY);
     
-    float2 gridPos = fmod(worldPos, uniforms.dotSpacing);
+    float2 offset = floor(worldPos / uniforms.dotSpacing);
+    float2 gridPos = worldPos - (offset * uniforms.dotSpacing);
     gridPos = gridPos - uniforms.dotSpacing * 0.5;
     
     float dist = length(gridPos);
