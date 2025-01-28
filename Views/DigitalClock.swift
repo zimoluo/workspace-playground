@@ -10,7 +10,7 @@ struct DigitalClock: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                let shorterSide: CGFloat = min(geometry.size.width, geometry.size.height)
+                let shorterSide: CGFloat = geometry.size.width
                 let fontSize: CGFloat = shorterSide * 0.3
                 Color.clear.ignoresSafeArea()
                 
@@ -26,7 +26,7 @@ struct DigitalClock: View {
                     DigitalNumber(number: minute, fontSize: fontSize)
                 }
                 .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
-                .frame(width: shorterSide, height: shorterSide)
+                .frame(width: shorterSide)
                 .onReceive(timer) { input in
                     withAnimation {
                         time = input

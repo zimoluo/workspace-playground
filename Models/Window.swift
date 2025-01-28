@@ -91,10 +91,12 @@ struct WindowData: Codable {
             updatedData.minAspectRatio = (sqrt(5) - 1) / 2
             updatedData.maxAspectRatio = (sqrt(5) + 1) / 2
         case .digitalClock:
-            updatedData.maxHeight = 300
-            updatedData.maxWidth = 300
-            updatedData.minHeight = 150
-            updatedData.minWidth = 150
+            updatedData.maxHeight = 420
+            updatedData.maxWidth = 420
+            updatedData.minHeight = 120
+            updatedData.minWidth = 120
+            updatedData.minAspectRatio = 1
+            updatedData.maxAspectRatio = 2
         case .themeMaker:
             updatedData.maxHeight = 676
             updatedData.maxWidth = 960
@@ -124,7 +126,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .blank: return (180, 180)
         case .notes: return (220, 280)
         case .clock: return (190, 190)
-        case .digitalClock: return (190, 190)
+        case .digitalClock: return (240, 150)
         case .themeMaker: return (700, 676)
         case .stopwatch: return (300, 360)
         }
