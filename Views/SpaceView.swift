@@ -193,7 +193,7 @@ struct SpaceView: View {
                                     space.updateDateModified()
                                 }
                             }) {
-                                Image(systemName: space.disableDots ? "square.grid.3x3" : "square.grid.3x3.fill")
+                                Image(systemName: space.disableDots ? "square" : "square.grid.3x3.square")
                                     .font(.title2)
                                     .themedForeground(using: theme, in: colorScheme, category: .tertiary)
                                     .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
