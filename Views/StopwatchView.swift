@@ -115,7 +115,7 @@ struct StopwatchView: View {
                 Text(mainButtonTitle)
                     .font(.system(size: 20, weight: .semibold))
                     .padding(9)
-                    .frame(maxWidth: stopwatchState == .initial ? 240 : .infinity)
+                    .frame(maxWidth: stopwatchState == .initial ? 210 : .infinity)
                     .lineLimit(1)
                     .foregroundColor(mainButtonForegroundColor)
                     .background(mainButtonBackgroundColor)
