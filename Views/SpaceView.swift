@@ -23,6 +23,18 @@ struct SpaceView: View {
         settings.isWindowsMenuButtonExpanded
     }
 
+    static let menuButtonDiameter: CGFloat = 64
+    static let menuPillPadding: CGFloat = 12
+    static let menuPillExtendedLength: CGFloat = 420
+
+    static var menuPillWidth: CGFloat {
+        menuButtonDiameter + 2 * menuPillPadding
+    }
+
+    static var menuPillPositionOffset: CGFloat {
+        (menuPillExtendedLength - menuPillWidth) / 2
+    }
+
     @State private var menuDragOffset: CGSize = .zero
 
     @State private var isDragging: Bool = false
@@ -316,7 +328,8 @@ struct SpaceView: View {
         in size: CGSize
     ) -> CGPoint {
         let offset: CGFloat = 72
-        let menuPillOffset: CGFloat = 166
+        let menuPillOffset: CGFloat = SpaceView.menuPillPositionOffset
+        let computedOffsetCenter: CGFloat = -offset - SpaceView.menuPillExtendedLength + SpaceView.menuPillWidth
 
         switch position {
         case .bottomTrailing:
@@ -324,9 +337,9 @@ struct SpaceView: View {
         case .bottomLeading:
             return CGPoint(x: offset, y: size.height - offset)
         case .leading:
-            return CGPoint(x: offset, y: size.height / 2)
+            return CGPoint(x: offset, y: min(size.height / 2, size.height + computedOffsetCenter))
         case .trailing:
-            return CGPoint(x: size.width - offset, y: size.height / 2)
+            return CGPoint(x: size.width - offset, y: min(size.height / 2, size.height + computedOffsetCenter))
         case .bottomCenterLeading:
             return CGPoint(
                 x: size.width / 2 - menuPillOffset,
@@ -379,17 +392,13 @@ struct WindowMenuView: View {
         settings.windowsMenuButtonsPosition.menuDirection
     }
 
-    let menuButtonDiameter: CGFloat = 64
-    let menuPillPadding: CGFloat = 12
-    let menuPillExtendedLength: CGFloat = 420
+    let menuButtonDiameter: CGFloat = SpaceView.menuButtonDiameter
+    let menuPillPadding: CGFloat = SpaceView.menuPillPadding
+    let menuPillExtendedLength: CGFloat = SpaceView.menuPillExtendedLength
 
-    var menuPillWidth: CGFloat {
-        menuButtonDiameter + 2 * menuPillPadding
-    }
+    var menuPillWidth: CGFloat = SpaceView.menuPillWidth
 
-    var menuPillPositionOffset: CGFloat {
-        (menuPillExtendedLength - menuPillWidth) / 2
-    }
+    var menuPillPositionOffset: CGFloat = SpaceView.menuPillPositionOffset
 
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
