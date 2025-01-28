@@ -99,8 +99,9 @@ struct SpaceView: View {
                                     )
                                     lastDragTranslation = value.translation
 
-                                    let newCenterX = space.cameraCenterX - incrementalTranslation.width / space.cameraZoom
-                                    let newCenterY = space.cameraCenterY - incrementalTranslation.height / space.cameraZoom
+                                    let zoomFactor = 1.0 / space.cameraZoom
+                                    let newCenterX = space.cameraCenterX - incrementalTranslation.width * zoomFactor
+                                    let newCenterY = space.cameraCenterY - incrementalTranslation.height * zoomFactor
 
                                     space.cameraCenterX = newCenterX.clamped(to: minCameraCenterX ... maxCameraCenterX)
                                     space.cameraCenterY = newCenterY.clamped(to: minCameraCenterY ... maxCameraCenterY)
@@ -137,12 +138,11 @@ struct SpaceView: View {
                                     let newZoom = currentZoom * zoomFactor
                                     let clampedZoom = newZoom.clamped(to: 0.75 ... 4 / 3)
 
-                                    let adjustedCenterX =
-                                        initialCameraCenter.x +
-                                        (initialPinchPoint.x / currentZoom - initialPinchPoint.x / clampedZoom)
-                                    let adjustedCenterY =
-                                        initialCameraCenter.y +
-                                        (initialPinchPoint.y / currentZoom - initialPinchPoint.y / clampedZoom)
+                                    let deltaX = initialPinchPoint.x / currentZoom - initialPinchPoint.x / clampedZoom
+                                    let deltaY = initialPinchPoint.y / currentZoom - initialPinchPoint.y / clampedZoom
+
+                                    let adjustedCenterX = initialCameraCenter.x + deltaX
+                                    let adjustedCenterY = initialCameraCenter.y + deltaY
 
                                     space.cameraZoom = clampedZoom
                                     space.cameraCenterX = adjustedCenterX.clamped(to: minCameraCenterX ... maxCameraCenterX)
@@ -293,15 +293,15 @@ struct SpaceView: View {
     }
 
     private func applyMomentum() {
-        let deceleration: CGFloat = 0.885
+        let deceleration: CGFloat = 0.905
         let minVelocity: CGFloat = 0.1
 
         var displayLink: CADisplayLink?
 
         displayLink = CADisplayLink(target: BlockOperation {
-            if isDragging {
+            guard !isDragging else {
                 displayLink?.invalidate()
-                displayLink = nil
+                return
             }
 
             dragVelocity = CGSize(
@@ -316,7 +316,6 @@ struct SpaceView: View {
 
             if abs(dragVelocity.width) <= minVelocity && abs(dragVelocity.height) <= minVelocity {
                 displayLink?.invalidate()
-                displayLink = nil
             }
         }, selector: #selector(Operation.main))
 
