@@ -42,7 +42,9 @@ fragment float4 fragmentShader(VertexOut in [[stage_in]],
     
     float dist = length(gridPos);
     
-    if (dist < uniforms.dotRadius) {
+    float adjustedDotRadius = min(max(uniforms.dotRadius / uniforms.cameraZoom, 1.2), 2.133);
+    
+    if (dist < adjustedDotRadius) {
         return float4(uniforms.color.rgb, uniforms.color.a);
     } else {
         return float4(0.0, 0.0, 0.0, 0.0);
