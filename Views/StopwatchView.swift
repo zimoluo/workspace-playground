@@ -15,7 +15,7 @@ struct StopwatchView: View {
 
     @State private var dummyTick = false
 
-    private let timer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
+    private let timer = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect()
 
     private var window: Window? {
         space.windows.first { $0.id == windowId }
@@ -208,16 +208,16 @@ struct StopwatchView: View {
 
     private func formatTime(_ time: TimeInterval) -> String {
         let clampedTime = max(0, time)
-        let totalMilliseconds = min(Int((clampedTime * 1000).rounded()), (99 * 3600000) + (59 * 60000) + (59 * 1000) + 999)
-        let hours = totalMilliseconds / 3600000
-        let minutes = (totalMilliseconds / 60000) % 60
-        let seconds = (totalMilliseconds / 1000) % 60
-        let milliseconds = totalMilliseconds % 1000
+        let totalHundredths = min(Int((clampedTime * 100).rounded()), (999 * 360000) + (59 * 6000) + (59 * 100) + 99)
+        let hours = totalHundredths / 360000
+        let minutes = (totalHundredths / 6000) % 60
+        let seconds = (totalHundredths / 100) % 60
+        let hundredths = totalHundredths % 100
 
         if hours > 0 {
-            return String(format: "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds)
+            return String(format: "%02d:%02d:%02d.%02d", hours, minutes, seconds, hundredths)
         } else {
-            return String(format: "%02d:%02d.%03d", minutes, seconds, milliseconds)
+            return String(format: "%02d:%02d.%02d", minutes, seconds, hundredths)
         }
     }
 }
