@@ -193,12 +193,18 @@ struct SpaceView: View {
                                     space.updateDateModified()
                                 }
                             }) {
-                                Image(systemName: space.disableDots ? "square" : "square.grid.3x3.square")
-                                    .font(.title2)
-                                    .themedForeground(using: theme, in: colorScheme, category: .tertiary)
-                                    .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
-                                    .safeAreaPadding(.horizontal, 12)
-                                    .safeAreaPadding(.vertical, 12)
+                                ZStack {
+                                    Image(systemName: "square")
+                                        .font(.title2)
+                                        .themedForeground(using: theme, in: colorScheme, category: .tertiary)
+                                        .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                                    Image(systemName: "square.grid.3x3.square")
+                                        .font(.title2)
+                                        .themedForeground(using: theme, in: colorScheme, category: .tertiary)
+                                        .opacity(space.disableDots ? 0.33 : 1)
+                                }
+                                .safeAreaPadding(.horizontal, 12)
+                                .safeAreaPadding(.vertical, 12)
                             }
 
                             Button(action: {
