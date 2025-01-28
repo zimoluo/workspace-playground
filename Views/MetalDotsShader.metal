@@ -43,10 +43,10 @@ fragment float4 fragmentShader(VertexOut in [[stage_in]],
     float adjustedRadius = uniforms.dotRadius;
     float radiusZoomProduct = uniforms.dotRadius * uniforms.cameraZoom;
     
-    if (radiusZoomProduct < 1.2) {
-        adjustedRadius = 1.2 / uniforms.cameraZoom;
-    } else if (radiusZoomProduct > 2.833) {
-        adjustedRadius = 2.833 / uniforms.cameraZoom;
+    if (radiusZoomProduct < 1.38) {
+        adjustedRadius = 1.38 / uniforms.cameraZoom;
+    } else if (radiusZoomProduct > 3.258) {
+        adjustedRadius = 3.258 / uniforms.cameraZoom;
     }
     
     float dist = length(gridPos);
