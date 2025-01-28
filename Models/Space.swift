@@ -200,8 +200,9 @@ class Space: ObservableObject {
 
     func thumbnail(canvasSize: CGSize, color: Color = .blue, windowCornerRadius: CGFloat = 4) -> some View {
         let zoom = cameraZoom
-        let scale = canvasSize.width / (600 / zoom)
-        let halfRegionSize = 300 / zoom
+        let dimension: CGFloat = 800
+        let scale = canvasSize.width / (dimension / zoom)
+        let halfRegionSize = (dimension / 2) / zoom
 
         let bgColor = color.opacity(0.33)
         let windowColor = color
