@@ -33,18 +33,14 @@ fragment float4 fragmentShader(VertexOut in [[stage_in]],
                                constant Uniforms &uniforms [[buffer(0)]]) {
     float2 uv = in.uv * uniforms.viewportSize;
     
-    // Apply camera transformation
     float2 worldPos = (uv - uniforms.viewportSize * 0.5) / uniforms.cameraZoom +
-    float2(uniforms.cameraCenterX, uniforms.cameraCenterY);
+    float2(uniforms.cameraCenterX, -uniforms.cameraCenterY);
     
-    // Calculate grid position
     float2 gridPos = fmod(worldPos, uniforms.dotSpacing);
     gridPos = gridPos - uniforms.dotSpacing * 0.5;
     
-    // Calculate distance to nearest dot center
     float dist = length(gridPos);
     
-    // Create dot
     float dot = 1.0 - smoothstep(uniforms.dotRadius - 0.5, uniforms.dotRadius + 0.5, dist);
     
     return float4(uniforms.color.rgb, uniforms.color.a * dot);

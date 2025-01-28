@@ -35,14 +35,14 @@ class Space: ObservableObject {
     }
 
     func renderDots(viewSize: CGSize, color: Color) -> some View {
-          MetalView(
-              color: color,
-              viewSize: viewSize,
-              cameraCenterX: cameraCenterX,
-              cameraCenterY: cameraCenterY,
-              cameraZoom: cameraZoom
-          )
-      }
+        MetalView(
+            color: color,
+            viewSize: viewSize,
+            cameraCenterX: cameraCenterX,
+            cameraCenterY: cameraCenterY,
+            cameraZoom: cameraZoom
+        )
+    }
 
     func copy() -> Space {
         let copiedWindows = windows.map { window -> Window in

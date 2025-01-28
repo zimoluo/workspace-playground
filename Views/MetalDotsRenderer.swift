@@ -81,8 +81,8 @@ class MetalDotsRenderer {
         
         var uniforms = Uniforms(
             viewportSize: SIMD2<Float>(Float(viewSize.width), Float(viewSize.height)),
-            dotSpacing: 5.0,
-            dotRadius: 1.0,
+            dotSpacing: 30.0,
+            dotRadius: 5.0,
             color: color.toSIMD4Float(),
             cameraCenterX: Float(cameraCenterX),
             cameraCenterY: Float(cameraCenterY),
@@ -163,8 +163,6 @@ struct MetalView: UIViewRepresentable {
         }
     }
 }
-
-// MARK: - Extensions
 
 extension Color {
     func toSIMD4Float() -> SIMD4<Float> {
