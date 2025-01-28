@@ -17,6 +17,8 @@ struct WindowTypeView: View {
             ThemeMaker()
                 .padding(12)
                 .frame(maxWidth: .infinity)
+        case .stopwatch:
+            StopwatchView()
         }
     }
 }

@@ -100,6 +100,11 @@ struct WindowData: Codable {
             updatedData.maxWidth = 960
             updatedData.minHeight = 676
             updatedData.minWidth = 640
+        case .stopwatch:
+            updatedData.maxWidth = 400
+            updatedData.minWidth = 280
+            updatedData.maxHeight = 600
+            updatedData.minHeight = 350
         }
 
         return updatedData
@@ -112,6 +117,7 @@ enum WindowType: String, Codable, CaseIterable {
     case clock
     case digitalClock
     case themeMaker
+    case stopwatch
 
     var defaultSize: (width: CGFloat, height: CGFloat) {
         switch self {
@@ -120,6 +126,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .clock: return (190, 190)
         case .digitalClock: return (190, 190)
         case .themeMaker: return (700, 676)
+        case .stopwatch: return (300, 360)
         }
     }
 
@@ -130,6 +137,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .clock: return "clock"
         case .digitalClock: return "numbers.rectangle"
         case .themeMaker: return "paintpalette"
+        case .stopwatch: return "stopwatch"
         }
     }
 }

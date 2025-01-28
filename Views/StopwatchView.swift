@@ -1,23 +1,21 @@
 import SwiftUI
 
-enum StopwatchState {
+enum StopwatchState: String, Codable {
     case initial
     case running
     case paused
 }
 
 struct StopwatchView: View {
+    @Environment(\.theme) private var theme
+    @Environment(\.colorScheme) private var colorScheme
+
     @State private var stopwatchState: StopwatchState = .initial
     
-    /// The time the stopwatch was most recently started (or resumed).
     @State private var startDate: Date? = nil
     
-    /// The total accumulated time from previous runs (in seconds).
     @State private var accumulatedTime: TimeInterval = 0
     
-    /// Each time "Lap" is tapped, we append the current Date.
-    /// The very first lap can be appended when we first start, so laps[0]
-    /// can serve as the reference for the first lap's start.
     @State private var laps: [Date] = []
     
     /// We use this dummy toggle to force frequent UI updates while running.
@@ -33,13 +31,21 @@ struct StopwatchView: View {
                 VStack {
                     Spacer()
                     Text(formatTime(currentElapsedTime))
-                        .font(.system(size: 48, weight: .bold, design: .monospaced))
+                        .font(.system(size: geometry.size.width * 0.126, weight: .bold, design: .monospaced))
+                        .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
+                        .fixedSize()
+                        .frame(height: geometry.size.width * 0.13)
+                        .frame(maxWidth: .infinity)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                     Spacer()
                     
                     // Buttons area
                     buttonsView
                 }
-                .frame(height: geometry.size.height * 0.5)
+                .frame(height: (geometry.size.width * 0.5).clamped(to: 100 ... 180))
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 12)
                 
                 // Bottom half: laps list in reverse order
                 Divider()
@@ -54,11 +60,12 @@ struct StopwatchView: View {
                             }
                             .padding(.horizontal)
                             .font(.system(.headline, design: .monospaced))
+                            .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                         }
                     }
-                    .padding(.vertical)
+                    .padding(.vertical, 16)
                 }
-                .frame(height: geometry.size.height * 0.5)
+                .frame(maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -78,63 +85,88 @@ struct StopwatchView: View {
         switch stopwatchState {
         case .initial:
             // Single large Start button
-            Button(action: startStopwatch) {
-                Text("Start")
-                    .font(.title)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .foregroundColor(.white)
-                    .background(Color.green)
-                    .cornerRadius(10)
+            HStack {
+                Button(action: {
+                    withAnimation(.spring(duration: 0.3)) {
+                        startStopwatch()
+                    }
+                }) {
+                    Text("Start")
+                        .font(.system(size: 20, weight: .semibold))
+                        .padding(9)
+                        .frame(maxWidth: 300)
+                        .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                        .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
+                        .cornerRadius(16)
+                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 16)
             
         case .running:
             // Lap (left), Stop (right)
-            HStack {
-                Button(action: lap) {
+            HStack(spacing: 12) {
+                Button(action: { withAnimation(.spring(duration: 0.3)) {
+                    lap()
+                }}) {
                     Text("Lap")
-                        .font(.title2)
-                        .padding()
+                        .font(.system(size: 20, weight: .semibold))
+                        .padding(9)
                         .frame(maxWidth: .infinity)
-                        .foregroundColor(.white)
-                        .background(Color.blue)
-                        .cornerRadius(10)
+                        .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                        .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2))
+                        .cornerRadius(16)
+                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                 }
                 
-                Button(action: stopStopwatch) {
+                Button(action: {
+                    withAnimation(.spring(duration: 0.3)) {
+                        stopStopwatch()
+                    }
+                }) {
                     Text("Stop")
-                        .font(.title2)
-                        .padding()
+                        .font(.system(size: 20, weight: .semibold))
+                        .padding(9)
                         .frame(maxWidth: .infinity)
-                        .foregroundColor(.white)
-                        .background(Color.red)
-                        .cornerRadius(10)
+                        .foregroundColor(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5))
+                        .background(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1))
+                        .cornerRadius(16)
+                        .shadow(color: theme.tertiary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                 }
             }
             .padding(.horizontal)
             
         case .paused:
             // Reset (left), Resume (right)
-            HStack {
-                Button(action: resetStopwatch) {
+            HStack(spacing: 12) {
+                Button(action: {
+                    withAnimation(.spring(duration: 0.3)) {
+                        resetStopwatch()
+                    }
+                }) {
                     Text("Reset")
-                        .font(.title2)
-                        .padding()
+                        .font(.system(size: 20, weight: .semibold))
+                        .padding(9)
                         .frame(maxWidth: .infinity)
-                        .foregroundColor(.white)
-                        .background(Color.gray)
-                        .cornerRadius(10)
+                        .foregroundColor(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5))
+                        .background(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 2))
+                        .cornerRadius(16)
+                        .shadow(color: theme.tertiary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                 }
                 
-                Button(action: resumeStopwatch) {
+                Button(action: {
+                    withAnimation(.spring(duration: 0.3)) {
+                        resumeStopwatch()
+                    }
+                }) {
                     Text("Resume")
-                        .font(.title2)
-                        .padding()
+                        .font(.system(size: 20, weight: .semibold))
+                        .padding(9)
                         .frame(maxWidth: .infinity)
-                        .foregroundColor(.white)
-                        .background(Color.green)
-                        .cornerRadius(10)
+                        .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
+                        .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
+                        .cornerRadius(16)
+                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
                 }
             }
             .padding(.horizontal)
@@ -145,7 +177,7 @@ struct StopwatchView: View {
     
     /// Current total elapsed time: accumulatedTime + (time since last start if running)
     private var currentElapsedTime: TimeInterval {
-        _ = dummyTick // Add this line to create a dependency on `dummyTick`
+        _ = dummyTick // create a dependency on dummyTick
         guard stopwatchState == .running, let startDate else {
             return accumulatedTime
         }
@@ -175,32 +207,12 @@ struct StopwatchView: View {
                 } else {
                     // The time we “stopped” or “paused”
                     // = thisLapStart + leftover is the end
-                    let endTime = thisLapStart.addingTimeInterval(accumulatedTime - lapOffsetBefore(i))
+                    let endTime = thisLapStart.addingTimeInterval(accumulatedTime)
                     results.append(endTime.timeIntervalSince(thisLapStart))
                 }
             }
         }
         return results
-    }
-    
-    /// When calculating a lap’s “stop” point in paused mode, we only want
-    /// the difference in accumulated time since that lap’s start. If the user
-    /// took multiple laps, the “start” of the last lap might be partway through.
-    /// This is just a helper to ensure partial times are accounted for correctly.
-    ///
-    /// A simpler approach is to store each lap’s offset from the start, but
-    /// here we adapt the logic to align with Date-based laps.
-    private func lapOffsetBefore(_ index: Int) -> TimeInterval {
-        // Sum all previous laps up to `index` so that we can figure out how much
-        // "accumulatedTime" had already accounted for them. This can get complex
-        // if you want partial logic for paused intervals, so feel free to adapt as needed.
-        // In a minimal design, you might not need this function. It’s here just
-        // to illustrate that if you have complicated lap offsets, you can manage them.
-        
-        // In many implementations, each lap's difference is simply
-        // laps[i+1] - laps[i], so you might skip the partial offsets.
-        // We'll keep it returning 0 for simplicity’s sake here.
-        return 0
     }
     
     // MARK: - Actions
@@ -240,7 +252,11 @@ struct StopwatchView: View {
     
     /// Simple time formatter: HH:MM:SS.mmm or MM:SS.mmm. Adjust as needed.
     private func formatTime(_ time: TimeInterval) -> String {
-        let totalMilliseconds = Int((time * 1000).rounded())
+        let clampedTime = max(0, time)
+        
+        let maxMilliseconds = (99 * 3600000) + (59 * 60000) + (59 * 1000) + 999 // 99:59:59.999 cap
+        let totalMilliseconds = min(Int((clampedTime * 1000).rounded()), maxMilliseconds)
+        
         let hours = totalMilliseconds / 3600000
         let minutes = (totalMilliseconds / 60000) % 60
         let seconds = (totalMilliseconds / 1000) % 60
