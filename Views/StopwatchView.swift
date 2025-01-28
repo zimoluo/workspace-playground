@@ -10,13 +10,41 @@ struct StopwatchView: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
 
-    @State private var stopwatchState: StopwatchState = .initial
-    @State private var startDate: Date? = nil
-    @State private var accumulatedTime: TimeInterval = 0
-    @State private var laps: [TimeInterval] = []
+    @EnvironmentObject var space: Space
+    @Environment(\.windowId) var windowId: UUID
+
     @State private var dummyTick = false
 
     private let timer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
+
+    private var window: Window? {
+        space.windows.first { $0.id == windowId }
+    }
+
+    private var currentState: (StopwatchState, Date?, TimeInterval, [TimeInterval]) {
+        guard let data = window?.data.saveData["stopwatchState"],
+              let decodedData = try? JSONDecoder().decode(StopwatchStorage.self, from: Data(data.utf8))
+        else {
+            return (.initial, nil, 0, [])
+        }
+        return (decodedData.state, decodedData.startDate, decodedData.accumulatedTime, decodedData.laps)
+    }
+
+    private var stopwatchState: StopwatchState {
+        currentState.0
+    }
+
+    private var startDate: Date? {
+        currentState.1
+    }
+
+    private var accumulatedTime: TimeInterval {
+        currentState.2
+    }
+
+    private var laps: [TimeInterval] {
+        currentState.3
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -44,7 +72,6 @@ struct StopwatchView: View {
 
                 ScrollView {
                     VStack(spacing: 8) {
-                        // Display the active lap dynamically
                         if stopwatchState != .initial {
                             HStack {
                                 Text("Lap \(laps.count + 1)")
@@ -56,7 +83,6 @@ struct StopwatchView: View {
                             .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                         }
 
-                        // Display the recorded laps
                         ForEach(Array(zip(laps.indices, laps)).reversed(), id: \.0) { index, timeInterval in
                             HStack {
                                 Text("Lap \(index + 1)")
@@ -86,9 +112,9 @@ struct StopwatchView: View {
         HStack(spacing: stopwatchState == .initial ? 0 : 12) {
             Button(action: {
                 if stopwatchState == .running {
-                    lap()
+                    saveState(state: .running, startDate: startDate, accumulatedTime: accumulatedTime, laps: laps + [currentElapsedTime - laps.reduce(0, +)])
                 } else if stopwatchState == .paused {
-                    resetStopwatch()
+                    saveState(state: .initial, startDate: nil, accumulatedTime: 0, laps: [])
                 }
             }) {
                 Text(stopwatchState == .running ? "Lap" : "Reset")
@@ -107,9 +133,12 @@ struct StopwatchView: View {
 
             Button(action: {
                 switch stopwatchState {
-                case .initial: startStopwatch()
-                case .running: stopStopwatch()
-                case .paused: resumeStopwatch()
+                case .initial:
+                    saveState(state: .running, startDate: Date(), accumulatedTime: 0, laps: [])
+                case .running:
+                    saveState(state: .paused, startDate: nil, accumulatedTime: currentElapsedTime, laps: laps)
+                case .paused:
+                    saveState(state: .running, startDate: Date(), accumulatedTime: accumulatedTime, laps: laps)
                 }
             }) {
                 Text(mainButtonTitle)
@@ -166,36 +195,15 @@ struct StopwatchView: View {
         return accumulatedTime + Date().timeIntervalSince(startDate)
     }
 
-    private func startStopwatch() {
-        startDate = Date()
-        accumulatedTime = 0
-        laps = []
-        stopwatchState = .running
-    }
-
-    private func stopStopwatch() {
-        if let startDate {
-            accumulatedTime += Date().timeIntervalSince(startDate)
+    private func saveState(state: StopwatchState, startDate: Date?, accumulatedTime: TimeInterval, laps: [TimeInterval]) {
+        let storage = StopwatchStorage(state: state, startDate: startDate, accumulatedTime: accumulatedTime, laps: laps)
+        if let encoded = try? JSONEncoder().encode(storage),
+           let jsonString = String(data: encoded, encoding: .utf8)
+        {
+            if let index = space.windows.firstIndex(where: { $0.id == windowId }) {
+                space.windows[index].data.saveData["stopwatchState"] = jsonString
+            }
         }
-        startDate = nil
-        stopwatchState = .paused
-    }
-
-    private func resumeStopwatch() {
-        startDate = Date()
-        stopwatchState = .running
-    }
-
-    private func resetStopwatch() {
-        startDate = nil
-        accumulatedTime = 0
-        laps.removeAll()
-        stopwatchState = .initial
-    }
-
-    private func lap() {
-        let lapTime = currentElapsedTime - laps.reduce(0, +)
-        laps.append(lapTime)
     }
 
     private func formatTime(_ time: TimeInterval) -> String {
@@ -212,6 +220,13 @@ struct StopwatchView: View {
             return String(format: "%02d:%02d.%03d", minutes, seconds, milliseconds)
         }
     }
+}
+
+struct StopwatchStorage: Codable {
+    let state: StopwatchState
+    let startDate: Date?
+    let accumulatedTime: TimeInterval
+    let laps: [TimeInterval]
 }
 
 struct StopwatchView_Previews: PreviewProvider {
