@@ -112,12 +112,12 @@ struct WindowData: Codable {
 }
 
 enum WindowType: String, Codable, CaseIterable {
-    case blank
-    case notes
     case clock
-    case digitalClock
-    case themeMaker
     case stopwatch
+    case digitalClock
+    case notes
+    case blank
+    case themeMaker
 
     var defaultSize: (width: CGFloat, height: CGFloat) {
         switch self {
@@ -133,7 +133,7 @@ enum WindowType: String, Codable, CaseIterable {
     var glyph: String {
         switch self {
         case .blank: return "square.dashed"
-        case .notes: return "pencil"
+        case .notes: return "note.text"
         case .clock: return "clock"
         case .digitalClock: return "numbers.rectangle"
         case .themeMaker: return "paintpalette"
