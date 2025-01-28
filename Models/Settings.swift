@@ -6,11 +6,13 @@ class Settings: ObservableObject {
     var theme: Theme
     var selectedSpaceId: UUID
     var windowsMenuButtonsPosition: WindowsMenuButtonPosition
+    var isWindowsMenuButtonExpanded: Bool
 
-    init(theme: Theme = BuiltinThemes.whim, windowsMenuButtonsPosition: WindowsMenuButtonPosition = .bottomTrailing) {
+    init(theme: Theme = BuiltinThemes.whim, windowsMenuButtonsPosition: WindowsMenuButtonPosition = .bottomTrailing, isWindowsMenuButtonExpanded: Bool = false) {
         self.theme = theme
         self.selectedSpaceId = UUID()
         self.windowsMenuButtonsPosition = windowsMenuButtonsPosition
+        self.isWindowsMenuButtonExpanded = isWindowsMenuButtonExpanded
     }
 }
 

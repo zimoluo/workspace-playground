@@ -19,7 +19,9 @@ struct SpaceView: View {
         case name
     }
 
-    @State private var isWindowMenuOpen: Bool = false
+    var isWindowMenuOpen: Bool {
+        settings.isWindowsMenuButtonExpanded
+    }
 
     @State private var menuDragOffset: CGSize = .zero
 
@@ -247,7 +249,6 @@ struct SpaceView: View {
                     )
 
                     WindowMenuView(
-                        isWindowMenuOpen: $isWindowMenuOpen,
                         space: space
                     )
                     .position(x: anchor.x + menuDragOffset.width, y: anchor.y + menuDragOffset.height)
@@ -370,7 +371,10 @@ struct SpaceView: View {
 struct WindowMenuView: View {
     @Environment(\.settings) private var settings
 
-    @Binding var isWindowMenuOpen: Bool
+    var isWindowMenuOpen: Bool {
+        settings.isWindowsMenuButtonExpanded
+    }
+
     var menuPillDirection: WindowsMenuDirection {
         settings.windowsMenuButtonsPosition.menuDirection
     }
@@ -470,7 +474,7 @@ struct WindowMenuView: View {
                 )
                 .onTapGesture {
                     withAnimation(.spring(duration: 0.3)) {
-                        isWindowMenuOpen.toggle()
+                        settings.isWindowsMenuButtonExpanded.toggle()
                     }
                 }
         }
