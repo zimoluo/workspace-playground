@@ -78,17 +78,19 @@ class Space: ObservableObject {
                     }
                 }
 
+                let combinedPath = CGMutablePath()
                 points.withUnsafeBufferPointer { buffer in
                     for point in buffer {
-                        cgContext.addEllipse(in: CGRect(
+                        let ellipse = CGRect(
                             x: point.x - radius,
                             y: point.y - radius,
                             width: dotDiameter,
                             height: dotDiameter
-                        ))
+                        )
+                        combinedPath.addEllipse(in: ellipse)
                     }
                 }
-
+                cgContext.addPath(combinedPath)
                 cgContext.fillPath()
             }
         }
