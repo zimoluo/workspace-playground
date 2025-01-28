@@ -34,67 +34,15 @@ class Space: ObservableObject {
         self.disableDots = disableDots
     }
 
-    func renderDots(viewSize: CGSize, color: Color = .blue) -> some View {
-        let zoom = cameraZoom
-        let baseDistance = Space.dotBaseDistance
-        let scaledDotDiameter = Space.dotBaseDiameter * zoom
-
-        let metrics = ViewMetrics(
-            viewSize: viewSize,
-            cameraCenterX: cameraCenterX,
-            cameraCenterY: cameraCenterY,
-            zoom: zoom,
-            baseDistance: baseDistance
-        )
-
-        return Canvas { context, _ in
-            let dotDiameter = scaledDotDiameter.clamped(to: 2.25 ... 4)
-            let dotColor = color.opacity(0.4).cgColor ?? CGColor(gray: 0.0, alpha: 1.0)
-
-            context.withCGContext { cgContext in
-                cgContext.setFillColor(dotColor)
-
-                let startRow = metrics.startRow
-                let endRow = metrics.endRow
-                let startCol = metrics.startColumn
-                let endCol = metrics.endColumn
-
-                let halfWidth = metrics.halfViewWidth
-                let halfHeight = metrics.halfViewHeight
-                let cameraOffsetX = metrics.cameraCenterX * zoom
-                let cameraOffsetY = metrics.cameraCenterY * zoom
-                let scaledBaseDistance = baseDistance * zoom
-                let radius = dotDiameter / 2
-
-                var points = [CGPoint]()
-                points.reserveCapacity((endRow - startRow + 1) * (endCol - startCol + 1))
-
-                for row in stride(from: startRow, through: endRow, by: 1) {
-                    let baseY = CGFloat(row) * scaledBaseDistance + halfHeight - cameraOffsetY
-
-                    for col in stride(from: startCol, through: endCol, by: 1) {
-                        let x = CGFloat(col) * scaledBaseDistance + halfWidth - cameraOffsetX
-                        points.append(CGPoint(x: x, y: baseY))
-                    }
-                }
-
-                let combinedPath = CGMutablePath()
-                points.withUnsafeBufferPointer { buffer in
-                    for point in buffer {
-                        let ellipse = CGRect(
-                            x: point.x - radius,
-                            y: point.y - radius,
-                            width: dotDiameter,
-                            height: dotDiameter
-                        )
-                        combinedPath.addEllipse(in: ellipse)
-                    }
-                }
-                cgContext.addPath(combinedPath)
-                cgContext.fillPath()
-            }
-        }
-    }
+    func renderDots(viewSize: CGSize, color: Color) -> some View {
+          MetalView(
+              color: color,
+              viewSize: viewSize,
+              cameraCenterX: cameraCenterX,
+              cameraCenterY: cameraCenterY,
+              cameraZoom: cameraZoom
+          )
+      }
 
     func copy() -> Space {
         let copiedWindows = windows.map { window -> Window in
