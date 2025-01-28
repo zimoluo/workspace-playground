@@ -75,8 +75,8 @@ struct WindowView: View {
                     }
             )
             .offset(
-                x: -window.state.width/2 + (isCloseButtonActive ? 9 : 8),
-                y: -window.state.height/2 + (isCloseButtonActive ? 9 : 8)
+                x: -window.state.width/2 + (isCloseButtonActive ? 9 : 8.9289),
+                y: -window.state.height/2 + (isCloseButtonActive ? 9 : 8.9289)
             )
 
             Group {
