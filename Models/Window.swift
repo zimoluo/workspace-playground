@@ -132,14 +132,24 @@ enum WindowType: String, Codable, CaseIterable {
         }
     }
 
-    var glyph: String {
+    var glyph: WindowGlyph {
         switch self {
-        case .blank: return "square.dashed"
-        case .notes: return "note.text"
-        case .clock: return "clock"
-        case .digitalClock: return "numbers.rectangle"
-        case .themeMaker: return "paintpalette"
-        case .stopwatch: return "stopwatch"
+        case .blank: return WindowGlyph(mode: .system, key: "square.dashed")
+        case .notes: return WindowGlyph(mode: .system, key: "note.text")
+        case .clock: return WindowGlyph(mode: .system, key: "clock")
+        case .digitalClock: return WindowGlyph(mode: .system, key: "numbers.rectangle")
+        case .themeMaker: return WindowGlyph(mode: .system, key: "paintpalette")
+        case .stopwatch: return WindowGlyph(mode: .system, key: "stopwatch")
         }
     }
+}
+
+enum WindowGlyphMode: Codable {
+    case system
+    case custom
+}
+
+struct WindowGlyph: Codable {
+    var mode: WindowGlyphMode
+    var key: String
 }

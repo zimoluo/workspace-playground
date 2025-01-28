@@ -497,15 +497,29 @@ struct WindowMenuView: View {
                     space.addWindow(type: windowType)
                 }
             }) {
-                Image(systemName: windowType.glyph)
-                    .font(.system(size: 32))
-                    .foregroundColor(itemColor)
-                    .scrollTransition { content, phase in
-                        content
-                            .opacity(phase.isIdentity ? 1 : 0)
-                            .scaleEffect(phase.isIdentity ? 1 : 0.6)
-                            .blur(radius: phase.isIdentity ? 0 : 10)
-                    }
+                if windowType.glyph.mode == .system {
+                    Image(systemName: windowType.glyph.key)
+                        .font(.system(size: 32))
+                        .foregroundColor(itemColor)
+                        .scrollTransition { content, phase in
+                            content
+                                .opacity(phase.isIdentity ? 1 : 0)
+                                .scaleEffect(phase.isIdentity ? 1 : 0.6)
+                                .blur(radius: phase.isIdentity ? 0 : 10)
+                        }
+                } else {
+                    Image(windowType.glyph.key)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 32, height: 32)
+                        .foregroundColor(itemColor)
+                        .scrollTransition { content, phase in
+                            content
+                                .opacity(phase.isIdentity ? 1 : 0)
+                                .scaleEffect(phase.isIdentity ? 1 : 0.6)
+                                .blur(radius: phase.isIdentity ? 0 : 10)
+                        }
+                }
             }
         }
     }
