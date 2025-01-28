@@ -57,8 +57,8 @@ class MetalDotsRenderer {
         pipelineDescriptor.fragmentFunction = fragmentFunction
         pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         pipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
-        pipelineDescriptor.colorAttachments[0].rgbBlendOperation = .subtract
-        pipelineDescriptor.colorAttachments[0].alphaBlendOperation = .subtract
+        pipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
+        pipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
         pipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
         pipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
         pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
@@ -78,8 +78,8 @@ class MetalDotsRenderer {
         var uniforms = Uniforms(
             viewportSize: SIMD2<Float>(Float(viewSize.width), Float(viewSize.height)),
             dotSpacing: 36.0,
-            dotRadius: 3.0,
-            color: color.opacity(0.4).toSIMD4Float(),
+            dotRadius: 1.6,
+            color: color.opacity(0.67).toSIMD4Float(),
             cameraCenterX: Float(cameraCenterX),
             cameraCenterY: Float(cameraCenterY),
             cameraZoom: Float(cameraZoom)
@@ -100,8 +100,6 @@ class MetalDotsRenderer {
         commandBuffer.commit()
     }
 }
-
-// MARK: - Metal View
 
 struct MetalView: UIViewRepresentable {
     var color: Color

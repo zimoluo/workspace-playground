@@ -42,7 +42,9 @@ fragment float4 fragmentShader(VertexOut in [[stage_in]],
     
     float dist = length(gridPos);
     
-    float dot = 1.0 - smoothstep(uniforms.dotRadius - 0.5, uniforms.dotRadius + 0.5, dist);
-    
-    return float4(uniforms.color.rgb, uniforms.color.a * dot);
+    if (dist < uniforms.dotRadius) {
+        return float4(uniforms.color.rgb, uniforms.color.a);
+    } else {
+        return float4(0.0, 0.0, 0.0, 0.0);
+    }
 }

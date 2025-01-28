@@ -18,9 +18,6 @@ class Space: ObservableObject {
 
     var disableDots: Bool
 
-    static let dotBaseDistance: CGFloat = 36
-    static let dotBaseDiameter: CGFloat = 3
-
     init(windows: [Window] = [], name: String = "New Space", cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1, disableDots: Bool = false) {
         self.id = UUID()
         self.dateCreated = Date()
