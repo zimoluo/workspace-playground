@@ -40,13 +40,21 @@ fragment float4 fragmentShader(VertexOut in [[stage_in]],
     float2 gridPos = worldPos - (offset * uniforms.dotSpacing);
     gridPos = gridPos - uniforms.dotSpacing * 0.5;
     
+    float adjustedRadius = uniforms.dotRadius;
+    float radiusZoomProduct = uniforms.dotRadius * uniforms.cameraZoom;
+    
+    if (radiusZoomProduct < 1.2) {
+        adjustedRadius = 1.2 / uniforms.cameraZoom;
+    } else if (radiusZoomProduct > 2.833) {
+        adjustedRadius = 2.833 / uniforms.cameraZoom;
+    }
+    
     float dist = length(gridPos);
     
-    float adjustedDotRadius = min(max(uniforms.dotRadius / uniforms.cameraZoom, 1.2), 2.133);
-    
-    if (dist < adjustedDotRadius) {
+    if (dist < adjustedRadius) {
         return float4(uniforms.color.rgb, uniforms.color.a);
     } else {
         return float4(0.0, 0.0, 0.0, 0.0);
     }
 }
+
