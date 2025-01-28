@@ -83,92 +83,79 @@ struct StopwatchView: View {
 
     @ViewBuilder
     private var buttonsView: some View {
-        switch stopwatchState {
-        case .initial:
-            HStack {
-                Button(action: {
-                    withAnimation(.spring(duration: 0.3)) {
-                        startStopwatch()
-                    }
-                }) {
-                    Text("Start")
-                        .font(.system(size: 20, weight: .semibold))
-                        .padding(9)
-                        .frame(maxWidth: 240)
-                        .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
-                        .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
-                        .cornerRadius(16)
-                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
-                }
-            }
-            .padding(.horizontal, 16)
-
-        case .running:
-            HStack(spacing: 12) {
-                Button(action: { withAnimation(.spring(duration: 0.3)) {
+        HStack(spacing: stopwatchState == .initial ? 0 : 12) {
+            Button(action: {
+                if stopwatchState == .running {
                     lap()
-                }}) {
-                    Text("Lap")
-                        .font(.system(size: 20, weight: .semibold))
-                        .padding(9)
-                        .frame(maxWidth: .infinity)
-                        .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
-                        .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2))
-                        .cornerRadius(16)
-                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                } else if stopwatchState == .paused {
+                    resetStopwatch()
                 }
-
-                Button(action: {
-                    withAnimation(.spring(duration: 0.3)) {
-                        stopStopwatch()
-                    }
-                }) {
-                    Text("Stop")
-                        .font(.system(size: 20, weight: .semibold))
-                        .padding(9)
-                        .frame(maxWidth: .infinity)
-                        .foregroundColor(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5))
-                        .background(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1))
-                        .cornerRadius(16)
-                        .shadow(color: theme.tertiary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
-                }
+            }) {
+                Text(stopwatchState == .running ? "Lap" : "Reset")
+                    .font(.system(size: 20, weight: .semibold))
+                    .padding(9)
+                    .frame(maxWidth: .infinity)
+                    .lineLimit(1)
+                    .foregroundColor(themeColor(from: theme, for: stopwatchState == .running ? .secondary : .tertiary, in: colorScheme, level: 5))
+                    .background(themeColor(from: theme, for: stopwatchState == .running ? .secondary : .tertiary, in: colorScheme, level: 2))
+                    .cornerRadius(16)
+                    .shadow(color: (stopwatchState == .running ? theme.secondary : theme.tertiary).toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
             }
-            .padding(.horizontal)
+            .frame(maxWidth: stopwatchState == .initial ? 0 : .infinity)
+            .opacity(stopwatchState == .initial ? 0 : 1)
+            .animation(.spring(duration: 0.3), value: stopwatchState)
 
-        case .paused:
-            HStack(spacing: 12) {
-                Button(action: {
-                    withAnimation(.spring(duration: 0.3)) {
-                        resetStopwatch()
-                    }
-                }) {
-                    Text("Reset")
-                        .font(.system(size: 20, weight: .semibold))
-                        .padding(9)
-                        .frame(maxWidth: .infinity)
-                        .foregroundColor(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5))
-                        .background(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 2))
-                        .cornerRadius(16)
-                        .shadow(color: theme.tertiary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+            Button(action: {
+                switch stopwatchState {
+                case .initial: startStopwatch()
+                case .running: stopStopwatch()
+                case .paused: resumeStopwatch()
                 }
-
-                Button(action: {
-                    withAnimation(.spring(duration: 0.3)) {
-                        resumeStopwatch()
-                    }
-                }) {
-                    Text("Resume")
-                        .font(.system(size: 20, weight: .semibold))
-                        .padding(9)
-                        .frame(maxWidth: .infinity)
-                        .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5))
-                        .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
-                        .cornerRadius(16)
-                        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
-                }
+            }) {
+                Text(mainButtonTitle)
+                    .font(.system(size: 20, weight: .semibold))
+                    .padding(9)
+                    .frame(maxWidth: stopwatchState == .initial ? 240 : .infinity)
+                    .lineLimit(1)
+                    .foregroundColor(mainButtonForegroundColor)
+                    .background(mainButtonBackgroundColor)
+                    .cornerRadius(16)
+                    .shadow(color: mainButtonShadowColor, radius: 12, y: 8)
             }
-            .padding(.horizontal)
+            .animation(.spring(duration: 0.3), value: stopwatchState)
         }
+        .animation(.spring(duration: 0.3), value: stopwatchState)
+        .padding(.horizontal, 12)
+    }
+
+    private var mainButtonTitle: String {
+        switch stopwatchState {
+        case .initial: return "Start"
+        case .running: return "Stop"
+        case .paused: return "Resume"
+        }
+    }
+
+    private var mainButtonForegroundColor: Color {
+        switch stopwatchState {
+        case .initial, .paused:
+            return themeColor(from: theme, for: .secondary, in: colorScheme, level: 5)
+        case .running:
+            return themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5)
+        }
+    }
+
+    private var mainButtonBackgroundColor: Color {
+        switch stopwatchState {
+        case .initial, .paused:
+            return themeColor(from: theme, for: .secondary, in: colorScheme, level: 1)
+        case .running:
+            return themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1)
+        }
+    }
+
+    private var mainButtonShadowColor: Color {
+        (stopwatchState == .running ? theme.tertiary : theme.secondary).toShadow(opacityMultiplier: 0.8)
     }
 
     private var currentElapsedTime: TimeInterval {
