@@ -154,7 +154,7 @@ struct ContentView: View {
                                 Image(systemName: "command").font(.title2)
                                     .frame(width: 24, height: 24)
                                     .foregroundColor(
-                                        selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 4) : themeColor(from: theme, for: .primary, in: colorScheme, level: 1)
+                                        selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 5) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                                     )
                                 Text("Theme Maker")
                                     .foregroundColor(
