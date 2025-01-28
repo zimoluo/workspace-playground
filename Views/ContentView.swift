@@ -372,7 +372,9 @@ struct SpaceCardView: View {
             .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
             .contextMenu {
                 Button {
-                    space.clusterWindows()
+                    withAnimation(.spring(duration: 0.5)) {
+                        space.clusterWindows()
+                    }
                 } label: {
                     Label("Organize windows", systemImage: "rectangle.3.group")
                 }
@@ -394,7 +396,6 @@ struct SpaceCardView: View {
                     color: themeColor(from: theme, for: .primary, in: colorScheme, level: 2),
                     windowCornerRadius: 12
                 )
-                .clipShape(RoundedRectangle(cornerRadius: 16))
             }
         }
     }
