@@ -13,6 +13,10 @@ struct WindowTypeView: View {
             ClockWidget()
         case .digitalClock:
             DigitalClock()
+        case .themeMaker:
+            ThemeMaker()
+                .padding(12)
+                .frame(maxWidth: .infinity)
         }
     }
 }
