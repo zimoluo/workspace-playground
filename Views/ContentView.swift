@@ -233,6 +233,7 @@ struct ContentView: View {
                     .font(.system(size: 24))
                     .padding(16)
                     .foregroundColor(columnVisibility == .detailOnly ? (selectedScreen.type == .space ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 0) : themeColor(from: theme, for: .secondary, in: colorScheme, level: 0)) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+                    .hoverEffect(.lift)
             }
             .position(x: columnVisibility == .detailOnly ? 36 : 32, y: 26)
 

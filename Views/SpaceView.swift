@@ -222,6 +222,7 @@ struct SpaceView: View {
                                 .safeAreaPadding(.horizontal, 12)
                                 .safeAreaPadding(.vertical, 12)
                             }
+                            .hoverEffect(.lift)
 
                             Button(action: {
                                 withAnimation(.spring(duration: 0.5)) {
@@ -235,6 +236,7 @@ struct SpaceView: View {
                                     .safeAreaPadding(.horizontal, 12)
                                     .safeAreaPadding(.vertical, 12)
                             }
+                            .hoverEffect(.lift)
 
                             Button(action: {
                                 withAnimation(.spring(duration: 0.2)) {
@@ -250,6 +252,7 @@ struct SpaceView: View {
                                     .safeAreaPadding(.horizontal, 12)
                                     .safeAreaPadding(.vertical, 12)
                             }
+                            .hoverEffect(.lift)
                         }
                         .safeAreaPadding(.horizontal, 8)
                         .safeAreaPadding(.vertical, 24)
