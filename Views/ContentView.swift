@@ -386,7 +386,7 @@ struct SpaceCardView: View {
                         space.updateDateModified()
                     }
                 } label: {
-                    Label("Toggle dot grid", systemImage: "square.grid.3x3.square")
+                    Label("Show/hide dot grid", systemImage: "square.grid.3x3.square")
                 }
 
                 Button {
