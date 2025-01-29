@@ -80,7 +80,7 @@ struct SpaceView: View {
                             viewSize: geometry.size,
                             color: colorScheme == .light
                                 ? theme.secondary.shadeMap(numShades: 19).shadeMap[7].color
-                                : theme.secondary.shadeMap(numShades: 19).shadeMap[5].color
+                                : theme.secondary.shadeMap(numShades: 19).shadeMap[5].color.opacity(0.67)
                         )
                     }
 
