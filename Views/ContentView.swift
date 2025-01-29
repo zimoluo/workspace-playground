@@ -28,7 +28,7 @@ struct ContentView: View {
                         Spacer()
                     }
                     .padding(20)
-                    .padding(.top, 32)
+                    .padding(.top, 40)
 
                     VStack(spacing: 8) {
                         SectionView(header: "Spaces", trailing: {
@@ -234,7 +234,7 @@ struct ContentView: View {
                     .padding(16)
                     .foregroundColor(columnVisibility == .detailOnly ? (selectedScreen.type == .space ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 0) : themeColor(from: theme, for: .secondary, in: colorScheme, level: 0)) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
             }
-            .position(x: columnVisibility == .detailOnly ? 36 : 32, y: 24)
+            .position(x: columnVisibility == .detailOnly ? 36 : 32, y: 27)
 
             PopUpView().ignoresSafeArea()
         }
