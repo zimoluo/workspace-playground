@@ -104,6 +104,7 @@ struct ContentView: View {
                                                         .stroke(themeColor(from: theme, for: .primary, in: .light, level: 5), lineWidth: 3)
                                                         .frame(width: 33, height: 33)
                                                 )
+                                                .hoverEffect(.lift)
                                         }
                                         .buttonStyle(PlainButtonStyle())
                                         .scrollTransition { content, phase in
@@ -133,6 +134,7 @@ struct ContentView: View {
                                                     .scaleEffect(phase.isIdentity ? 1 : 0.6)
                                                     .blur(radius: phase.isIdentity ? 0 : 10)
                                             }
+                                            .hoverEffect(.lift)
                                     }
                                 }
                                 .padding(16)

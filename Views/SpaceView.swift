@@ -527,6 +527,7 @@ struct WindowMenuView: View {
                         }
                 }
             }
+            .hoverEffect(.lift)
         }
     }
 }

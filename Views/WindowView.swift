@@ -51,6 +51,7 @@ struct WindowView: View {
             }
             .frame(width: 30, height: 30)
             .contentShape(Circle())
+            .hoverEffect(.lift)
             .onHover { hovering in
                 withAnimation(.spring(duration: 0.3)) {
                     isCloseButtonActive = hovering
@@ -88,6 +89,7 @@ struct WindowView: View {
             .frame(width: 48, height: 48)
             .contentShape(Circle())
             .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isResizeHandleActive ? 0.75 : 0.6))
+            .hoverEffect(.lift)
             .onHover { hovering in
                 withAnimation(.spring(duration: 0.3)) {
                     isResizeHandleHovered = hovering
