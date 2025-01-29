@@ -37,6 +37,42 @@ struct ThemeSelectorView: View {
                                     .scaleEffect(phase.isIdentity ? 1 : 0.6)
                                     .blur(radius: phase.isIdentity ? 0 : 10)
                             }
+                            .contextMenu {
+                                Button {
+                                    withAnimation(.spring(duration: 0.15)) {
+                                        saveTheme(theme.id)
+                                        selectedThemeId = theme.id
+                                    }
+                                } label: {
+                                    Label("Save to preset", systemImage: "tray.and.arrow.down")
+                                }
+
+                                Button {
+                                    withAnimation(.spring(duration: 0.15)) {
+                                        applyTheme(theme.id)
+                                        selectedThemeId = theme.id
+                                    }
+                                } label: {
+                                    Label("Apply and edit", systemImage: "pencil.and.outline")
+                                }
+
+                                Button {
+                                    let newTheme = theme.deepCopy()
+
+                                    withAnimation(.spring(duration: 0.15)) {
+                                        modelContext.insert(newTheme)
+                                        selectedThemeId = newTheme.id
+                                    }
+                                } label: {
+                                    Label("Duplicate", systemImage: "doc.on.doc")
+                                }
+
+                                Button(role: .destructive) {
+                                    deleteTheme(theme.id)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                     }
                 }
             }
