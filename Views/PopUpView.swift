@@ -12,20 +12,17 @@ struct PopUpView: View {
                     .opacity(colorScheme == .light ? 0.25 : 0.75)
                     .ignoresSafeArea()
                     .transition(.opacity)
-                    .animation(.spring(duration: 0.1), value: popUp.type)
 
                 contentView()
                     .ignoresSafeArea()
                     .transition(
-                        AnyTransition.asymmetric(
-                            insertion: .opacity.combined(with: .offset(y: 120)),
-                            removal: .opacity.combined(with: .offset(y: -40))
+                        .opacity.combined(
+                            with: .offset(y: UIScreen.main.bounds.height + 100)
                         )
                     )
-                    .animation(.spring(duration: 0.4), value: popUp.type)
             }
         }
-        .animation(.spring(duration: 0.2), value: popUp.type)
+        .animation(.spring(duration: 0.45), value: popUp.type)
     }
 
     @ViewBuilder
