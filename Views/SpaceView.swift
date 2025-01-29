@@ -502,6 +502,7 @@ struct WindowMenuView: View {
                     Image(systemName: windowType.glyph.key)
                         .font(.system(size: 32))
                         .foregroundColor(itemColor)
+                        .shadow(color: theme.tertiary.toShadow(), radius: 6)
                         .scrollTransition { content, phase in
                             content
                                 .opacity(phase.isIdentity ? 1 : 0)
@@ -514,6 +515,7 @@ struct WindowMenuView: View {
                         .scaledToFit()
                         .frame(width: 32, height: 32)
                         .foregroundColor(itemColor)
+                        .shadow(color: theme.tertiary.toShadow(), radius: 6)
                         .scrollTransition { content, phase in
                             content
                                 .opacity(phase.isIdentity ? 1 : 0)
