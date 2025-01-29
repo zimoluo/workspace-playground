@@ -130,6 +130,7 @@ struct StopwatchView: View {
             .frame(maxWidth: stopwatchState == .initial ? 0 : .infinity)
             .opacity(stopwatchState == .initial ? 0 : 1)
             .animation(.spring(duration: 0.3), value: stopwatchState)
+            .gesture(DragGesture().onChanged { _ in })
 
             Button(action: {
                 switch stopwatchState {
@@ -152,6 +153,7 @@ struct StopwatchView: View {
                     .shadow(color: mainButtonShadowColor, radius: 12, y: 8)
             }
             .animation(.spring(duration: 0.3), value: stopwatchState)
+            .gesture(DragGesture().onChanged { _ in })
         }
         .animation(.spring(duration: 0.3), value: stopwatchState)
         .padding(.horizontal, 12)
