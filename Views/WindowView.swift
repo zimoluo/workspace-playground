@@ -36,7 +36,7 @@ struct WindowView: View {
 
     var body: some View {
         ZStack {
-            WindowTypeView(windowData: window.data)
+            window.data.type.view
                 .frame(width: window.state.width, height: window.state.height)
                 .background(LinearGradient(colors: [colorScheme == .light ?theme.secondary.shadeMap(numShades: 26).shadeMap[1].color : theme.secondary.shadeMap(numShades: 40).shadeMap[35].color, colorScheme == .light ? theme.secondary.shadeMap(numShades: 26).shadeMap[0].color : theme.secondary.shadeMap(numShades: 40).shadeMap[33].color], startPoint: .bottom, endPoint: .top))
                 .cornerRadius(16)
