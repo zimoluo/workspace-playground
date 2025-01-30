@@ -78,8 +78,8 @@ class MetalDotsRenderer {
         
         var uniforms = Uniforms(
             viewportSize: SIMD2<Float>(Float(viewSize.width), Float(viewSize.height)),
-            dotSpacing: 36.0,
-            dotRadius: 1.84,
+            dotSpacing: 28.0,
+            dotRadius: 1.42,
             color: color.opacity(0.8).toSIMD4Float(),
             cameraCenterX: Float(cameraCenterX),
             cameraCenterY: Float(cameraCenterY),
