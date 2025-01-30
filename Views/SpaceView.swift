@@ -206,7 +206,7 @@ struct SpaceView: View {
                             )
                             .safeAreaPadding(.horizontal, 16)
                             .safeAreaPadding(.vertical, 12)
-                            .frame(maxWidth: 200)
+                            .frame(maxWidth: 194)
                             .cornerRadius(16)
                             .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
                             .padding(.trailing, isNameEditing ? 16 : 0)
