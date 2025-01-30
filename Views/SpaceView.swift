@@ -329,7 +329,7 @@ struct SpaceView: View {
         var displayLink: CADisplayLink?
 
         displayLink = CADisplayLink(target: BlockOperation {
-            guard !isDragging else {
+            guard !isDragging && !space.lockCamera else {
                 displayLink?.invalidate()
                 return
             }
