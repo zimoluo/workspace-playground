@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ThemeSelectorView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Theme.dateCreated, order: .reverse) var themes: [Theme]
+    @Query(sort: \Theme.dateModified, order: .reverse) var themes: [Theme]
     @State var selectedThemeId: UUID? = nil
     @Environment(\.theme) private var currentTheme
     @Environment(\.colorScheme) private var colorScheme
@@ -157,6 +157,7 @@ struct ThemeSelectorView: View {
         matchingTheme.secondary = copiedTheme.secondary
         matchingTheme.tertiary = copiedTheme.tertiary
         matchingTheme.mainGradient = copiedTheme.mainGradient
+        matchingTheme.dateModified = Date()
     }
 
     private func createNewTheme() {

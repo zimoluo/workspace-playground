@@ -13,6 +13,7 @@ class Theme: ObservableObject, Equatable {
     @Attribute(.unique) var id: UUID
 
     var dateCreated: Date
+    var dateModified: Date
 
     var primary: RGBAColor
     var secondary: RGBAColor
@@ -43,6 +44,7 @@ class Theme: ObservableObject, Equatable {
         self.mainGradient = mainGradient
         self.id = UUID()
         self.dateCreated = Date()
+        self.dateModified = Date()
         self.version = 1
     }
 

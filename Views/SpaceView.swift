@@ -89,6 +89,8 @@ struct SpaceView: View {
                         .gesture(
                             DragGesture()
                                 .onChanged { value in
+                                    if space.lockCamera { return }
+
                                     if !isDragging {
                                         isDragging = true
                                     }
@@ -109,6 +111,8 @@ struct SpaceView: View {
                                     dragVelocity = incrementalTranslation
                                 }
                                 .onEnded { _ in
+                                    if space.lockCamera { return }
+
                                     lastDragTranslation = .zero
                                     isDragging = false
                                     applyMomentum()
@@ -118,6 +122,8 @@ struct SpaceView: View {
                         .gesture(
                             MagnifyGesture()
                                 .onChanged { value in
+                                    if space.lockCamera { return }
+
                                     if dragVelocity != .zero {
                                         dragVelocity = .zero
                                     }
@@ -151,6 +157,8 @@ struct SpaceView: View {
                                     space.cameraCenterY = adjustedCenterY.clamped(to: minCameraCenterY ... maxCameraCenterY)
                                 }
                                 .onEnded { _ in
+                                    if space.lockCamera { return }
+
                                     currentZoom = space.cameraZoom
                                     initialPinchPoint = .zero
                                     space.updateDateModified()
@@ -205,6 +213,23 @@ struct SpaceView: View {
 
                             Button(action: {
                                 withAnimation(.spring(duration: 0.5)) {
+                                    space.lockCamera.toggle()
+                                    space.updateDateModified()
+                                }
+                            }) {
+                                Image(systemName: space.lockCamera ? "lock.slash" : "lock")
+                                    .font(.title2)
+                                    .themedForeground(using: theme, in: colorScheme, category: .tertiary)
+                                    .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                                    .safeAreaPadding(.horizontal, 12)
+                                    .safeAreaPadding(.vertical, 12)
+                                    .contentTransition(.symbolEffect(.replace))
+                                    .frame(width: 44, height: 40)
+                            }
+                            .hoverEffect(.lift)
+
+                            Button(action: {
+                                withAnimation(.spring(duration: 0.5)) {
                                     space.disableDots.toggle()
                                     space.updateDateModified()
                                 }
@@ -213,7 +238,7 @@ struct SpaceView: View {
                                     Image(systemName: "square")
                                         .font(.title2)
                                         .themedForeground(using: theme, in: colorScheme, category: .tertiary)
-                                        .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                                        .shadow(color: theme.tertiary.toShadow(), radius: 4)
                                     Image(systemName: "square.grid.3x3.square")
                                         .font(.title2)
                                         .themedForeground(using: theme, in: colorScheme, category: .tertiary)
@@ -232,7 +257,7 @@ struct SpaceView: View {
                                 Image(systemName: "rectangle.3.group")
                                     .font(.title2)
                                     .themedForeground(using: theme, in: colorScheme, category: .tertiary)
-                                    .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                                    .shadow(color: theme.tertiary.toShadow(), radius: 4)
                                     .safeAreaPadding(.horizontal, 12)
                                     .safeAreaPadding(.vertical, 12)
                             }
@@ -248,7 +273,7 @@ struct SpaceView: View {
                                 Image(systemName: "square.and.pencil")
                                     .font(.title2)
                                     .themedForeground(using: theme, in: colorScheme, category: .tertiary)
-                                    .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                                    .shadow(color: theme.tertiary.toShadow(), radius: 4)
                                     .safeAreaPadding(.horizontal, 12)
                                     .safeAreaPadding(.vertical, 12)
                             }

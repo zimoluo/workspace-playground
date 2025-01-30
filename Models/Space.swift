@@ -17,11 +17,15 @@ class Space: ObservableObject {
     var cameraZoom: CGFloat
 
     var disableDots: Bool
+    var lockCamera: Bool
 
-    init(windows: [Window] = [], name: String = "New Space", cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1, disableDots: Bool = false) {
+    var version: Int
+
+    init(windows: [Window] = [], name: String = "New Space", cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1, disableDots: Bool = false, lockCamera: Bool = false) {
         self.id = UUID()
         self.dateCreated = Date()
         self.dateModified = Date()
+        self.version = 1
 
         self.name = name
         self.windows = windows
@@ -29,6 +33,7 @@ class Space: ObservableObject {
         self.cameraCenterY = cameraCenterY
         self.cameraZoom = cameraZoom
         self.disableDots = disableDots
+        self.lockCamera = lockCamera
     }
 
     func renderDots(viewSize: CGSize, color: Color) -> some View {
@@ -47,7 +52,7 @@ class Space: ObservableObject {
             newWindow.id = UUID()
             return newWindow
         }
-        return Space(windows: copiedWindows, name: name, cameraCenterX: cameraCenterX, cameraCenterY: cameraCenterY, cameraZoom: cameraZoom, disableDots: disableDots)
+        return Space(windows: copiedWindows, name: name, cameraCenterX: cameraCenterX, cameraCenterY: cameraCenterY, cameraZoom: cameraZoom, disableDots: disableDots, lockCamera: lockCamera)
     }
 
     func updateDateModified() {

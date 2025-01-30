@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Theme.dateCreated, order: .reverse) var themes: [Theme]
+    @Query(sort: \Theme.dateModified, order: .reverse) var themes: [Theme]
     @Query(sort: \Space.dateModified, order: .reverse) var spaces: [Space]
     @Environment(\.theme) private var theme
     @Environment(\.settings) private var settings
@@ -236,6 +236,7 @@ struct ContentView: View {
                     .padding(16)
                     .foregroundColor(columnVisibility == .detailOnly ? (selectedScreen.type == .space ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 0) : themeColor(from: theme, for: .secondary, in: colorScheme, level: 0)) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
                     .hoverEffect(.lift)
+                    .shadow(color: columnVisibility == .detailOnly ? (selectedScreen.type == .space ? theme.tertiary.toShadow() : theme.secondary.toShadow()) : theme.primary.toShadow(), radius: 4)
             }
             .position(x: columnVisibility == .detailOnly ? 36 : 32, y: 26)
 
@@ -389,7 +390,16 @@ struct SpaceCardView: View {
                         space.updateDateModified()
                     }
                 } label: {
-                    Label("Show/hide dot grid", systemImage: "square.grid.3x3.square")
+                    Label("\(space.disableDots ? "Show" : "Hide") dot grid", systemImage: "square.grid.3x3.square")
+                }
+
+                Button {
+                    withAnimation(.spring(duration: 0.3)) {
+                        space.lockCamera.toggle()
+                        space.updateDateModified()
+                    }
+                } label: {
+                    Label("\(space.lockCamera ? "Unlock" : "Lock") frame", systemImage: space.lockCamera ? "lock.slash" : "lock")
                 }
 
                 Button {
