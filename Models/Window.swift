@@ -107,6 +107,11 @@ struct WindowData: Codable {
             updatedData.minWidth = 280
             updatedData.maxHeight = 600
             updatedData.minHeight = 340
+        case .dashboard:
+            updatedData.maxWidth = 400
+            updatedData.minWidth = 200
+            updatedData.maxHeight = 330
+            updatedData.minHeight = 300
         }
 
         return updatedData
@@ -118,6 +123,7 @@ enum WindowType: String, Codable, CaseIterable {
     case stopwatch
     case digitalClock
     case notes
+    case dashboard
     case blank
     case themeMaker
 
@@ -129,6 +135,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .digitalClock: return (240, 150)
         case .themeMaker: return (700, 676)
         case .stopwatch: return (300, 360)
+        case .dashboard: return (250, 320)
         }
     }
 
@@ -140,6 +147,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .digitalClock: return WindowGlyph(mode: .custom, key: "DigitalClock")
         case .themeMaker: return WindowGlyph(mode: .system, key: "command")
         case .stopwatch: return WindowGlyph(mode: .system, key: "stopwatch")
+        case .dashboard: return WindowGlyph(mode: .system, key: "mappin.and.ellipse")
         }
     }
 
@@ -160,6 +168,8 @@ enum WindowType: String, Codable, CaseIterable {
                 .frame(maxWidth: .infinity)
         case .stopwatch:
             StopwatchView()
+        case .dashboard:
+            DashboardView()
         }
     }
 }
