@@ -139,10 +139,12 @@ struct ThemeSelectorView: View {
 
         let copiedTheme = matchingTheme.deepCopy()
 
-        currentTheme.primary = copiedTheme.primary
-        currentTheme.secondary = copiedTheme.secondary
-        currentTheme.tertiary = copiedTheme.tertiary
-        currentTheme.mainGradient = copiedTheme.mainGradient
+        withAnimation(.spring(duration: 0.15)) {
+            currentTheme.primary = copiedTheme.primary
+            currentTheme.secondary = copiedTheme.secondary
+            currentTheme.tertiary = copiedTheme.tertiary
+            currentTheme.mainGradient = copiedTheme.mainGradient
+        }
     }
 
     private func saveTheme(_ id: UUID?) {
@@ -157,7 +159,10 @@ struct ThemeSelectorView: View {
         matchingTheme.secondary = copiedTheme.secondary
         matchingTheme.tertiary = copiedTheme.tertiary
         matchingTheme.mainGradient = copiedTheme.mainGradient
-        matchingTheme.dateModified = Date()
+
+        withAnimation(.spring(duration: 0.15)) {
+            matchingTheme.dateModified = Date()
+        }
     }
 
     private func createNewTheme() {
