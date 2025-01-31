@@ -68,6 +68,8 @@ struct MarkerView: View {
                 .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5).opacity(0.85))
         }
         .frame(width: hitboxSize, height: hitboxSize)
+        .contentShape(Circle())
+        .hoverEffect(.lift)
         .position(x: marker.x, y: marker.y)
         .onTapGesture {
             withAnimation(.smooth(duration: 0.4)) {
