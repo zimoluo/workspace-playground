@@ -408,7 +408,7 @@ struct SpaceCardView: View {
                         space.updateDateModified()
                     }
                 } label: {
-                    Label("\(space.showMarkers ? "Hide" : "Show") markers", systemImage: space.showMarkers ? "mappin" : "mappin.slash")
+                    Label("\(space.showMarkers ? "Hide" : "Show") markers", systemImage: space.showMarkers ? "mappin.slash" : "mappin")
                 }
 
                 Button {
