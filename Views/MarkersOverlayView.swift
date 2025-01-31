@@ -29,6 +29,9 @@ struct MarkersOverlayView: View {
         .offset(x: totalOffset.x + parentSize.width / 2,
                 y: totalOffset.y + parentSize.height / 2)
         .scaleEffect(space.cameraZoom)
+        .transaction { transaction in
+            transaction.animation = nil
+        }
     }
 
     private func isWithinBounds(marker: SpaceMarker, left: CGFloat, right: CGFloat, top: CGFloat, bottom: CGFloat) -> Bool {
