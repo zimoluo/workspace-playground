@@ -279,7 +279,7 @@ struct SpaceView: View {
                                     }
 
                                     List {
-                                        ForEach(space.markers.reversed(), id: \.id) { marker in
+                                        ForEach(Array(space.markers.reversed().enumerated()), id: \.element.id) { index, marker in
                                             Button(action: {
                                                 withAnimation(.smooth(duration: 0.4)
                                                 ) {
@@ -311,7 +311,15 @@ struct SpaceView: View {
                                             }
                                             .frame(height: 70)
                                             .listRowSeparator(.hidden)
-                                            .listRowBackground(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+                                            .listRowBackground(Rectangle()
+                                                .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+                                                .clipShape(
+                                                    .rect(topLeadingRadius: index == 0 ? 12 : 0,
+                                                          bottomLeadingRadius: (index == space.markers.count - 1) ? 12 : 0,
+                                                          bottomTrailingRadius: (index == space.markers.count - 1) ? 12 : 0,
+                                                          topTrailingRadius: index == 0 ? 12 : 0)
+                                                )
+                                            )
                                             .swipeActions {
                                                 Button(role: .destructive) {
                                                     space.removeMarker(marker)
