@@ -3,7 +3,7 @@ import SwiftUI
 struct MarkersOverlayView: View {
     @ObservedObject var space: Space
     let parentSize: CGSize
-    let cullingBuffer: CGFloat = 10
+    let cullingBuffer: CGFloat = 12
 
     var body: some View {
         let totalOffset = CGPoint(x: -space.cameraCenterX, y: -space.cameraCenterY)
@@ -29,9 +29,6 @@ struct MarkersOverlayView: View {
         .offset(x: totalOffset.x + parentSize.width / 2,
                 y: totalOffset.y + parentSize.height / 2)
         .scaleEffect(space.cameraZoom)
-        .transaction { transaction in
-            transaction.animation = nil
-        }
     }
 
     private func isWithinBounds(marker: SpaceMarker, left: CGFloat, right: CGFloat, top: CGFloat, bottom: CGFloat) -> Bool {
@@ -52,25 +49,23 @@ struct MarkerView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        let baseSize = 21 / space.cameraZoom
-        let overlaySize = (14 * pow(marker.zoom, 0.25)) / space.cameraZoom
-        let shadowRadius = 8 / space.cameraZoom
-        let shadowYOffset = 4 / space.cameraZoom
+        let baseSize = 27 / space.cameraZoom
+        let iconSize = (17 * pow(marker.zoom, 0.28)) / space.cameraZoom
+        let shadowRadius = 13 / space.cameraZoom
+        let shadowYOffset = 7 / space.cameraZoom
 
-        Canvas { context, _ in
-            let fillColor = themeColor(from: theme, for: .secondary, in: colorScheme, level: 1).opacity(0.85)
-            let strokeColor = themeColor(from: theme, for: .secondary, in: colorScheme, level: 5).opacity(0.85)
+        ZStack {
+            Circle()
+                .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1).opacity(0.85))
+                .frame(width: baseSize, height: baseSize)
+                .shadow(color: theme.secondary.toShadow(opacityMultiplier: 1.2), radius: shadowRadius, y: shadowYOffset)
 
-            // Draw main circle
-            let mainCircle = Path(ellipseIn: CGRect(x: 0, y: 0, width: baseSize, height: baseSize))
-            context.fill(mainCircle, with: .color(fillColor))
-
-            // Draw overlay circle with stroke
-            let overlayCircle = Path(ellipseIn: CGRect(x: (baseSize - overlaySize) / 2, y: (baseSize - overlaySize) / 2, width: overlaySize, height: overlaySize))
-            context.stroke(overlayCircle, with: .color(strokeColor), lineWidth: 2.2 / space.cameraZoom)
+            Image(systemName: "mappin")
+                .resizable()
+                .scaledToFit()
+                .frame(width: iconSize, height: iconSize)
+                .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5).opacity(0.85))
         }
-        .frame(width: baseSize, height: baseSize)
-        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 1.2), radius: shadowRadius, y: shadowYOffset)
         .position(x: marker.x, y: marker.y)
         .onTapGesture {
             withAnimation(.smooth(duration: 0.4)) {
