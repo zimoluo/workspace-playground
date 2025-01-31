@@ -49,15 +49,30 @@ struct MarkerView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        return Circle()
-            .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1).opacity(0.85))
-            .frame(width: 21 / space.cameraZoom, height: 21 / space.cameraZoom)
-            .overlay(
-                Circle()
-                    .stroke(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5).opacity(0.85), lineWidth: 2.2 / space.cameraZoom)
-                    .frame(width: 14 / space.cameraZoom * pow(marker.zoom, 0.3), height: 17 / space.cameraZoom * pow(marker.zoom, 0.3))
-            )
-            .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 6 / space.cameraZoom, y: 4 / space.cameraZoom)
-            .position(x: marker.x, y: marker.y)
+        let baseSize = 21 / space.cameraZoom
+        let overlaySize = (14 * pow(marker.zoom, 0.25)) / space.cameraZoom
+        let shadowRadius = 6 / space.cameraZoom
+        let shadowYOffset = 4 / space.cameraZoom
+
+        Canvas { context, _ in
+            let fillColor = themeColor(from: theme, for: .secondary, in: colorScheme, level: 1).opacity(0.85)
+            let strokeColor = themeColor(from: theme, for: .secondary, in: colorScheme, level: 5).opacity(0.85)
+
+            // Draw main circle
+            let mainCircle = Path(ellipseIn: CGRect(x: 0, y: 0, width: baseSize, height: baseSize))
+            context.fill(mainCircle, with: .color(fillColor))
+
+            // Draw overlay circle with stroke
+            let overlayCircle = Path(ellipseIn: CGRect(x: (baseSize - overlaySize) / 2, y: (baseSize - overlaySize) / 2, width: overlaySize, height: overlaySize))
+            context.stroke(overlayCircle, with: .color(strokeColor), lineWidth: 2.2 / space.cameraZoom)
+        }
+        .frame(width: baseSize, height: baseSize)
+        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: shadowRadius, y: shadowYOffset)
+        .position(x: marker.x, y: marker.y)
+        .onTapGesture {
+            withAnimation(.smooth(duration: 0.4)) {
+                space.moveCameraToMarker(marker)
+            }
+        }
     }
 }

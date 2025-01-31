@@ -320,8 +320,18 @@ struct SpaceView: View {
                                                 }
                                             }
                                         }
+                                        .onMove { from, to in
+                                            let originalCount = space.markers.count
+                                            let adjustedFrom = originalCount - 1 - from.first!
+                                            let adjustedTo = originalCount - to
+
+                                            space.markers.move(fromOffsets: IndexSet(integer: adjustedFrom), toOffset: adjustedTo)
+                                        }
                                     }
                                     .listStyle(PlainListStyle())
+                                    .toolbar {
+                                        EditButton()
+                                    }
                                     .frame(maxWidth: .infinity)
                                     .frame(height: 240)
                                     .cornerRadius(12)
