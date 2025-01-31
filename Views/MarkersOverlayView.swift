@@ -49,7 +49,7 @@ struct MarkerView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        let hitboxSize = 50 / space.cameraZoom
+        let hitboxSize = 52 / space.cameraZoom
         let baseSize = 27 / space.cameraZoom
         let iconSize = (17 * pow(marker.zoom, 0.28)) / space.cameraZoom
         let shadowRadius = 13 / space.cameraZoom
