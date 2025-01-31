@@ -57,7 +57,14 @@ class Space: ObservableObject {
             newWindow.id = UUID()
             return newWindow
         }
-        return Space(windows: copiedWindows, name: name, cameraCenterX: cameraCenterX, cameraCenterY: cameraCenterY, cameraZoom: cameraZoom, showMarkers: showMarkers, markers: markers, disableDots: disableDots, lockCamera: lockCamera)
+
+        let copiedMarkers = markers.map { marker -> SpaceMarker in
+            var newMarker = marker
+            newMarker.id = UUID()
+            return newMarker
+        }
+
+        return Space(windows: copiedWindows, name: name, cameraCenterX: cameraCenterX, cameraCenterY: cameraCenterY, cameraZoom: cameraZoom, showMarkers: showMarkers, markers: copiedMarkers, disableDots: disableDots, lockCamera: lockCamera)
     }
 
     func updateDateModified() {
