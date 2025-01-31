@@ -54,7 +54,7 @@ struct MarkerView: View {
     var body: some View {
         let baseSize = 21 / space.cameraZoom
         let overlaySize = (14 * pow(marker.zoom, 0.25)) / space.cameraZoom
-        let shadowRadius = 6 / space.cameraZoom
+        let shadowRadius = 8 / space.cameraZoom
         let shadowYOffset = 4 / space.cameraZoom
 
         Canvas { context, _ in
@@ -70,7 +70,7 @@ struct MarkerView: View {
             context.stroke(overlayCircle, with: .color(strokeColor), lineWidth: 2.2 / space.cameraZoom)
         }
         .frame(width: baseSize, height: baseSize)
-        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: shadowRadius, y: shadowYOffset)
+        .shadow(color: theme.secondary.toShadow(opacityMultiplier: 1.2), radius: shadowRadius, y: shadowYOffset)
         .position(x: marker.x, y: marker.y)
         .onTapGesture {
             withAnimation(.smooth(duration: 0.4)) {
