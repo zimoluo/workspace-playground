@@ -403,9 +403,26 @@ struct SpaceCardView: View {
                 }
 
                 Button {
+                    withAnimation(.spring(duration: 0.3)) {
+                        space.showMarkers.toggle()
+                        space.updateDateModified()
+                    }
+                } label: {
+                    Label("\(space.showMarkers ? "Hide" : "Show") markers", systemImage: space.showMarkers ? "mappin" : "mappin.slash")
+                }
+
+                Button {
                     onDuplicate()
                 } label: {
                     Label("Duplicate", systemImage: "plus.square.on.square")
+                }
+
+                Button(role: .destructive) {
+                    withAnimation(.spring(duration: 0.3)) {
+                        space.removeAllMarkers()
+                    }
+                } label: {
+                    Label("Remove all markers", systemImage: "mappin.slash.circle")
                 }
 
                 Button(role: .destructive) {

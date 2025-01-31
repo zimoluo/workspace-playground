@@ -137,6 +137,11 @@ class Space: ObservableObject {
         removeMarker(marker.id)
     }
 
+    func removeAllMarkers() {
+        markers = []
+        updateDateModified()
+    }
+
     func moveCameraToMarker(_ marker: SpaceMarker) {
         cameraCenterX = marker.x
         cameraCenterY = marker.y
