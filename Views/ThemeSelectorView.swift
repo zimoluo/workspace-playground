@@ -64,7 +64,7 @@ struct ThemeSelectorView: View {
                                         selectedThemeId = newTheme.id
                                     }
                                 } label: {
-                                    Label("Duplicate", systemImage: "doc.on.doc")
+                                    Label("Duplicate", systemImage: "plus.square.on.square")
                                 }
 
                                 Button(role: .destructive) {

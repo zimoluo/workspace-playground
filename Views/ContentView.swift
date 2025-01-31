@@ -405,7 +405,7 @@ struct SpaceCardView: View {
                 Button {
                     onDuplicate()
                 } label: {
-                    Label("Duplicate", systemImage: "doc.on.doc")
+                    Label("Duplicate", systemImage: "plus.square.on.square")
                 }
 
                 Button(role: .destructive) {

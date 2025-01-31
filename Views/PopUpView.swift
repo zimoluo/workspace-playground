@@ -17,12 +17,12 @@ struct PopUpView: View {
                     .ignoresSafeArea()
                     .transition(
                         .opacity.combined(
-                            with: .offset(y: UIScreen.main.bounds.height + 100)
+                            with: .offset(y: UIScreen.main.bounds.height)
                         )
                     )
             }
         }
-        .animation(.spring(duration: 0.45), value: popUp.type)
+        .animation(.smooth(duration: 0.5), value: popUp.type)
     }
 
     @ViewBuilder
@@ -52,9 +52,7 @@ struct PopUpView: View {
                 ],
                 buttonText: "Got it!",
                 buttonAction: {
-                    withAnimation(.spring()) {
-                        popUp.type = .empty
-                    }
+                    popUp.type = .empty
                 }
             )
         }

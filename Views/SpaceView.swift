@@ -193,6 +193,7 @@ struct SpaceView: View {
                                         isNameEditing = true
                                     } else {
                                         isNameEditing = false
+                                        space.updateDateModified()
                                     }
                                 }
                             }
