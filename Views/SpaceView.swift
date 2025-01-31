@@ -50,25 +50,33 @@ struct SpaceView: View {
     @State private var listID = UUID()
 
     private var maxCameraCenterX: CGFloat {
-        let maxRightEdge = space.windows.map { $0.state.x + $0.state.width / 2 }.max() ?? 0
+        let maxWindowRightEdge = space.windows.map { $0.state.x + $0.state.width / 2 }.max() ?? 0
+        let maxMarkerX = space.markers.map { $0.x }.max() ?? 0
+        let maxRightEdge = max(maxWindowRightEdge, maxMarkerX)
         let calculatedMax = max(maxRightEdge + 150, 300)
         return min(calculatedMax, 1_000_000_000)
     }
 
     private var minCameraCenterX: CGFloat {
-        let minLeftEdge = space.windows.map { $0.state.x - $0.state.width / 2 }.min() ?? 0
+        let minWindowLeftEdge = space.windows.map { $0.state.x - $0.state.width / 2 }.min() ?? 0
+        let minMarkerX = space.markers.map { $0.x }.min() ?? 0
+        let minLeftEdge = min(minWindowLeftEdge, minMarkerX)
         let calculatedMin = min(minLeftEdge - 150, -300)
         return max(calculatedMin, -1_000_000_000)
     }
 
     private var maxCameraCenterY: CGFloat {
-        let maxBottomEdge = space.windows.map { $0.state.y + $0.state.height / 2 }.max() ?? 0
+        let maxWindowBottomEdge = space.windows.map { $0.state.y + $0.state.height / 2 }.max() ?? 0
+        let maxMarkerY = space.markers.map { $0.y }.max() ?? 0
+        let maxBottomEdge = max(maxWindowBottomEdge, maxMarkerY)
         let calculatedMax = max(maxBottomEdge + 150, 300)
         return min(calculatedMax, 1_000_000_000)
     }
 
     private var minCameraCenterY: CGFloat {
-        let minTopEdge = space.windows.map { $0.state.y - $0.state.height / 2 }.min() ?? 0
+        let minWindowTopEdge = space.windows.map { $0.state.y - $0.state.height / 2 }.min() ?? 0
+        let minMarkerY = space.markers.map { $0.y }.min() ?? 0
+        let minTopEdge = min(minWindowTopEdge, minMarkerY)
         let calculatedMin = min(minTopEdge - 150, -300)
         return max(calculatedMin, -1_000_000_000)
     }
