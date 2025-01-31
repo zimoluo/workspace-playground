@@ -260,6 +260,7 @@ struct SpaceView: View {
                                             withAnimation(.snappy(duration: 0.4)) {
                                                 space.showMarkers.toggle()
                                             }
+                                            space.updateDateModified()
                                         }) {
                                             ZStack {
                                                 RoundedRectangle(cornerRadius: 12)
@@ -334,6 +335,7 @@ struct SpaceView: View {
                                             let adjustedTo = originalCount - to
 
                                             space.markers.move(fromOffsets: IndexSet(integer: adjustedFrom), toOffset: adjustedTo)
+                                            space.updateDateModified()
                                         }
                                     }
                                     .listStyle(PlainListStyle())
