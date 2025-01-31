@@ -249,7 +249,7 @@ struct SpaceView: View {
                                                         .font(.system(size: 24, weight: .medium))
                                                         .frame(height: 24)
                                                     Text("Place")
-                                                        .font(.system(size: 15))
+                                                        .font(.system(size: 15, weight: .medium))
                                                 }
                                             }
                                             .frame(maxWidth: .infinity)
@@ -270,7 +270,7 @@ struct SpaceView: View {
                                                         .frame(height: 24)
                                                         .contentTransition(.symbolEffect(.replace))
                                                     Text(space.showMarkers ? "Hide" : "Show")
-                                                        .font(.system(size: 15))
+                                                        .font(.system(size: 15, weight: .medium))
                                                 }
                                             }
                                             .frame(maxWidth: .infinity)
