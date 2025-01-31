@@ -47,6 +47,8 @@ struct SpaceView: View {
 
     @State private var showMarkerPopover: Bool = false
 
+    @State private var listID = UUID()
+
     private var maxCameraCenterX: CGFloat {
         let maxRightEdge = space.windows.map { $0.state.x + $0.state.width / 2 }.max() ?? 0
         let calculatedMax = max(maxRightEdge + 150, 300)
@@ -334,10 +336,14 @@ struct SpaceView: View {
                                             let adjustedFrom = originalCount - 1 - from.first!
                                             let adjustedTo = originalCount - to
 
-                                            space.markers.move(fromOffsets: IndexSet(integer: adjustedFrom), toOffset: adjustedTo)
+                                            withAnimation(.snappy(duration: 0.4)) {
+                                                space.markers.move(fromOffsets: IndexSet(integer: adjustedFrom), toOffset: adjustedTo)
+                                            }
                                             space.updateDateModified()
+                                            listID = UUID()
                                         }
                                     }
+                                    .id(listID)
                                     .listStyle(PlainListStyle())
                                     .toolbar {
                                         EditButton()
