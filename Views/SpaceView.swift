@@ -359,7 +359,7 @@ struct SpaceView: View {
                                         EditButton()
                                     }
                                     .frame(maxWidth: .infinity)
-                                    .frame(height: 240)
+                                    .frame(height: 228)
                                     .cornerRadius(12)
                                     .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.6), radius: 8, y: 6)
                                 }
