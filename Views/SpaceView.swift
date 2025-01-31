@@ -45,6 +45,8 @@ struct SpaceView: View {
     @State private var initialPinchPoint: CGPoint = .zero
     @State private var initialCameraCenter: CGPoint = .zero
 
+    @State private var showMarkerPopover: Bool = false
+
     private var maxCameraCenterX: CGFloat {
         let maxRightEdge = space.windows.map { $0.state.x + $0.state.width / 2 }.max() ?? 0
         let calculatedMax = max(maxRightEdge + 150, 300)
@@ -170,6 +172,13 @@ struct SpaceView: View {
                         parentSize: geometry.size
                     )
 
+                    if space.showMarkers {
+                        MarkersOverlayView(
+                            space: space,
+                            parentSize: geometry.size
+                        )
+                    }
+
                     VStack {
                         HStack(spacing: 0) {
                             Spacer()
@@ -211,6 +220,117 @@ struct SpaceView: View {
                             .cornerRadius(16)
                             .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
                             .padding(.trailing, isNameEditing ? 16 : 0)
+
+                            Button(action: {
+                                showMarkerPopover.toggle()
+                            }) {
+                                Image(systemName: "mappin.circle")
+                                    .font(.title2)
+                                    .themedForeground(using: theme, in: colorScheme, category: .tertiary)
+                                    .shadow(color: theme.tertiary.toShadow(), radius: 8, y: 4)
+                                    .safeAreaPadding(.horizontal, 12)
+                                    .safeAreaPadding(.vertical, 12)
+                                    .frame(width: 44, height: 40)
+                            }
+                            .hoverEffect(.lift)
+                            .popover(isPresented: $showMarkerPopover) {
+                                VStack(spacing: 12) {
+                                    HStack(spacing: 12) {
+                                        Button(action: {
+                                            withAnimation(.snappy(duration: 0.4)) {
+                                                space.addMarker()
+                                            }
+                                        }) {
+                                            ZStack {
+                                                RoundedRectangle(cornerRadius: 12)
+                                                    .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+                                                VStack(spacing: 5) {
+                                                    Image(systemName: "plus")
+                                                        .font(.system(size: 24, weight: .medium))
+                                                        .frame(height: 24)
+                                                    Text("Place")
+                                                        .font(.system(size: 15))
+                                                }
+                                            }
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 70)
+                                        }
+
+                                        Button(action: {
+                                            withAnimation(.snappy(duration: 0.4)) {
+                                                space.showMarkers.toggle()
+                                            }
+                                        }) {
+                                            ZStack {
+                                                RoundedRectangle(cornerRadius: 12)
+                                                    .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+                                                VStack(spacing: 5) {
+                                                    Image(systemName: space.showMarkers ? "mappin.slash" : "mappin")
+                                                        .font(.system(size: 24, weight: .medium))
+                                                        .frame(height: 24)
+                                                        .contentTransition(.symbolEffect(.replace))
+                                                    Text(space.showMarkers ? "Hide" : "Show")
+                                                        .font(.system(size: 15))
+                                                }
+                                            }
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 70)
+                                        }
+                                    }
+
+                                    List {
+                                        ForEach(space.markers.reversed(), id: \.id) { marker in
+                                            Button(action: {
+                                                withAnimation(.smooth(duration: 0.4)
+                                                ) {
+                                                    space.moveCameraToMarker(marker)
+                                                }
+                                            }) {
+                                                HStack(spacing: 6) {
+                                                    space.thumbnail(canvasSize: CGSize(width: 68, height: 68), color: themeColor(from: theme, for: .tertiary, in: colorScheme, level: 2), cameraCenterX: marker.x, cameraCenterY: marker.y, cameraZoom: marker.zoom)
+                                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                                                    VStack(alignment: .leading) {
+                                                        Text("X: \(Int(marker.x.rounded()))")
+                                                            .lineLimit(1)
+                                                            .font(.system(size: 14, weight: .medium, design: .monospaced))
+                                                            .frame(height: 14)
+
+                                                        Text("Y: \(Int(marker.y.rounded()))")
+                                                            .lineLimit(1)
+                                                            .font(.system(size: 14, weight: .medium, design: .monospaced))
+                                                            .frame(height: 14)
+
+                                                        Text("ZOOM: \(String(format: "%.2f", marker.zoom))×")
+                                                            .lineLimit(1)
+                                                            .font(.system(size: 14, weight: .medium, design: .monospaced))
+                                                            .frame(height: 14)
+                                                    }
+                                                    .frame(maxWidth: .infinity)
+                                                }
+                                            }
+                                            .frame(height: 70)
+                                            .listRowSeparator(.hidden)
+                                            .listRowBackground(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+                                            .swipeActions {
+                                                Button(role: .destructive) {
+                                                    space.removeMarker(marker)
+                                                } label: {
+                                                    Label("Delete", systemImage: "trash")
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .listStyle(PlainListStyle())
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 240)
+                                    .cornerRadius(12)
+                                }
+                                .padding(12)
+                                .frame(width: 270)
+                                .background(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5))
+                                .foregroundColor(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1))
+                            }
 
                             Button(action: {
                                 withAnimation(.spring(duration: 0.5)) {

@@ -17,7 +17,7 @@ class Space: ObservableObject {
     var cameraZoom: CGFloat
 
     var showMarkers: Bool
-    var markers: [SpaceMarker] = []
+    var markers: [SpaceMarker]
 
     var disableDots: Bool
     var lockCamera: Bool
@@ -35,6 +35,8 @@ class Space: ObservableObject {
         self.cameraCenterX = cameraCenterX
         self.cameraCenterY = cameraCenterY
         self.cameraZoom = cameraZoom
+        self.showMarkers = showMarkers
+        self.markers = markers
         self.disableDots = disableDots
         self.lockCamera = lockCamera
     }
@@ -98,21 +100,49 @@ class Space: ObservableObject {
     }
 
     func addMarker(_ marker: SpaceMarker) {
+        let thresholdX: CGFloat = 0.5
+        let thresholdY: CGFloat = 0.5
+        let thresholdZoom: CGFloat = 0.01
+
+        for existingMarker in markers {
+            if abs(existingMarker.x - marker.x) <= thresholdX &&
+                abs(existingMarker.y - marker.y) <= thresholdY &&
+                abs(existingMarker.zoom - marker.zoom) <= thresholdZoom
+            {
+                return
+            }
+        }
+
         markers.append(marker)
+        showMarkers = true
+        updateDateModified()
     }
 
     func addMarker(x: CGFloat, y: CGFloat, zoom: CGFloat) {
         addMarker(SpaceMarker(x: x, y: y, zoom: zoom))
     }
 
+    func addMarker() {
+        addMarker(x: cameraCenterX, y: cameraCenterY, zoom: cameraZoom)
+    }
+
     func removeMarker(_ id: UUID) {
         if let index = markers.firstIndex(where: { $0.id == id }) {
             markers.remove(at: index)
+            updateDateModified()
         }
     }
 
     func removeMarker(_ marker: SpaceMarker) {
         removeMarker(marker.id)
+    }
+
+    func moveCameraToMarker(_ marker: SpaceMarker) {
+        cameraCenterX = marker.x
+        cameraCenterY = marker.y
+        cameraZoom = marker.zoom
+
+        updateDateModified()
     }
 
     func clusterWindows() {
@@ -171,8 +201,11 @@ class Space: ObservableObject {
         updateDateModified()
     }
 
-    func thumbnail(canvasSize: CGSize, color: Color = .blue, windowCornerRadius: CGFloat = 4) -> some View {
-        let zoom = cameraZoom
+    func thumbnail(canvasSize: CGSize, color: Color = .blue, windowCornerRadius: CGFloat = 4, cameraCenterX: CGFloat? = nil, cameraCenterY: CGFloat? = nil, cameraZoom: CGFloat? = nil) -> some View {
+        let zoom = cameraZoom ?? self.cameraZoom
+        let cameraCenterX = cameraCenterX ?? self.cameraCenterX
+        let cameraCenterY = cameraCenterY ?? self.cameraCenterY
+
         let dimension: CGFloat = 800
         let scale = canvasSize.width / (dimension / zoom)
         let halfRegionSize = (dimension / 2) / zoom
@@ -250,7 +283,7 @@ extension CGRect {
     }
 }
 
-struct SpaceMarker {
+struct SpaceMarker: Codable {
     var x: CGFloat
     var y: CGFloat
     var zoom: CGFloat
