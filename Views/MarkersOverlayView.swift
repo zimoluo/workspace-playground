@@ -49,6 +49,7 @@ struct MarkerView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
+        let hitboxSize = 50 / space.cameraZoom
         let baseSize = 27 / space.cameraZoom
         let iconSize = (17 * pow(marker.zoom, 0.28)) / space.cameraZoom
         let shadowRadius = 13 / space.cameraZoom
@@ -66,6 +67,7 @@ struct MarkerView: View {
                 .frame(width: iconSize, height: iconSize)
                 .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5).opacity(0.85))
         }
+        .frame(width: hitboxSize, height: hitboxSize)
         .position(x: marker.x, y: marker.y)
         .onTapGesture {
             withAnimation(.smooth(duration: 0.4)) {
