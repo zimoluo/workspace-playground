@@ -246,6 +246,7 @@ struct SpaceView: View {
                                             ZStack {
                                                 RoundedRectangle(cornerRadius: 12)
                                                     .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+                                                    .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.6), radius: 8, y: 6)
                                                 VStack(spacing: 5) {
                                                     Image(systemName: "plus")
                                                         .font(.system(size: 24, weight: .medium))
@@ -267,6 +268,7 @@ struct SpaceView: View {
                                             ZStack {
                                                 RoundedRectangle(cornerRadius: 12)
                                                     .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+                                                    .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.6), radius: 8, y: 6)
                                                 VStack(spacing: 5) {
                                                     Image(systemName: space.showMarkers ? "mappin.slash" : "mappin")
                                                         .font(.system(size: 24, weight: .medium))
@@ -351,6 +353,7 @@ struct SpaceView: View {
                                     .frame(maxWidth: .infinity)
                                     .frame(height: 240)
                                     .cornerRadius(12)
+                                    .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.6), radius: 8, y: 6)
                                 }
                                 .padding(12)
                                 .frame(width: 270)
