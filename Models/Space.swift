@@ -16,12 +16,15 @@ class Space: ObservableObject {
     var cameraCenterY: CGFloat
     var cameraZoom: CGFloat
 
+    var showMarkers: Bool
+    var markers: [SpaceMarker] = []
+
     var disableDots: Bool
     var lockCamera: Bool
 
     var version: Int
 
-    init(windows: [Window] = [], name: String = "New Space", cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1, disableDots: Bool = false, lockCamera: Bool = false) {
+    init(windows: [Window] = [], name: String = "New Space", cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1, showMarkers: Bool = false, markers: [SpaceMarker] = [], disableDots: Bool = false, lockCamera: Bool = false) {
         self.id = UUID()
         self.dateCreated = Date()
         self.dateModified = Date()
@@ -52,7 +55,7 @@ class Space: ObservableObject {
             newWindow.id = UUID()
             return newWindow
         }
-        return Space(windows: copiedWindows, name: name, cameraCenterX: cameraCenterX, cameraCenterY: cameraCenterY, cameraZoom: cameraZoom, disableDots: disableDots, lockCamera: lockCamera)
+        return Space(windows: copiedWindows, name: name, cameraCenterX: cameraCenterX, cameraCenterY: cameraCenterY, cameraZoom: cameraZoom, showMarkers: showMarkers, markers: markers, disableDots: disableDots, lockCamera: lockCamera)
     }
 
     func updateDateModified() {
@@ -92,6 +95,24 @@ class Space: ObservableObject {
         let newWindow = Window(state: newWindowState, data: newWindowData)
         windows.append(newWindow)
         updateDateModified()
+    }
+
+    func addMarker(_ marker: SpaceMarker) {
+        markers.append(marker)
+    }
+
+    func addMarker(x: CGFloat, y: CGFloat, zoom: CGFloat) {
+        addMarker(SpaceMarker(x: x, y: y, zoom: zoom))
+    }
+
+    func removeMarker(_ id: UUID) {
+        if let index = markers.firstIndex(where: { $0.id == id }) {
+            markers.remove(at: index)
+        }
+    }
+
+    func removeMarker(_ marker: SpaceMarker) {
+        removeMarker(marker.id)
     }
 
     func clusterWindows() {
@@ -229,33 +250,16 @@ extension CGRect {
     }
 }
 
-private struct ViewMetrics {
-    let halfViewWidth: CGFloat
-    let halfViewHeight: CGFloat
-    let startRow: Int
-    let endRow: Int
-    let startColumn: Int
-    let endColumn: Int
-    let cameraCenterX: CGFloat
-    let cameraCenterY: CGFloat
+struct SpaceMarker {
+    var x: CGFloat
+    var y: CGFloat
+    var zoom: CGFloat
+    var id: UUID
 
-    init(viewSize: CGSize, cameraCenterX: CGFloat, cameraCenterY: CGFloat, zoom: CGFloat, baseDistance: CGFloat) {
-        self.halfViewWidth = viewSize.width / 2
-        self.halfViewHeight = viewSize.height / 2
-        self.cameraCenterX = cameraCenterX
-        self.cameraCenterY = cameraCenterY
-
-        let visibleWidth = viewSize.width / zoom
-        let visibleHeight = viewSize.height / zoom
-
-        let minX = cameraCenterX - visibleWidth / 2
-        let maxX = cameraCenterX + visibleWidth / 2
-        let minY = cameraCenterY - visibleHeight / 2
-        let maxY = cameraCenterY + visibleHeight / 2
-
-        self.startColumn = Int(floor(minX / baseDistance))
-        self.endColumn = Int(ceil(maxX / baseDistance))
-        self.startRow = Int(floor(minY / baseDistance))
-        self.endRow = Int(ceil(maxY / baseDistance))
+    init(x: CGFloat, y: CGFloat, zoom: CGFloat) {
+        self.x = x
+        self.y = y
+        self.zoom = zoom
+        self.id = UUID()
     }
 }
