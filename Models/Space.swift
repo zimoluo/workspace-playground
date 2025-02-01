@@ -106,18 +106,21 @@ class Space: ObservableObject {
         updateDateModified()
     }
 
-    func addMarker(_ marker: SpaceMarker) {
+    func isCameraNearMarkers() -> Bool {
         let thresholdX: CGFloat = 0.5
         let thresholdY: CGFloat = 0.5
         let thresholdZoom: CGFloat = 0.01
 
-        for existingMarker in markers {
-            if abs(existingMarker.x - marker.x) <= thresholdX &&
-                abs(existingMarker.y - marker.y) <= thresholdY &&
-                abs(existingMarker.zoom - marker.zoom) <= thresholdZoom
-            {
-                return
-            }
+        return markers.contains { marker in
+            abs(marker.x - cameraCenterX) <= thresholdX &&
+                abs(marker.y - cameraCenterY) <= thresholdY &&
+                abs(marker.zoom - cameraZoom) <= thresholdZoom
+        }
+    }
+
+    func addMarker(_ marker: SpaceMarker) {
+        if isCameraNearMarkers() {
+            return
         }
 
         markers.append(marker)

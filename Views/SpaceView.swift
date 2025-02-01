@@ -246,6 +246,8 @@ struct SpaceView: View {
                             .popover(isPresented: $showMarkerPopover) {
                                 VStack(spacing: 12) {
                                     HStack(spacing: 12) {
+                                        let isNearMarker = space.isCameraNearMarkers()
+
                                         Button(action: {
                                             withAnimation(.snappy(duration: 0.4)) {
                                                 space.addMarker()
@@ -255,17 +257,22 @@ struct SpaceView: View {
                                                 RoundedRectangle(cornerRadius: 12)
                                                     .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
                                                     .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.6), radius: 8, y: 6)
+
                                                 VStack(spacing: 5) {
                                                     Image(systemName: "plus")
                                                         .font(.system(size: 24, weight: .medium))
                                                         .frame(height: 24)
+                                                        .opacity(isNearMarker ? 0.3 : 1.0)
+
                                                     Text("Place")
                                                         .font(.system(size: 15, weight: .medium))
+                                                        .opacity(isNearMarker ? 0.3 : 1.0)
                                                 }
                                             }
                                             .frame(maxWidth: .infinity)
                                             .frame(height: 70)
                                         }
+                                        .disabled(isNearMarker)
 
                                         Button(action: {
                                             withAnimation(.snappy(duration: 0.4)) {
