@@ -304,12 +304,12 @@ struct SpaceView: View {
                                                         .clipShape(RoundedRectangle(cornerRadius: 12))
 
                                                     VStack(alignment: .leading) {
-                                                        Text("X: \(Int(marker.x.rounded()))")
+                                                        Text("X: \(Int(marker.x.rounded()).description)")
                                                             .lineLimit(1)
                                                             .font(.system(size: 14, weight: .medium, design: .monospaced))
                                                             .frame(height: 14)
 
-                                                        Text("Y: \(Int(marker.y.rounded()))")
+                                                        Text("Y: \(Int(marker.y.rounded()).description)")
                                                             .lineLimit(1)
                                                             .font(.system(size: 14, weight: .medium, design: .monospaced))
                                                             .frame(height: 14)
