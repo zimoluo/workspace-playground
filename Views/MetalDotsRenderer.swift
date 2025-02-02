@@ -102,7 +102,7 @@ class MetalDotsRenderer {
     }
 }
 
-struct MetalView: UIViewRepresentable {
+struct MetalDotsView: UIViewRepresentable {
     var color: Color
     var viewSize: CGSize
     var cameraCenterX: CGFloat

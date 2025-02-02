@@ -42,7 +42,7 @@ class Space: ObservableObject {
     }
 
     func renderDots(viewSize: CGSize, color: Color) -> some View {
-        MetalView(
+        MetalDotsView(
             color: color,
             viewSize: viewSize,
             cameraCenterX: cameraCenterX,
