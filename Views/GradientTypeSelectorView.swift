@@ -47,7 +47,7 @@ struct GradientTypeSelectorView: View {
                             theme.mainGradient.type = gradientType
                         }
                     }
-                    .foregroundColor(
+                    .foregroundStyle(
                         themeColor(from: theme, for: .secondary, in: colorScheme, level: isSelected ? 5 : 1)
                     )
                 }

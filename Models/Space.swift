@@ -304,6 +304,14 @@ struct SpaceMarker: Codable {
     var zoom: CGFloat
     var id: UUID
 
+    func isSelected(cameraCenterX: CGFloat, cameraCenterY: CGFloat, cameraZoom: CGFloat) -> Bool {
+        let thresholdX: CGFloat = 0.5
+        let thresholdY: CGFloat = 0.5
+        let thresholdZoom: CGFloat = 0.01
+
+        return abs(x - cameraCenterX) < thresholdX && abs(y - cameraCenterY) < thresholdY && abs(zoom - cameraZoom) < thresholdZoom
+    }
+
     init(x: CGFloat, y: CGFloat, zoom: CGFloat) {
         self.x = x
         self.y = y

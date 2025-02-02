@@ -200,7 +200,7 @@ struct SpaceView: View {
                                     set: { newValue in space.name = newValue }
                                 ),
                                 prompt: Text("Name...")
-                                    .foregroundColor(
+                                    .foregroundStyle(
                                         themeColor(from: theme, for: .tertiary, in: colorScheme, level: 2)
                                             .opacity(0.67)
                                     )
@@ -300,6 +300,8 @@ struct SpaceView: View {
 
                                     List {
                                         ForEach(Array(space.markers.reversed().enumerated()), id: \.element.id) { index, marker in
+                                            let isSelected = marker.isSelected(cameraCenterX: space.cameraCenterX, cameraCenterY: space.cameraCenterY, cameraZoom: space.cameraZoom)
+
                                             Button(action: {
                                                 withAnimation(.smooth(duration: 0.4)
                                                 ) {
@@ -307,7 +309,9 @@ struct SpaceView: View {
                                                 }
                                             }) {
                                                 HStack(spacing: 6) {
-                                                    space.thumbnail(canvasSize: CGSize(width: 68, height: 68), color: themeColor(from: theme, for: .tertiary, in: colorScheme, level: 2), cameraCenterX: marker.x, cameraCenterY: marker.y, cameraZoom: marker.zoom)
+                                                    space.thumbnail(canvasSize: CGSize(width: 68, height: 68), color: isSelected ?
+                                                        themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4) :
+                                                        themeColor(from: theme, for: .tertiary, in: colorScheme, level: 2), cameraCenterX: marker.x, cameraCenterY: marker.y, cameraZoom: marker.zoom)
                                                         .clipShape(RoundedRectangle(cornerRadius: 12))
 
                                                     VStack(alignment: .leading) {
@@ -332,7 +336,7 @@ struct SpaceView: View {
                                             .frame(height: 70)
                                             .listRowSeparator(.hidden)
                                             .listRowBackground(Rectangle()
-                                                .fill(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+                                                .fill(isSelected ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1) : themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
                                                 .clipShape(
                                                     .rect(topLeadingRadius: index == 0 ? 12 : 0,
                                                           bottomLeadingRadius: (index == space.markers.count - 1) ? 12 : 0,
@@ -340,6 +344,7 @@ struct SpaceView: View {
                                                           topTrailingRadius: index == 0 ? 12 : 0)
                                                 )
                                             )
+                                            .foregroundStyle(isSelected ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5) : themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1))
                                             .swipeActions {
                                                 Button(role: .destructive) {
                                                     space.removeMarker(marker)
@@ -373,7 +378,7 @@ struct SpaceView: View {
                                 .padding(12)
                                 .frame(width: 270)
                                 .background(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 5))
-                                .foregroundColor(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1))
+                                .foregroundStyle(themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1))
                             }
 
                             Button(action: {
@@ -660,7 +665,7 @@ struct WindowMenuView: View {
             Image(systemName: "plus")
                 .rotationEffect(.degrees(isWindowMenuOpen ? 45 : 0))
                 .font(.system(size: 30, weight: .semibold))
-                .foregroundColor(
+                .foregroundStyle(
                     themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1)
                 )
                 .frame(width: menuButtonDiameter, height: menuButtonDiameter)
@@ -694,7 +699,7 @@ struct WindowMenuView: View {
                 if windowType.glyph.mode == .system {
                     Image(systemName: windowType.glyph.key)
                         .font(.system(size: 32))
-                        .foregroundColor(itemColor)
+                        .foregroundStyle(itemColor)
                         .shadow(color: theme.tertiary.toShadow(), radius: 6)
                         .scrollTransition { content, phase in
                             content
@@ -707,7 +712,7 @@ struct WindowMenuView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 32, height: 32)
-                        .foregroundColor(itemColor)
+                        .foregroundStyle(itemColor)
                         .shadow(color: theme.tertiary.toShadow(), radius: 6)
                         .scrollTransition { content, phase in
                             content

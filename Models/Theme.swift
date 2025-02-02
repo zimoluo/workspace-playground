@@ -86,7 +86,7 @@ extension View {
             in: colorScheme,
             level: level
         )
-        return self.foregroundColor(foregroundColor)
+        return self.foregroundStyle(foregroundColor)
     }
 
     func themedBackground(using theme: Theme, in colorScheme: ColorScheme, level: Int, category: PaletteCategory = .primary) -> some View {

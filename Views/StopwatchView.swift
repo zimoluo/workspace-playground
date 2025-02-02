@@ -53,7 +53,7 @@ struct StopwatchView: View {
                     Spacer()
                     Text(formatTime(currentElapsedTime))
                         .font(.system(size: geometry.size.width * 0.126, weight: .bold, design: .monospaced))
-                        .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
+                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                         .fixedSize()
                         .frame(height: geometry.size.width * 0.13)
                         .frame(maxWidth: .infinity)
@@ -80,7 +80,7 @@ struct StopwatchView: View {
                             }
                             .padding(.horizontal)
                             .font(.system(.headline, design: .monospaced))
-                            .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
+                            .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                         }
 
                         ForEach(Array(zip(laps.indices, laps)).reversed(), id: \.0) { index, timeInterval in
@@ -91,7 +91,7 @@ struct StopwatchView: View {
                             }
                             .padding(.horizontal)
                             .font(.system(.headline, design: .monospaced))
-                            .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
+                            .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                         }
                     }
                     .padding(.vertical, 16)
@@ -122,7 +122,7 @@ struct StopwatchView: View {
                     .padding(9)
                     .frame(maxWidth: .infinity)
                     .lineLimit(1)
-                    .foregroundColor(themeColor(from: theme, for: stopwatchState == .running ? .secondary : .tertiary, in: colorScheme, level: 5))
+                    .foregroundStyle(themeColor(from: theme, for: stopwatchState == .running ? .secondary : .tertiary, in: colorScheme, level: 5))
                     .background(themeColor(from: theme, for: stopwatchState == .running ? .secondary : .tertiary, in: colorScheme, level: 2))
                     .cornerRadius(16)
                     .shadow(color: (stopwatchState == .running ? theme.secondary : theme.tertiary).toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
@@ -147,7 +147,7 @@ struct StopwatchView: View {
                     .padding(9)
                     .frame(maxWidth: stopwatchState == .initial ? 210 : .infinity)
                     .lineLimit(1)
-                    .foregroundColor(mainButtonForegroundColor)
+                    .foregroundStyle(mainButtonForegroundColor)
                     .background(mainButtonBackgroundColor)
                     .cornerRadius(16)
                     .shadow(color: mainButtonShadowColor, radius: 12, y: 8)

@@ -25,7 +25,7 @@ struct DigitalClock: View {
                     
                     DigitalNumber(number: minute, fontSize: fontSize)
                 }
-                .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
+                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                 .frame(width: shorterSide)
                 .onReceive(timer) { input in
                     withAnimation {

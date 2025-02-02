@@ -65,7 +65,7 @@ struct MarkerView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: iconSize, height: iconSize)
-                .foregroundColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5).opacity(0.85))
+                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5).opacity(0.85))
         }
         .frame(width: hitboxSize, height: hitboxSize)
         .contentShape(Circle())

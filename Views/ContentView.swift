@@ -38,7 +38,7 @@ struct ContentView: View {
                                         deleteSpace(settings.selectedSpaceId)
                                     }) {
                                         Image(systemName: "trash")
-                                            .foregroundColor(
+                                            .foregroundStyle(
                                                 themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                                             )
                                     }
@@ -48,7 +48,7 @@ struct ContentView: View {
                                     addSpace()
                                 }) {
                                     Image(systemName: "plus")
-                                        .foregroundColor(
+                                        .foregroundStyle(
                                             themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                                         )
                                 }
@@ -155,11 +155,11 @@ struct ContentView: View {
                             HStack(spacing: 12) {
                                 Image(systemName: "command").font(.title2)
                                     .frame(width: 24, height: 24)
-                                    .foregroundColor(
+                                    .foregroundStyle(
                                         selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 5) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                                     )
                                 Text("Theme Maker")
-                                    .foregroundColor(
+                                    .foregroundStyle(
                                         selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 5) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                                     )
                             }
@@ -234,7 +234,7 @@ struct ContentView: View {
                 Image(systemName: "sidebar.leading")
                     .font(.system(size: 24))
                     .padding(16)
-                    .foregroundColor(columnVisibility == .detailOnly ? (selectedScreen.type == .space ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 0) : themeColor(from: theme, for: .secondary, in: colorScheme, level: 0)) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
+                    .foregroundStyle(columnVisibility == .detailOnly ? (selectedScreen.type == .space ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 0) : themeColor(from: theme, for: .secondary, in: colorScheme, level: 0)) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
                     .hoverEffect(.lift)
                     .shadow(color: columnVisibility == .detailOnly ? (selectedScreen.type == .space ? theme.tertiary.toShadow() : theme.secondary.toShadow()) : theme.primary.toShadow(), radius: 4)
             }
@@ -338,14 +338,14 @@ struct SpaceCardView: View {
             HStack(spacing: 8) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(space.name.isEmpty ? "New Space" : space.name)
-                        .foregroundColor(isSelected ?
+                        .foregroundStyle(isSelected ?
                             themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
                             themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                         )
                         .fontWeight(.bold)
 
                     Text(formattedDateString(for: space.dateModified))
-                        .foregroundColor(isSelected ?
+                        .foregroundStyle(isSelected ?
                             themeColor(from: theme, for: .primary, in: colorScheme, level: 5) :
                             themeColor(from: theme, for: .primary, in: colorScheme, level: 0)
                         )
