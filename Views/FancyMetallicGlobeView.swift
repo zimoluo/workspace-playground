@@ -2,12 +2,20 @@ import CoreImage
 import CoreImage.CIFilterBuiltins
 import SwiftUI
 
-struct FancyMetallicView: View {
+struct FancyMetallicGlobeView: View {
     @State private var meshPoints: [SIMD2<Float>] = MeshGradientHelper.generateMeshPoints()
-    @State private var meshColors: [Color] = MeshGradientHelper.generateMeshColors()
-    
+    @State private var meshColors: [Color]
+    private let hueRange: (Double, Double)
+
     private let animationDuration: Double = 3.0
     private let timer = Timer.publish(every: 3.0, on: .main, in: .common).autoconnect()
+
+    init() {
+        let hueStart = Double.random(in: 0...0.8)
+        let hueEnd = (hueStart + 0.2).truncatingRemainder(dividingBy: 1.0)
+        self.hueRange = (hueStart, hueEnd)
+        self._meshColors = State(initialValue: MeshGradientHelper.generateMeshColors(hueRange: hueRange))
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -18,11 +26,11 @@ struct FancyMetallicView: View {
                     .onReceive(timer) { _ in
                         withAnimation(.easeInOut(duration: animationDuration)) {
                             meshPoints = MeshGradientHelper.generateMeshPoints()
-                            meshColors = MeshGradientHelper.generateMeshColors()
+                            meshColors = MeshGradientHelper.generateMeshColors(hueRange: hueRange)
                         }
                     }
 
-                MetallicBorder(lineWidth: 32)
+                MetallicBorder(lineWidth: min(geometry.size.width, geometry.size.height) * 0.066)
                     .frame(width: geometry.size.width - 32, height: geometry.size.height - 32)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
@@ -33,7 +41,6 @@ struct FancyMetallicView: View {
 
 enum MeshGradientHelper {
     private static let basePositions: [Float] = [0.0, 0.333, 0.667, 1.0]
-    private static let hueOffset: Double = Double.random(in: 0...0.7)
 
     static func generateMeshPoints() -> [SIMD2<Float>] {
         var points: [SIMD2<Float>] = []
@@ -47,15 +54,16 @@ enum MeshGradientHelper {
         return points
     }
 
-    static func generateMeshColors() -> [Color] {
+    static func generateMeshColors(hueRange: (Double, Double)) -> [Color] {
         var colors: [Color] = []
-        let hueStart = hueOffset
-        let hueEnd = (hueOffset + 0.3).truncatingRemainder(dividingBy: 1.0)
+        let (hueStart, hueEnd) = hueRange
 
         for _ in 0 ..< 16 {
-            let hue = hueStart < hueEnd ? Double.random(in: hueStart...hueEnd) : Double.random(in: hueStart...1.0) + Double.random(in: 0.0...hueEnd)
-            let saturation = Double.random(in: 0.5...0.9)
-            let brightness = Double.random(in: 0.6...1.0)
+            let hue = hueStart < hueEnd
+                ? Double.random(in: hueStart...hueEnd)
+                : Double.random(in: hueStart...1.0) + Double.random(in: 0.0...hueEnd)
+            let saturation = Double.random(in: 0.5...0.85)
+            let brightness = Double.random(in: 0.65...1.0)
             colors.append(Color(hue: hue, saturation: saturation, brightness: brightness))
         }
         return colors
@@ -134,13 +142,5 @@ struct MetallicNoiseTexture: View {
             return UIImage(cgImage: cgImage)
         }
         return nil
-    }
-}
-
-struct FancyMetallicView_Previews: PreviewProvider {
-    static var previews: some View {
-        FancyMetallicView()
-            .previewLayout(.sizeThatFits)
-            .padding()
     }
 }
