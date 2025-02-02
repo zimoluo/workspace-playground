@@ -7,6 +7,9 @@ struct FancyMetallicGlobeView: View {
     @State private var meshColors: [Color] = []
     @State private var hueRange: (Double, Double) = (0, 0)
 
+    @EnvironmentObject var space: Space
+    @Environment(\.windowId) var windowId: UUID
+
     private let animationDuration: Double = 3.0
     private let timer = Timer.publish(every: 3.0, on: .main, in: .common).autoconnect()
 
@@ -36,9 +39,14 @@ struct FancyMetallicGlobeView: View {
     }
 
     private func generateUniqueHueRange() {
-        let hueStart = Double.random(in: 0...0.8)
-        let hueEnd = (hueStart + 0.2).truncatingRemainder(dividingBy: 1.0)
-        hueRange = (hueStart, hueEnd)
+        if let window = space.windows.first(where: { $0.id == windowId }) {
+            let seed = window.id.uuidString.hashValue
+            var generator = SeededRandomGenerator(seed: seed)
+
+            let hueStart = Double.random(in: 0...0.8, using: &generator)
+            let hueEnd = (hueStart + 0.2).truncatingRemainder(dividingBy: 1.0)
+            hueRange = (hueStart, hueEnd)
+        }
     }
 }
 
@@ -145,5 +153,20 @@ struct MetallicNoiseTexture: View {
             return UIImage(cgImage: cgImage)
         }
         return nil
+    }
+}
+
+struct SeededRandomGenerator: RandomNumberGenerator {
+    private var state: UInt64
+
+    init(seed: Int) {
+        self.state = UInt64(seed & 0x7FFFFFFFFFFFFFFF)
+    }
+
+    mutating func next() -> UInt64 {
+        state ^= state >> 21
+        state ^= state << 35
+        state ^= state >> 4
+        return state &* 2685821657736338717
     }
 }
