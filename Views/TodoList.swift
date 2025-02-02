@@ -157,7 +157,7 @@ struct TodoItemRow: View {
     @State private var timer: Timer?
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 10) {
             TextField(
                 "",
                 text: $item.title,
@@ -203,8 +203,10 @@ struct TodoItemRow: View {
             .frame(width: 30, height: 30)
             .contentShape(Rectangle())
             .buttonStyle(.borderless)
+            .gesture(DragGesture().onChanged { _ in })
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle())
     }
 
     private func startDeletionCountdown() {
