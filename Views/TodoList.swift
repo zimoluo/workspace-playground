@@ -123,10 +123,10 @@ struct TodoItemRow: View {
                             .rotationEffect(.degrees(-90))
                     }
                 }
-                .frame(width: 30, height: 30)
-                .contentShape(Circle())
             }
             .accessibilityLabel("Complete Item")
+            .frame(width: 30, height: 30)
+            .contentShape(Circle())
         }
         .padding(.vertical, 4)
     }
@@ -152,7 +152,6 @@ struct TodoItemRow: View {
         }
     }
 
-    // Cancels deletion and resets progress
     private func cancelDeletion() {
         timer?.invalidate()
         timer = nil
