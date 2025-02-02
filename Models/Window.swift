@@ -127,7 +127,7 @@ struct WindowData: Codable {
         case .calculator:
             updatedData.maxWidth = 380
             updatedData.minWidth = 200
-            updatedData.maxHeight = 400
+            updatedData.maxHeight = 360
             updatedData.minHeight = 360
         }
 
