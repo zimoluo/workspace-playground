@@ -11,7 +11,7 @@ class CalculatorViewModel: ObservableObject {
         if tokens.isEmpty && currentInput.isEmpty {
             currentDisplay = "0"
         } else {
-            currentDisplay = tokens.joined(separator: " ") + (currentInput.isEmpty ? "" : " " + currentInput)
+            currentDisplay = tokens.joined(separator: "") + (currentInput.isEmpty ? "" : "" + currentInput)
         }
     }
     
@@ -118,7 +118,7 @@ class CalculatorViewModel: ObservableObject {
             tokens.append(currentInput)
             currentInput = ""
         }
-        previousExpression = tokens.joined(separator: " ")
+        previousExpression = tokens.joined(separator: "")
         let result = evaluateTokens(tokens)
         currentDisplay = result.clean
         tokens = []
