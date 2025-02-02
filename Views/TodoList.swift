@@ -197,7 +197,8 @@ struct TodoItemRow: View {
             }
             .accessibilityLabel("Complete Item")
             .frame(width: 30, height: 30)
-            .contentShape(Circle())
+            .contentShape(Rectangle())
+            .buttonStyle(.borderless)
         }
         .padding(.vertical, 4)
     }
