@@ -10,8 +10,8 @@ struct FancyMetallicGlobeView: View {
     @EnvironmentObject var space: Space
     @Environment(\.windowId) var windowId: UUID
 
-    private let animationDuration: Double = 3.0
-    private let timer = Timer.publish(every: 3.0, on: .main, in: .common).autoconnect()
+    private let animationDuration: Double = 2.0
+    private let timer = Timer.publish(every: 2.0, on: .main, in: .common).autoconnect()
 
     var body: some View {
         GeometryReader { geometry in
@@ -24,7 +24,7 @@ struct FancyMetallicGlobeView: View {
                         meshColors = MeshGradientHelper.generateMeshColors(hueRange: hueRange)
                     }
                     .onReceive(timer) { _ in
-                        withAnimation(.easeInOut(duration: animationDuration)) {
+                        withAnimation(.linear(duration: animationDuration)) {
                             meshPoints = MeshGradientHelper.generateMeshPoints()
                             meshColors = MeshGradientHelper.generateMeshColors(hueRange: hueRange)
                         }
