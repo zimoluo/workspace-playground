@@ -105,20 +105,24 @@ struct TodoListView: View {
             .padding(8)
 
             List {
-                ForEach(Array(itemsBinding.wrappedValue.enumerated()), id: \.element.id) { index, _ in
-                    TodoItemRow(item: itemsBinding[index]) {
-                        var currentItems = itemsBinding.wrappedValue
-                        currentItems.remove(at: index)
-                        itemsBinding.wrappedValue = currentItems
+                ForEach(itemsBinding.wrappedValue, id: \.id) { item in
+                    if let binding = itemsBinding.binding(for: item.id) {
+                        TodoItemRow(item: binding) {
+                            var currentItems = itemsBinding.wrappedValue
+                            if let index = currentItems.firstIndex(where: { $0.id == item.id }) {
+                                currentItems.remove(at: index)
+                                itemsBinding.wrappedValue = currentItems
+                            }
+                        }
+                        .focused($focusedItemID, equals: item.id)
+                        .listRowBackground(themeColor(from: theme, for: .secondary, in: colorScheme, level: 4))
+                        .listRowSeparator(.hidden)
+                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                     }
-                    .focused($focusedItemID, equals: itemsBinding[index].wrappedValue.id)
-                    .listRowBackground(themeColor(from: theme, for: .secondary, in: colorScheme, level: 4))
-                    .listRowSeparator(.hidden)
-                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                 }
                 .onMove(perform: moveItems)
             }
-            .listStyle(PlainListStyle())
+            .listStyle(.plain)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -231,5 +235,12 @@ struct TodoItemRow: View {
             progress = 0.0
         }
         isActive = false
+    }
+}
+
+extension Binding where Value: MutableCollection, Value.Element: Identifiable {
+    func binding(for id: Value.Element.ID) -> Binding<Value.Element>? {
+        guard let index = wrappedValue.firstIndex(where: { $0.id == id }) else { return nil }
+        return self[index]
     }
 }
