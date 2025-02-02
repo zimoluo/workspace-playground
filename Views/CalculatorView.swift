@@ -67,9 +67,9 @@ class CalculatorViewModel: ObservableObject {
     }
     
     func clear() {
+        previousExpression = ""
         tokens = []
         currentInput = ""
-        previousExpression = ""
         currentDisplay = "0"
     }
     
