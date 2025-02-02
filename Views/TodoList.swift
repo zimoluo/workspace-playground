@@ -108,28 +108,27 @@ struct TodoItemRow: View {
             }) {
                 ZStack {
                     Circle()
-                        .stroke(lineWidth: 4)
+                        .stroke(lineWidth: 2.7)
                         .frame(width: 19, height: 19)
-                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
+                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2))
 
                     if isActive {
                         Circle()
                             .trim(from: 0, to: progress)
                             .stroke(
                                 themeColor(from: theme, for: .secondary, in: colorScheme, level: 2),
-                                style: StrokeStyle(lineWidth: 4, lineCap: .round)
+                                style: StrokeStyle(lineWidth: 2.7, lineCap: .round)
                             )
                             .frame(width: 9, height: 9)
                             .rotationEffect(.degrees(-90))
                     }
                 }
-                .frame(width: 26, height: 26)
+                .frame(width: 30, height: 30)
                 .contentShape(Circle())
             }
-            .buttonStyle(.plain)
             .accessibilityLabel("Complete Item")
         }
-        .padding(.vertical, 3.5)
+        .padding(.vertical, 4)
     }
 
     private func startDeletionCountdown() {
