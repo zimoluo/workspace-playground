@@ -124,6 +124,11 @@ struct WindowData: Codable {
             updatedData.minWidth = 150
             updatedData.minAspectRatio = (sqrt(5) - 1) / 2
             updatedData.maxAspectRatio = (sqrt(5) + 1) / 2
+        case .calculator:
+            updatedData.maxWidth = 380
+            updatedData.minWidth = 200
+            updatedData.maxHeight = 400
+            updatedData.minHeight = 360
         }
 
         return updatedData
@@ -134,6 +139,7 @@ enum WindowType: String, Codable, CaseIterable {
     case clock
     case stopwatch
     case digitalClock
+    case calculator
     case toDoList
     case notes
     case magicGlobe
@@ -147,6 +153,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .notes: return (220, 280)
         case .clock: return (190, 190)
         case .digitalClock: return (240, 150)
+        case .calculator: return (200, 360)
         case .themeMaker: return (700, 676)
         case .stopwatch: return (300, 360)
         case .dashboard: return (250, 320)
@@ -166,6 +173,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .dashboard: return WindowGlyph(mode: .system, key: "mappin.and.ellipse")
         case .toDoList: return WindowGlyph(mode: .system, key: "list.bullet.rectangle.portrait")
         case .magicGlobe: return WindowGlyph(mode: .system, key: "moon.stars.circle")
+        case .calculator: return WindowGlyph(mode: .system, key: "number")
         }
     }
 
@@ -192,6 +200,8 @@ enum WindowType: String, Codable, CaseIterable {
             TodoListView()
         case .magicGlobe:
             FancyMetallicGlobeView()
+        case .calculator:
+            CalculatorView()
         }
     }
 }

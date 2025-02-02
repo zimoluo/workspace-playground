@@ -192,13 +192,14 @@ struct CalculatorButton: View {
     var body: some View {
         Button(action: { action(title) }) {
             Text(title)
-                .font(.system(size: 32))
+                .font(.system(size: 16, weight: .medium, design: .monospaced))
                 .frame(width: isWide ? normalWidth * 2 + spacing : normalWidth,
                        height: buttonHeight)
                 .foregroundStyle(theme.secondary.shadeMap(numShades: 40).shadeMap[0].color)
                 .background(backgroundColor ?? theme.secondary.shadeMap(numShades: 40).shadeMap[26].color)
                 .cornerRadius(buttonHeight / 2)
         }
+        .gesture(DragGesture().onChanged { _ in })
     }
 }
 
@@ -208,26 +209,30 @@ struct CalculatorView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            let spacing: CGFloat = 12
+            let spacing: CGFloat = 8
             let normalButtonWidth = (geometry.size.width - spacing * 5) / 4
-            let fixedButtonHeight: CGFloat = 80
+            let fixedButtonHeight: CGFloat = 40
             
             VStack(spacing: spacing) {
+                Spacer()
+                
                 VStack(alignment: .trailing, spacing: 8) {
                     if !viewModel.previousExpression.isEmpty {
                         Text(viewModel.previousExpression)
-                            .font(.system(size: 24))
+                            .font(.system(size: 17, weight: .medium, design: .monospaced))
                             .foregroundStyle(theme.secondary.shadeMap(numShades: 40).shadeMap[6].color)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.5)
                             .multilineTextAlignment(.trailing)
                     }
                     Text(viewModel.currentDisplay)
-                        .font(.system(size: 48))
+                        .font(.system(size: 24, weight: .medium, design: .monospaced))
                         .foregroundStyle(theme.secondary.shadeMap(numShades: 40).shadeMap[0].color)
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                         .multilineTextAlignment(.trailing)
                 }
-                .padding()
+                .padding(.horizontal, spacing)
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 
                 VStack(spacing: spacing) {
@@ -346,12 +351,12 @@ struct CalculatorView: View {
                                          action: viewModel.handleInput)
                     }
                 }
-                .padding(.bottom)
+                .padding(.bottom, spacing * 1.6)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
         .edgesIgnoringSafeArea(.all)
-        .background(theme.secondary.shadeMap(numShades: 40).shadeMap[36].color)
+        .background(LinearGradient(colors: [theme.secondary.shadeMap(numShades: 40).shadeMap[36].color, theme.secondary.shadeMap(numShades: 40).shadeMap[31].color], startPoint: .bottom, endPoint: .top))
     }
 }
 
