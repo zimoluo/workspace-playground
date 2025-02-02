@@ -113,10 +113,10 @@ struct WindowData: Codable {
             updatedData.maxHeight = 330
             updatedData.minHeight = 300
         case .toDoList:
-            updatedData.maxWidth = 320
+            updatedData.maxWidth = 400
             updatedData.minWidth = 180
-            updatedData.maxHeight = 400
-            updatedData.minHeight = 250
+            updatedData.maxHeight = 600
+            updatedData.minHeight = 260
         }
 
         return updatedData
@@ -127,11 +127,11 @@ enum WindowType: String, Codable, CaseIterable {
     case clock
     case stopwatch
     case digitalClock
+    case toDoList
     case notes
     case dashboard
     case blank
     case themeMaker
-    case toDoList
 
     var defaultSize: (width: CGFloat, height: CGFloat) {
         switch self {
@@ -142,7 +142,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .themeMaker: return (700, 676)
         case .stopwatch: return (300, 360)
         case .dashboard: return (250, 320)
-        case .toDoList: return (200, 300)
+        case .toDoList: return (210, 310)
         }
     }
 
