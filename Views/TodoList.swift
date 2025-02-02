@@ -1,30 +1,93 @@
 import SwiftUI
 
-struct TodoItem: Identifiable, Equatable {
-    let id = UUID()
+extension Binding {
+    subscript<Element>(index: Int) -> Binding<Element> where Value == [Element] {
+        Binding<Element>(
+            get: { self.wrappedValue[index] },
+            set: { newValue in
+                var copy = self.wrappedValue
+                copy[index] = newValue
+                self.wrappedValue = copy
+            }
+        )
+    }
+}
+
+struct TodoItem: Identifiable, Equatable, Codable {
+    let id: UUID
     var title: String
+
+    init(id: UUID = UUID(), title: String) {
+        self.id = id
+        self.title = title
+    }
 }
 
 struct TodoListView: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
 
-    @State private var listTitle: String = "To-do"
-    @State private var items: [TodoItem] = []
+    @EnvironmentObject var space: Space
+    @Environment(\.windowId) var windowId: UUID
+
     @FocusState private var focusedItemID: UUID?
+
+    private var listTitleBinding: Binding<String> {
+        Binding<String>(
+            get: {
+                if let window = space.windows.first(where: { $0.id == windowId }) {
+                    return window.data.saveData["listTitle"] ?? "To-do"
+                }
+                return "To-do"
+            },
+            set: { newTitle in
+                if let index = space.windows.firstIndex(where: { $0.id == windowId }) {
+                    space.windows[index].data.saveData["listTitle"] = newTitle
+                }
+            }
+        )
+    }
+
+    private var itemsBinding: Binding<[TodoItem]> {
+        Binding<[TodoItem]>(
+            get: {
+                if let window = space.windows.first(where: { $0.id == windowId }) {
+                    let json = window.data.saveData["items"] ?? "[]"
+                    if let data = json.data(using: .utf8),
+                       let decoded = try? JSONDecoder().decode([TodoItem].self, from: data)
+                    {
+                        return decoded
+                    }
+                }
+                return []
+            },
+            set: { newItems in
+                if let data = try? JSONEncoder().encode(newItems),
+                   let json = String(data: data, encoding: .utf8),
+                   let index = space.windows.firstIndex(where: { $0.id == windowId })
+                {
+                    space.windows[index].data.saveData["items"] = json
+                }
+            }
+        )
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                TextField("", text: $listTitle, prompt: Text("Title...")
-                    .foregroundStyle(
-                        themeColor(from: theme, for: .secondary, in: colorScheme, level: 2)
-                            .opacity(0.67)
-                    ))
-                    .textFieldStyle(.plain)
-                    .padding(.leading, 8)
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
+                TextField(
+                    "",
+                    text: listTitleBinding,
+                    prompt: Text("Title...")
+                        .foregroundStyle(
+                            themeColor(from: theme, for: .secondary, in: colorScheme, level: 2)
+                                .opacity(0.67)
+                        )
+                )
+                .textFieldStyle(.plain)
+                .padding(.leading, 8)
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
 
                 Button {
                     withAnimation(.snappy) {
@@ -42,13 +105,13 @@ struct TodoListView: View {
             .padding(8)
 
             List {
-                ForEach($items) { $item in
-                    TodoItemRow(item: $item) {
-                        if let index = items.firstIndex(where: { $0.id == item.id }) {
-                            items.remove(at: index)
-                        }
+                ForEach(Array(itemsBinding.wrappedValue.enumerated()), id: \.element.id) { index, _ in
+                    TodoItemRow(item: itemsBinding[index]) {
+                        var currentItems = itemsBinding.wrappedValue
+                        currentItems.remove(at: index)
+                        itemsBinding.wrappedValue = currentItems
                     }
-                    .focused($focusedItemID, equals: item.id)
+                    .focused($focusedItemID, equals: itemsBinding[index].wrappedValue.id)
                     .listRowBackground(themeColor(from: theme, for: .secondary, in: colorScheme, level: 4))
                     .listRowSeparator(.hidden)
                     .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
@@ -62,7 +125,9 @@ struct TodoListView: View {
 
     private func addItem() {
         let newItem = TodoItem(title: "")
-        items.insert(newItem, at: 0)
+        var currentItems = itemsBinding.wrappedValue
+        currentItems.insert(newItem, at: 0)
+        itemsBinding.wrappedValue = currentItems
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             focusedItemID = newItem.id
@@ -70,7 +135,9 @@ struct TodoListView: View {
     }
 
     private func moveItems(from source: IndexSet, to destination: Int) {
-        items.move(fromOffsets: source, toOffset: destination)
+        var currentItems = itemsBinding.wrappedValue
+        currentItems.move(fromOffsets: source, toOffset: destination)
+        itemsBinding.wrappedValue = currentItems
     }
 }
 
@@ -87,13 +154,17 @@ struct TodoItemRow: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            TextField("", text: $item.title, prompt: Text("Item...")
-                .foregroundStyle(
-                    themeColor(from: theme, for: .secondary, in: colorScheme, level: 2)
-                        .opacity(0.67)
-                ))
-                .textFieldStyle(.plain)
-                .font(.system(size: 17, weight: .medium))
+            TextField(
+                "",
+                text: $item.title,
+                prompt: Text("Item...")
+                    .foregroundStyle(
+                        themeColor(from: theme, for: .secondary, in: colorScheme, level: 2)
+                            .opacity(0.67)
+                    )
+            )
+            .textFieldStyle(.plain)
+            .font(.system(size: 17, weight: .medium))
 
             Button(action: {
                 if isActive {
@@ -146,7 +217,7 @@ struct TodoItemRow: View {
                 progress = 0.0
             } else {
                 withAnimation(.linear(duration: 0.3)) {
-                    progress += 0.1 // 0.3 / 3.0
+                    progress += 0.1
                 }
             }
         }
@@ -159,11 +230,5 @@ struct TodoItemRow: View {
             progress = 0.0
         }
         isActive = false
-    }
-}
-
-struct TodoListView_Previews: PreviewProvider {
-    static var previews: some View {
-        TodoListView()
     }
 }
