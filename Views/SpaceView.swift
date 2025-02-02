@@ -336,7 +336,7 @@ struct SpaceView: View {
                                             .frame(height: 70)
                                             .listRowSeparator(.hidden)
                                             .listRowBackground(Rectangle()
-                                                .fill(isSelected ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 1) : themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
+                                                .fill(isSelected ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 2) : themeColor(from: theme, for: .tertiary, in: colorScheme, level: 4))
                                                 .clipShape(
                                                     .rect(topLeadingRadius: index == 0 ? 12 : 0,
                                                           bottomLeadingRadius: (index == space.markers.count - 1) ? 12 : 0,
