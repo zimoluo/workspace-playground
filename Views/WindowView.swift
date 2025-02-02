@@ -85,6 +85,8 @@ struct WindowView: View {
                     .resizable()
                     .scaleEffect(isResizeHandleActive ? 1.12 : 1)
                     .frame(width: 27, height: 27)
+                    .allowsHitTesting(false)
+                    .offset(x: -5.5, y: -5.5)
             }
             .frame(width: 48, height: 48)
             .contentShape(Circle())
@@ -252,7 +254,7 @@ struct WindowView: View {
                         space.updateDateModified()
                     }
             )
-            .offset(x: window.state.width/2 - 6, y: window.state.height/2 - 6)
+            .offset(x: window.state.width/2 + 1.5, y: window.state.height/2 + 1.5)
         }
         .position(x: window.state.x + dragOffset.width, y: window.state.y + dragOffset.height)
         .gesture(

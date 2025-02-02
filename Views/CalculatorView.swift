@@ -351,7 +351,7 @@ struct CalculatorView: View {
                                          action: viewModel.handleInput)
                     }
                 }
-                .padding(.bottom, spacing * 1.6)
+                .padding(.bottom, spacing * 1.5)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
