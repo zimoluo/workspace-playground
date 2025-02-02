@@ -4,18 +4,11 @@ import SwiftUI
 
 struct FancyMetallicGlobeView: View {
     @State private var meshPoints: [SIMD2<Float>] = MeshGradientHelper.generateMeshPoints()
-    @State private var meshColors: [Color]
-    private let hueRange: (Double, Double)
+    @State private var meshColors: [Color] = []
+    @State private var hueRange: (Double, Double) = (0, 0)
 
     private let animationDuration: Double = 3.0
     private let timer = Timer.publish(every: 3.0, on: .main, in: .common).autoconnect()
-
-    init() {
-        let hueStart = Double.random(in: 0...0.8)
-        let hueEnd = (hueStart + 0.2).truncatingRemainder(dividingBy: 1.0)
-        self.hueRange = (hueStart, hueEnd)
-        self._meshColors = State(initialValue: MeshGradientHelper.generateMeshColors(hueRange: hueRange))
-    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -23,6 +16,10 @@ struct FancyMetallicGlobeView: View {
                 Ellipse()
                     .fill(MeshGradient(width: 4, height: 4, points: meshPoints, colors: meshColors))
                     .frame(width: geometry.size.width - 32, height: geometry.size.height - 32)
+                    .onAppear {
+                        generateUniqueHueRange()
+                        meshColors = MeshGradientHelper.generateMeshColors(hueRange: hueRange)
+                    }
                     .onReceive(timer) { _ in
                         withAnimation(.easeInOut(duration: animationDuration)) {
                             meshPoints = MeshGradientHelper.generateMeshPoints()
@@ -36,6 +33,12 @@ struct FancyMetallicGlobeView: View {
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func generateUniqueHueRange() {
+        let hueStart = Double.random(in: 0...0.8)
+        let hueEnd = (hueStart + 0.2).truncatingRemainder(dividingBy: 1.0)
+        hueRange = (hueStart, hueEnd)
     }
 }
 
