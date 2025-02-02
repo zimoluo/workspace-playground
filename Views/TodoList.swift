@@ -198,6 +198,7 @@ struct TodoItemRow: View {
                             .rotationEffect(.degrees(-90))
                     }
                 }
+                .contentShape(Rectangle())
             }
             .accessibilityLabel("Complete Item")
             .frame(width: 30, height: 30)
@@ -206,6 +207,7 @@ struct TodoItemRow: View {
             .gesture(DragGesture().onChanged { _ in })
         }
         .padding(.vertical, 4)
+        .background(Color.clear)
         .contentShape(Rectangle())
     }
 
