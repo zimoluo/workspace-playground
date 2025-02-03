@@ -3,6 +3,9 @@ import SwiftUI
 enum PopUpType {
     case empty
     case themeMakerGuide
+    case tips_menu
+    case tips_theme
+    case tips_technical
 }
 
 class PopUp: ObservableObject {

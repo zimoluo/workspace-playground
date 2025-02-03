@@ -134,6 +134,13 @@ struct WindowData: Codable {
             updatedData.minWidth = 280
             updatedData.maxHeight = 160
             updatedData.minHeight = 108
+        case .tips:
+            updatedData.maxHeight = 270
+            updatedData.maxWidth = 270
+            updatedData.minHeight = 150
+            updatedData.minWidth = 150
+            updatedData.minAspectRatio = 1
+            updatedData.maxAspectRatio = 1
         }
 
         return updatedData
@@ -149,6 +156,7 @@ enum WindowType: String, Codable, CaseIterable {
     case toDoList
     case notes
     case magicGlobe
+    case tips
     case dashboard
     case blank
     case themeMaker
@@ -166,6 +174,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .toDoList: return (210, 310)
         case .magicGlobe: return (210, 210)
         case .themePicker: return (280, 108)
+        case .tips: return (200, 200)
         }
     }
 
@@ -182,6 +191,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .magicGlobe: return WindowGlyph(mode: .system, key: "moon.stars.circle")
         case .calculator: return WindowGlyph(mode: .custom, key: "Calculator")
         case .themePicker: return WindowGlyph(mode: .system, key: "paintpalette")
+        case .tips: return WindowGlyph(mode: .system, key: "lightbulb.min")
         }
     }
 
@@ -215,6 +225,8 @@ enum WindowType: String, Codable, CaseIterable {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.vertical, 20)
                 .gesture(DragGesture().onChanged { _ in })
+        case .tips:
+            TipsView()
         }
     }
 }

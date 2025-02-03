@@ -55,6 +55,81 @@ struct PopUpView: View {
                     popUp.type = .empty
                 }
             )
+        case .tips_menu:
+            PopUpContent(
+                title: "Tips:\nKnowing the Tools",
+                items: [
+                    PopUpItem(
+                        icon: "rectangle.3.group",
+                        title: "Organizing Windows",
+                        description: "Organize."
+                    ),
+                    PopUpItem(
+                        icon: "mappin.circle",
+                        title: "Using Markers",
+                        description: "Edit three accent colors with ease. WorkSpace adapts brightness and saturation to ensure your colors always look great!"
+                    ),
+                    PopUpItem(
+                        icon: "lock",
+                        title: "Locking the Frame",
+                        description: "Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s toolset makes it easy to create stunning gradients. Its smart color algorithm ensures beautiful results."
+                    )
+                ],
+                buttonText: "Got it!",
+                buttonAction: {
+                    popUp.type = .empty
+                }
+            )
+        case .tips_theme:
+            PopUpContent(
+                title: "Tips:\nChanging Themes",
+                items: [
+                    PopUpItem(
+                        icon: "rectangle.3.group",
+                        title: "Organizing Windows",
+                        description: "Organize."
+                    ),
+                    PopUpItem(
+                        icon: "mappin.circle",
+                        title: "Using Markers",
+                        description: "Edit three accent colors with ease. WorkSpace adapts brightness and saturation to ensure your colors always look great!"
+                    ),
+                    PopUpItem(
+                        icon: "lock",
+                        title: "Locking the Frame",
+                        description: "Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s toolset makes it easy to create stunning gradients. Its smart color algorithm ensures beautiful results."
+                    )
+                ],
+                buttonText: "Got it!",
+                buttonAction: {
+                    popUp.type = .empty
+                }
+            )
+        case .tips_technical:
+            PopUpContent(
+                title: "Tips:\nTrivia",
+                items: [
+                    PopUpItem(
+                        icon: "rectangle.3.group",
+                        title: "Organizing Windows",
+                        description: "Organize."
+                    ),
+                    PopUpItem(
+                        icon: "mappin.circle",
+                        title: "Using Markers",
+                        description: "Edit three accent colors with ease. WorkSpace adapts brightness and saturation to ensure your colors always look great!"
+                    ),
+                    PopUpItem(
+                        icon: "lock",
+                        title: "Locking the Frame",
+                        description: "Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s toolset makes it easy to create stunning gradients. Its smart color algorithm ensures beautiful results."
+                    )
+                ],
+                buttonText: "Got it!",
+                buttonAction: {
+                    popUp.type = .empty
+                }
+            )
         }
     }
 }
