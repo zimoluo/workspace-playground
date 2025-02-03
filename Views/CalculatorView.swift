@@ -386,6 +386,7 @@ struct CalculatorButton: View {
                 .foregroundStyle(theme.secondary.shadeMap(numShades: 40).shadeMap[0].color)
                 .background(backgroundColor ?? theme.secondary.shadeMap(numShades: 40).shadeMap[26].color)
                 .cornerRadius(buttonHeight / 2)
+                .hoverEffect(.lift)
         }
         .gesture(DragGesture().onChanged { _ in })
     }

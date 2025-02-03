@@ -39,14 +39,30 @@ struct FancyMetallicGlobeView: View {
     }
 
     private func generateUniqueHueRange() {
-        if let window = space.windows.first(where: { $0.id == windowId }) {
-            let seed = window.id.uuidString.hashValue
-            var generator = SeededRandomGenerator(seed: seed)
-
-            let hueStart = Double.random(in: 0...0.8, using: &generator)
+        if let window = space.windows.first(where: { $0.id == windowId }),
+           let hueRangeString = window.data.saveData["hueRange"],
+           let decodedHueRange = decodeHueRange(from: hueRangeString)
+        {
+            hueRange = decodedHueRange
+        } else {
+            let hueStart = Double.random(in: 0...0.8)
             let hueEnd = (hueStart + 0.2).truncatingRemainder(dividingBy: 1.0)
             hueRange = (hueStart, hueEnd)
+
+            if let windowIndex = space.windows.firstIndex(where: { $0.id == windowId }) {
+                space.windows[windowIndex].data.saveData["hueRange"] = encodeHueRange(hueRange)
+            }
         }
+    }
+
+    private func encodeHueRange(_ hueRange: (Double, Double)) -> String {
+        return "\(hueRange.0),\(hueRange.1)"
+    }
+
+    private func decodeHueRange(from string: String) -> (Double, Double)? {
+        let components = string.split(separator: ",").compactMap { Double($0) }
+        guard components.count == 2 else { return nil }
+        return (components[0], components[1])
     }
 }
 
@@ -153,20 +169,5 @@ struct MetallicNoiseTexture: View {
             return UIImage(cgImage: cgImage)
         }
         return nil
-    }
-}
-
-struct SeededRandomGenerator: RandomNumberGenerator {
-    private var state: UInt64
-
-    init(seed: Int) {
-        self.state = UInt64(seed & 0x7FFFFFFFFFFFFFFF)
-    }
-
-    mutating func next() -> UInt64 {
-        state ^= state >> 21
-        state ^= state << 35
-        state ^= state >> 4
-        return state &* 2685821657736338717
     }
 }
