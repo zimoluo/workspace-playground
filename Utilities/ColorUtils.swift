@@ -265,3 +265,49 @@ func themeColor(
 
     return inputColor.shadeMap(saturationMultiplier: saturationMultiplier).shadeMap[index].color
 }
+
+func themeColor(
+    from theme: Theme,
+    for category: PaletteCategory = .primary,
+    in colorScheme: ColorScheme,
+    level: Double,
+    lightMap: [Int: Int] = shadeIndexMapLight,
+    darkMap: [Int: Int] = shadeIndexMapDark
+) -> Color {
+    let clampedLevel = max(0.0, min(level, 5.0))
+    let lowerLevel = Int(floor(clampedLevel))
+    let upperLevel = Int(ceil(clampedLevel))
+    let fraction = clampedLevel - Double(lowerLevel)
+
+    let colorLower = themeColor(from: theme, for: category, in: colorScheme, level: lowerLevel, lightMap: lightMap, darkMap: darkMap)
+    let colorUpper = themeColor(from: theme, for: category, in: colorScheme, level: upperLevel, lightMap: lightMap, darkMap: darkMap)
+
+    return colorLower.blended(with: colorUpper, fraction: fraction)
+}
+
+extension Color {
+    func blended(with other: Color, fraction: Double) -> Color {
+        let c1 = self.rgbaComponents()
+        let c2 = other.rgbaComponents()
+
+        let red = (1 - fraction) * c1.red + fraction * c2.red
+        let green = (1 - fraction) * c1.green + fraction * c2.green
+        let blue = (1 - fraction) * c1.blue + fraction * c2.blue
+        let alpha = (1 - fraction) * c1.alpha + fraction * c2.alpha
+
+        return Color(red: red, green: green, blue: blue, opacity: alpha)
+    }
+
+    func rgbaComponents() -> (red: Double, green: Double, blue: Double, alpha: Double) {
+        #if canImport(UIKit)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        UIColor(self).getRed(&r, green: &g, blue: &b, alpha: &a)
+        return (Double(r), Double(g), Double(b), Double(a))
+        #elseif canImport(AppKit)
+        let nsColor = NSColor(self)
+        return (Double(nsColor.redComponent), Double(nsColor.greenComponent), Double(nsColor.blueComponent), Double(nsColor.alphaComponent))
+        #else
+        return (0, 0, 0, 1)
+        #endif
+    }
+}
