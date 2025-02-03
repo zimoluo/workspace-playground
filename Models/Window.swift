@@ -173,7 +173,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .dashboard: return WindowGlyph(mode: .system, key: "mappin.and.ellipse")
         case .toDoList: return WindowGlyph(mode: .system, key: "list.bullet.rectangle.portrait")
         case .magicGlobe: return WindowGlyph(mode: .system, key: "moon.stars.circle")
-        case .calculator: return WindowGlyph(mode: .system, key: "number")
+        case .calculator: return WindowGlyph(mode: .custom, key: "Calculator")
         }
     }
 
