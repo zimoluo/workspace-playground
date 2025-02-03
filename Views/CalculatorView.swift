@@ -142,7 +142,6 @@ struct CalculatorView: View {
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
-        .edgesIgnoringSafeArea(.all)
     }
     
     private func loadCalcData() -> CalculatorData {
