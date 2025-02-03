@@ -100,7 +100,7 @@ struct PopUpView: View {
                         description: "The Theme Maker is where you can fully express yourself by creating your own theme. It's intuitive, intelligent, and rewarding. Try it out!"
                     )
                 ],
-                buttonText: "Got it!",
+                buttonText: "Good to know!",
                 buttonAction: {
                     popUp.type = .empty
                 }
@@ -125,7 +125,7 @@ struct PopUpView: View {
                         description: "Did you know that the boundary of the Space is one billion units away from the start? It takes half a year to scroll there without stopping, so don't try to reach it!"
                     )
                 ],
-                buttonText: "Got it!",
+                buttonText: "Good to know!",
                 buttonAction: {
                     popUp.type = .empty
                 }
@@ -150,7 +150,7 @@ struct PopUpView: View {
                         description: "If you leave a stopwatch running, it will continue even when you exit the Space or the entire app! It's always a big surprise to see the stopwatch running for days on end."
                     )
                 ],
-                buttonText: "Got it!",
+                buttonText: "Good to know!",
                 buttonAction: {
                     popUp.type = .empty
                 }
