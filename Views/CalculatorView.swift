@@ -1,128 +1,323 @@
 import SwiftUI
 
-class CalculatorViewModel: ObservableObject {
-    @Published var previousExpression: String = ""
-    @Published var currentDisplay: String = "0"
+struct CalculatorView: View {
+    @EnvironmentObject var space: Space
+    @Environment(\.windowId) var windowId: UUID
     
-    private var tokens: [String] = []
-    private var currentInput: String = ""
+    @Environment(\.theme) private var theme
+    @Environment(\.colorScheme) private var colorScheme
     
-    private func updateCurrentDisplay() {
-        if tokens.isEmpty && currentInput.isEmpty {
-            currentDisplay = "0"
+    struct CalculatorData: Codable {
+        var previousExpression: String
+        var currentDisplay: String
+        var tokens: [String]
+        var currentInput: String
+    }
+    
+    var body: some View {
+        let data = loadCalcData()
+        
+        return GeometryReader { geometry in
+            let spacing: CGFloat = 8
+            let normalButtonWidth = (geometry.size.width - spacing * 5) / 4
+            let fixedButtonHeight: CGFloat = 40
+            
+            VStack(spacing: spacing) {
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 8) {
+                    if !data.previousExpression.isEmpty {
+                        Text(data.previousExpression)
+                            .font(.system(size: 17, weight: .medium, design: .monospaced))
+                            .foregroundStyle(theme.secondary.shadeMap(numShades: 40).shadeMap[6].color)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.5)
+                            .multilineTextAlignment(.trailing)
+                    }
+                    Text(data.currentDisplay)
+                        .font(.system(size: 24, weight: .medium, design: .monospaced))
+                        .foregroundStyle(theme.secondary.shadeMap(numShades: 40).shadeMap[0].color)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
+                        .multilineTextAlignment(.trailing)
+                }
+                .padding(.horizontal, spacing)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                
+                VStack(spacing: spacing) {
+                    HStack(spacing: spacing) {
+                        CalculatorButton(
+                            title: "AC",
+                            backgroundColor: theme.secondary.shadeMap(numShades: 40).shadeMap[16].color,
+                            normalWidth: normalButtonWidth,
+                            spacing: spacing,
+                            buttonHeight: fixedButtonHeight,
+                            action: handleInput
+                        )
+                        CalculatorButton(
+                            title: "+/-",
+                            backgroundColor: theme.secondary.shadeMap(numShades: 40).shadeMap[16].color,
+                            normalWidth: normalButtonWidth,
+                            spacing: spacing,
+                            buttonHeight: fixedButtonHeight,
+                            action: handleInput
+                        )
+                        CalculatorButton(
+                            title: "%",
+                            backgroundColor: theme.secondary.shadeMap(numShades: 40).shadeMap[16].color,
+                            normalWidth: normalButtonWidth,
+                            spacing: spacing,
+                            buttonHeight: fixedButtonHeight,
+                            action: handleInput
+                        )
+                        CalculatorButton(
+                            title: "÷",
+                            backgroundColor: theme.tertiary.shadeMap(numShades: 40).shadeMap[15].color,
+                            normalWidth: normalButtonWidth,
+                            spacing: spacing,
+                            buttonHeight: fixedButtonHeight,
+                            action: handleInput
+                        )
+                    }
+                    HStack(spacing: spacing) {
+                        CalculatorButton("7", normalButtonWidth, spacing, fixedButtonHeight, handleInput)
+                        CalculatorButton("8", normalButtonWidth, spacing, fixedButtonHeight, handleInput)
+                        CalculatorButton("9", normalButtonWidth, spacing, fixedButtonHeight, handleInput)
+                        CalculatorButton(
+                            title: "×",
+                            backgroundColor: theme.tertiary.shadeMap(numShades: 40).shadeMap[15].color,
+                            normalWidth: normalButtonWidth,
+                            spacing: spacing,
+                            buttonHeight: fixedButtonHeight,
+                            action: handleInput
+                        )
+                    }
+                    HStack(spacing: spacing) {
+                        CalculatorButton("4", normalButtonWidth, spacing, fixedButtonHeight, handleInput)
+                        CalculatorButton("5", normalButtonWidth, spacing, fixedButtonHeight, handleInput)
+                        CalculatorButton("6", normalButtonWidth, spacing, fixedButtonHeight, handleInput)
+                        CalculatorButton(
+                            title: "−",
+                            backgroundColor: theme.tertiary.shadeMap(numShades: 40).shadeMap[15].color,
+                            normalWidth: normalButtonWidth,
+                            spacing: spacing,
+                            buttonHeight: fixedButtonHeight,
+                            action: handleInput
+                        )
+                    }
+                    HStack(spacing: spacing) {
+                        CalculatorButton("1", normalButtonWidth, spacing, fixedButtonHeight, handleInput)
+                        CalculatorButton("2", normalButtonWidth, spacing, fixedButtonHeight, handleInput)
+                        CalculatorButton("3", normalButtonWidth, spacing, fixedButtonHeight, handleInput)
+                        CalculatorButton(
+                            title: "+",
+                            backgroundColor: theme.tertiary.shadeMap(numShades: 40).shadeMap[15].color,
+                            normalWidth: normalButtonWidth,
+                            spacing: spacing,
+                            buttonHeight: fixedButtonHeight,
+                            action: handleInput
+                        )
+                    }
+                    HStack(spacing: spacing) {
+                        CalculatorButton(
+                            title: "0",
+                            isWide: true,
+                            normalWidth: normalButtonWidth,
+                            spacing: spacing,
+                            buttonHeight: fixedButtonHeight,
+                            action: handleInput
+                        )
+                        CalculatorButton(".", normalButtonWidth, spacing, fixedButtonHeight, handleInput)
+                        CalculatorButton(
+                            title: "=",
+                            backgroundColor: theme.tertiary.shadeMap(numShades: 40).shadeMap[15].color,
+                            normalWidth: normalButtonWidth,
+                            spacing: spacing,
+                            buttonHeight: fixedButtonHeight,
+                            action: handleInput
+                        )
+                    }
+                }
+                .padding(.bottom, spacing * 1.5)
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+        }
+        .edgesIgnoringSafeArea(.all)
+        .background(
+            LinearGradient(
+                colors: [
+                    theme.secondary.shadeMap(numShades: 40).shadeMap[36].color,
+                    theme.secondary.shadeMap(numShades: 40).shadeMap[31].color
+                ],
+                startPoint: .bottom,
+                endPoint: .top
+            )
+        )
+    }
+    
+    private func loadCalcData() -> CalculatorData {
+        guard let wIndex = space.windows.firstIndex(where: { $0.id == windowId }) else {
+            return CalculatorData(previousExpression: "", currentDisplay: "0", tokens: [], currentInput: "")
+        }
+        
+        let w = space.windows[wIndex]
+        if
+            let jsonString = w.data.saveData["CalculatorData"],
+            let rawData = jsonString.data(using: .utf8),
+            let decoded = try? JSONDecoder().decode(CalculatorData.self, from: rawData)
+        {
+            return decoded
         } else {
-            currentDisplay = tokens.joined(separator: "") + (currentInput.isEmpty ? "" : "" + currentInput)
+            return CalculatorData(previousExpression: "", currentDisplay: "0", tokens: [], currentInput: "")
         }
     }
     
-    func handleInput(_ input: String) {
+    private func saveCalcData(_ newData: CalculatorData) {
+        guard let wIndex = space.windows.firstIndex(where: { $0.id == windowId }) else { return }
+        var w = space.windows[wIndex]
+        
+        if let encoded = try? JSONEncoder().encode(newData),
+           let jsonString = String(data: encoded, encoding: .utf8)
+        {
+            w.data.saveData["CalculatorData"] = jsonString
+            space.windows[wIndex] = w
+        }
+    }
+    
+    private func handleInput(_ input: String) {
+        var c = loadCalcData()
+        
         switch input {
         case "AC":
-            clear()
+            c = clear(c)
         case "+/-":
-            toggleSign()
+            c = toggleSign(c)
         case "%":
-            applyPercentage()
+            c = applyPercentage(c)
         case "+", "−", "×", "÷":
-            inputOperator(input)
+            c = inputOperator(input, c)
         case "=":
-            evaluate()
+            c = evaluate(c)
         default:
-            inputDigit(input)
+            c = inputDigit(input, c)
         }
+        
+        saveCalcData(c)
     }
     
-    func inputDigit(_ digit: String) {
-        if !previousExpression.isEmpty {
-            previousExpression = ""
-            tokens = []
-            currentInput = ""
-            currentDisplay = "0"
+    private func inputDigit(_ digit: String, _ data: CalculatorData) -> CalculatorData {
+        var d = data
+        
+        if !d.previousExpression.isEmpty {
+            d.previousExpression = ""
+            d.tokens = []
+            d.currentInput = ""
+            d.currentDisplay = "0"
         }
+        
         if digit == "." {
-            if currentInput.contains(".") { return }
-            if currentInput.isEmpty { currentInput = "0" }
+            if d.currentInput.contains(".") { return d }
+            if d.currentInput.isEmpty { d.currentInput = "0" }
         }
-        currentInput.append(digit)
-        updateCurrentDisplay()
+        
+        d.currentInput.append(digit)
+        d = updateCurrentDisplay(d)
+        return d
     }
     
-    func inputOperator(_ op: String) {
-        if !previousExpression.isEmpty {
-            previousExpression = ""
-            tokens = [currentDisplay]
-            currentInput = ""
+    private func inputOperator(_ op: String, _ data: CalculatorData) -> CalculatorData {
+        var d = data
+        if !d.previousExpression.isEmpty {
+            d.previousExpression = ""
+            d.tokens = [d.currentDisplay]
+            d.currentInput = ""
         } else {
-            if !currentInput.isEmpty {
-                tokens.append(currentInput)
-                currentInput = ""
+            if !d.currentInput.isEmpty {
+                d.tokens.append(d.currentInput)
+                d.currentInput = ""
             }
         }
-        if let last = tokens.last, isOperator(last) {
-            tokens[tokens.count - 1] = op
+        
+        if let last = d.tokens.last, isOperator(last) {
+            d.tokens[d.tokens.count - 1] = op
         } else {
-            tokens.append(op)
+            d.tokens.append(op)
         }
-        updateCurrentDisplay()
+        d = updateCurrentDisplay(d)
+        return d
     }
     
-    func clear() {
-        previousExpression = ""
-        tokens = []
-        currentInput = ""
-        currentDisplay = "0"
+    private func clear(_ data: CalculatorData) -> CalculatorData {
+        return CalculatorData(previousExpression: "", currentDisplay: "0", tokens: [], currentInput: "")
     }
     
-    func toggleSign() {
-        if !previousExpression.isEmpty {
-            previousExpression = ""
-            tokens = []
-            currentInput = ""
-            currentDisplay = "0"
+    private func toggleSign(_ data: CalculatorData) -> CalculatorData {
+        var d = data
+        
+        if !d.previousExpression.isEmpty {
+            d.previousExpression = ""
         }
-        if !currentInput.isEmpty {
-            if currentInput.first == "-" {
-                currentInput.removeFirst()
+        
+        if !d.currentInput.isEmpty {
+            if d.currentInput.first == "-" {
+                d.currentInput.removeFirst()
             } else {
-                currentInput = "-" + currentInput
+                d.currentInput = "-" + d.currentInput
             }
-        } else if let last = tokens.last, !isOperator(last) {
+        } else if let last = d.tokens.last, !isOperator(last) {
             if last.first == "-" {
-                tokens[tokens.count - 1] = String(last.dropFirst())
+                d.tokens[d.tokens.count - 1] = String(last.dropFirst())
             } else {
-                tokens[tokens.count - 1] = "-" + last
+                d.tokens[d.tokens.count - 1] = "-" + last
             }
         }
-        updateCurrentDisplay()
+        d = updateCurrentDisplay(d)
+        return d
     }
     
-    func applyPercentage() {
-        if !previousExpression.isEmpty {
-            previousExpression = ""
-            tokens = []
-            currentInput = ""
-            currentDisplay = "0"
+    private func applyPercentage(_ data: CalculatorData) -> CalculatorData {
+        var d = data
+        
+        if !d.previousExpression.isEmpty {
+            d.previousExpression = ""
         }
-        if !currentInput.isEmpty, let value = Double(currentInput) {
+        
+        if !d.currentInput.isEmpty, let value = Double(d.currentInput) {
             let percentValue = value / 100
-            currentInput = String(percentValue)
-        } else if let last = tokens.last, let value = Double(last) {
+            d.currentInput = String(percentValue)
+        } else if let last = d.tokens.last, let value = Double(last) {
             let percentValue = value / 100
-            tokens[tokens.count - 1] = String(percentValue)
+            d.tokens[d.tokens.count - 1] = String(percentValue)
         }
-        updateCurrentDisplay()
+        d = updateCurrentDisplay(d)
+        return d
     }
     
-    func evaluate() {
-        if !currentInput.isEmpty {
-            tokens.append(currentInput)
-            currentInput = ""
+    private func evaluate(_ data: CalculatorData) -> CalculatorData {
+        var d = data
+        
+        if !d.currentInput.isEmpty {
+            d.tokens.append(d.currentInput)
+            d.currentInput = ""
         }
-        previousExpression = tokens.joined(separator: "")
-        let result = evaluateTokens(tokens)
-        currentDisplay = result.clean
-        tokens = []
-        currentInput = result.clean
+        d.previousExpression = d.tokens.joined(separator: "")
+        
+        let result = evaluateTokens(d.tokens)
+        d.currentDisplay = result.clean
+        
+        d.tokens = []
+        d.currentInput = result.clean
+        return d
+    }
+    
+    private func updateCurrentDisplay(_ data: CalculatorData) -> CalculatorData {
+        var d = data
+        if d.tokens.isEmpty && d.currentInput.isEmpty {
+            d.currentDisplay = "0"
+        } else {
+            d.currentDisplay = d.tokens.joined(separator: "") + d.currentInput
+        }
+        return d
     }
     
     private func isOperator(_ token: String) -> Bool {
@@ -132,17 +327,18 @@ class CalculatorViewModel: ObservableObject {
     private func evaluateTokens(_ tokens: [String]) -> Double {
         var newTokens = [String]()
         var i = 0
+        
         while i < tokens.count {
             let token = tokens[i]
             if token == "×" || token == "÷" {
-                if let left = Double(newTokens.removeLast()),
-                   i + 1 < tokens.count,
-                   let right = Double(tokens[i + 1])
+                if
+                    let left = Double(newTokens.removeLast()),
+                    i + 1 < tokens.count,
+                    let right = Double(tokens[i + 1])
                 {
-                    let computed: Double = token == "×" ? left * right : left / right
+                    let computed = (token == "×") ? (left * right) : (left / right)
                     newTokens.append(String(computed))
                     i += 2
-                    continue
                 } else {
                     return 0
                 }
@@ -151,6 +347,7 @@ class CalculatorViewModel: ObservableObject {
                 i += 1
             }
         }
+        
         var result = 0.0
         if let first = newTokens.first, let firstVal = Double(first) {
             result = firstVal
@@ -173,8 +370,9 @@ class CalculatorViewModel: ObservableObject {
 
 extension Double {
     var clean: String {
-        truncatingRemainder(dividingBy: 1) == 0 ?
-            String(format: "%.0f", self) : String(self)
+        truncatingRemainder(dividingBy: 1) == 0
+            ? String(format: "%.0f", self)
+            : String(self)
     }
 }
 
@@ -203,165 +401,19 @@ struct CalculatorButton: View {
     }
 }
 
-struct CalculatorView: View {
-    @StateObject private var viewModel = CalculatorViewModel()
-    @Environment(\.theme) private var theme
-    
-    var body: some View {
-        GeometryReader { geometry in
-            let spacing: CGFloat = 8
-            let normalButtonWidth = (geometry.size.width - spacing * 5) / 4
-            let fixedButtonHeight: CGFloat = 40
-            
-            VStack(spacing: spacing) {
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 8) {
-                    if !viewModel.previousExpression.isEmpty {
-                        Text(viewModel.previousExpression)
-                            .font(.system(size: 17, weight: .medium, design: .monospaced))
-                            .foregroundStyle(theme.secondary.shadeMap(numShades: 40).shadeMap[6].color)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.5)
-                            .multilineTextAlignment(.trailing)
-                    }
-                    Text(viewModel.currentDisplay)
-                        .font(.system(size: 24, weight: .medium, design: .monospaced))
-                        .foregroundStyle(theme.secondary.shadeMap(numShades: 40).shadeMap[0].color)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.5)
-                        .multilineTextAlignment(.trailing)
-                }
-                .padding(.horizontal, spacing)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                
-                VStack(spacing: spacing) {
-                    HStack(spacing: spacing) {
-                        CalculatorButton(title: "AC",
-                                         backgroundColor: theme.secondary.shadeMap(numShades: 40).shadeMap[16].color,
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "+/-",
-                                         backgroundColor: theme.secondary.shadeMap(numShades: 40).shadeMap[16].color,
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "%",
-                                         backgroundColor: theme.secondary.shadeMap(numShades: 40).shadeMap[16].color,
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "÷",
-                                         backgroundColor: theme.tertiary.shadeMap(numShades: 40).shadeMap[15].color,
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                    }
-                    HStack(spacing: spacing) {
-                        CalculatorButton(title: "7",
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "8",
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "9",
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "×",
-                                         backgroundColor: theme.tertiary.shadeMap(numShades: 40).shadeMap[15].color,
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                    }
-                    HStack(spacing: spacing) {
-                        CalculatorButton(title: "4",
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "5",
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "6",
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "−",
-                                         backgroundColor: theme.tertiary.shadeMap(numShades: 40).shadeMap[15].color,
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                    }
-                    HStack(spacing: spacing) {
-                        CalculatorButton(title: "1",
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "2",
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "3",
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "+",
-                                         backgroundColor: theme.tertiary.shadeMap(numShades: 40).shadeMap[15].color,
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                    }
-                    HStack(spacing: spacing) {
-                        CalculatorButton(title: "0",
-                                         isWide: true,
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: ".",
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                        CalculatorButton(title: "=",
-                                         backgroundColor: theme.tertiary.shadeMap(numShades: 40).shadeMap[15].color,
-                                         normalWidth: normalButtonWidth,
-                                         spacing: spacing,
-                                         buttonHeight: fixedButtonHeight,
-                                         action: viewModel.handleInput)
-                    }
-                }
-                .padding(.bottom, spacing * 1.5)
-            }
-            .frame(width: geometry.size.width, height: geometry.size.height)
-        }
-        .edgesIgnoringSafeArea(.all)
-        .background(LinearGradient(colors: [theme.secondary.shadeMap(numShades: 40).shadeMap[36].color, theme.secondary.shadeMap(numShades: 40).shadeMap[31].color], startPoint: .bottom, endPoint: .top))
-    }
-}
-
-struct CalculatorView_Previews: PreviewProvider {
-    static var previews: some View {
-        CalculatorView()
+private extension CalculatorButton {
+    init(_ title: String,
+         _ normalWidth: CGFloat,
+         _ spacing: CGFloat,
+         _ buttonHeight: CGFloat,
+         _ action: @escaping (String) -> Void)
+    {
+        self.init(
+            title: title,
+            normalWidth: normalWidth,
+            spacing: spacing,
+            buttonHeight: buttonHeight,
+            action: action
+        )
     }
 }
