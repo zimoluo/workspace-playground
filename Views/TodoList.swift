@@ -108,10 +108,8 @@ struct TodoListView: View {
                 ForEach(itemsBinding.wrappedValue, id: \.id) { item in
                     if let binding = itemsBinding.binding(for: item.id) {
                         TodoItemRow(item: binding) {
-                            var currentItems = itemsBinding.wrappedValue
-                            if let index = currentItems.firstIndex(where: { $0.id == item.id }) {
-                                currentItems.remove(at: index)
-                                itemsBinding.wrappedValue = currentItems
+                            withAnimation(.snappy) {
+                                deleteItem(withId: item.id)
                             }
                         }
                         .focused($focusedItemID, equals: item.id)
@@ -135,6 +133,19 @@ struct TodoListView: View {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             focusedItemID = newItem.id
+        }
+    }
+
+    private func deleteItem(withId id: UUID) {
+        var currentItems = itemsBinding.wrappedValue
+
+        guard let index = currentItems.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+
+        if index < currentItems.count {
+            currentItems.remove(at: index)
+            itemsBinding.wrappedValue = currentItems
         }
     }
 
@@ -170,45 +181,42 @@ struct TodoItemRow: View {
             .textFieldStyle(.plain)
             .font(.system(size: 17, weight: .medium))
 
-            Button(action: {
-                if isActive {
-                    withAnimation(.snappy) {
-                        cancelDeletion()
-                    }
-                } else {
-                    withAnimation(.snappy) {
-                        startDeletionCountdown()
-                    }
-                }
-            }) {
-                ZStack {
-                    Circle()
-                        .stroke(lineWidth: 2.7)
-                        .frame(width: 19, height: 19)
-                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2))
+            ZStack {
+                Circle()
+                    .stroke(lineWidth: 2.7)
+                    .frame(width: 19, height: 19)
+                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2))
 
-                    if isActive {
-                        Circle()
-                            .trim(from: 0, to: progress)
-                            .stroke(
-                                themeColor(from: theme, for: .secondary, in: colorScheme, level: 2),
-                                style: StrokeStyle(lineWidth: 2.7, lineCap: .round)
-                            )
-                            .frame(width: 9, height: 9)
-                            .rotationEffect(.degrees(-90))
-                    }
+                if isActive {
+                    Circle()
+                        .trim(from: 0, to: progress)
+                        .stroke(
+                            themeColor(from: theme, for: .secondary, in: colorScheme, level: 2),
+                            style: StrokeStyle(lineWidth: 2.7, lineCap: .round)
+                        )
+                        .frame(width: 9, height: 9)
+                        .rotationEffect(.degrees(-90))
                 }
-                .contentShape(Rectangle())
             }
+            .contentShape(Rectangle())
             .accessibilityLabel("Complete Item")
             .frame(width: 30, height: 30)
-            .contentShape(Rectangle())
-            .buttonStyle(.plain)
             .gesture(DragGesture().onChanged { _ in })
         }
         .padding(.vertical, 4)
         .background(Color.clear)
         .contentShape(Rectangle())
+        .onTapGesture {
+            if isActive {
+                withAnimation(.snappy) {
+                    cancelDeletion()
+                }
+            } else {
+                withAnimation(.snappy) {
+                    startDeletionCountdown()
+                }
+            }
+        }
     }
 
     private func startDeletionCountdown() {
