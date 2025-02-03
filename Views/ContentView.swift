@@ -370,7 +370,7 @@ struct SpaceCardView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 isSelected ?
-                    themeColor(from: theme, for: .primary, in: colorScheme, level: 1) :
+                    themeColor(from: theme, for: .primary, in: colorScheme, level: 1.33) :
                     themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
             )
             .cornerRadius(16)
