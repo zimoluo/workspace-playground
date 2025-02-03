@@ -28,7 +28,7 @@ struct CalculatorView: View {
                 VStack(alignment: .trailing, spacing: 8) {
                     if !data.previousExpression.isEmpty {
                         Text(data.previousExpression)
-                            .font(.system(size: 18, weight: .medium, design: .monospaced))
+                            .font(.system(size: 19, weight: .medium, design: .monospaced))
                             .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2))
                             .lineLimit(1)
                             .minimumScaleFactor(0.5)
@@ -380,7 +380,7 @@ struct CalculatorButton: View {
     var body: some View {
         Button(action: { action(title) }) {
             Text(title)
-                .font(.system(size: 16, weight: .medium, design: .monospaced))
+                .font(.system(size: 17.5, weight: .medium, design: .monospaced))
                 .frame(width: isWide ? normalWidth * 2 + spacing : normalWidth,
                        height: buttonHeight)
                 .foregroundStyle(theme.secondary.shadeMap(numShades: 40).shadeMap[0].color)

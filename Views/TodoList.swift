@@ -224,7 +224,7 @@ struct TodoItemRow: View {
         progress = 0.0
         timer?.invalidate()
 
-        timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { timer in
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
             if progress >= 1.0 {
                 timer.invalidate()
                 withAnimation(.snappy) {
@@ -233,8 +233,8 @@ struct TodoItemRow: View {
                 isActive = false
                 progress = 0.0
             } else {
-                withAnimation(.linear(duration: 0.3)) {
-                    progress += 0.1
+                withAnimation(.linear(duration: 0.1)) {
+                    progress += 0.201
                 }
             }
         }
