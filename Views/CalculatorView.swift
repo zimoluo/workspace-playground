@@ -29,14 +29,14 @@ struct CalculatorView: View {
                     if !data.previousExpression.isEmpty {
                         Text(data.previousExpression)
                             .font(.system(size: 17, weight: .medium, design: .monospaced))
-                            .foregroundStyle(theme.secondary.shadeMap(numShades: 40).shadeMap[6].color)
+                            .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2))
                             .lineLimit(1)
                             .minimumScaleFactor(0.5)
                             .multilineTextAlignment(.trailing)
                     }
                     Text(data.currentDisplay)
                         .font(.system(size: 24, weight: .medium, design: .monospaced))
-                        .foregroundStyle(theme.secondary.shadeMap(numShades: 40).shadeMap[0].color)
+                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                         .multilineTextAlignment(.trailing)
@@ -143,16 +143,6 @@ struct CalculatorView: View {
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
         .edgesIgnoringSafeArea(.all)
-        .background(
-            LinearGradient(
-                colors: [
-                    theme.secondary.shadeMap(numShades: 40).shadeMap[36].color,
-                    theme.secondary.shadeMap(numShades: 40).shadeMap[31].color
-                ],
-                startPoint: .bottom,
-                endPoint: .top
-            )
-        )
     }
     
     private func loadCalcData() -> CalculatorData {
