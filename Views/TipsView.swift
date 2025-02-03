@@ -12,8 +12,8 @@ struct TipsView: View {
                 Color.clear.ignoresSafeArea()
 
                 Image(systemName: "lightbulb.max")
-                    .font(.system(size: shorterSide * 0.4))
-                    .frame(width: shorterSide * 0.55, height: shorterSide * 0.55)
+                    .font(.system(size: shorterSide * 0.55))
+                    .frame(width: shorterSide * 0.9, height: shorterSide * 0.9)
                     .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                     .onTapGesture {
                         popUp.type = .tips_menu
