@@ -61,17 +61,17 @@ struct PopUpView: View {
                 items: [
                     PopUpItem(
                         icon: "rectangle.3.group.fill",
-                        title: "Organize Your Windows",
+                        title: "Organizing Windows",
                         description: "Lost in the vast Space? Reclaim windows with a tap. WorkSpace’s smart algorithm knows window sizes and positions them perfectly."
                     ),
                     PopUpItem(
                         icon: "mappin.circle.fill",
-                        title: "Use Markers",
+                        title: "Placing Markers",
                         description: "Sometimes a Space can have different zones. Place a Marker to quickly travel between and preview different areas."
                     ),
                     PopUpItem(
                         icon: "lock.fill",
-                        title: "Lock the Frame",
+                        title: "Locking the Frame",
                         description: "Maximize your screen’s real estate. Lock the frame to keep your windows exactly where you want them."
                     )
                 ],
