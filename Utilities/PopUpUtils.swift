@@ -1,11 +1,12 @@
 import SwiftUI
 
-enum PopUpType {
+enum PopUpType: String, Codable {
     case empty
     case themeMakerGuide
     case tips_menu
     case tips_theme
     case tips_technical
+    case tips_window
 }
 
 class PopUp: ObservableObject {

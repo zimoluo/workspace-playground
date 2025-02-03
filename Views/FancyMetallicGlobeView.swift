@@ -7,11 +7,15 @@ struct FancyMetallicGlobeView: View {
     @State private var meshColors: [Color] = []
     @State private var hueRange: (Double, Double) = (0, 0)
 
+    @EnvironmentObject private var popUp: PopUp
+
     @EnvironmentObject var space: Space
     @Environment(\.windowId) var windowId: UUID
 
     private let animationDuration: Double = 2.0
     private let timer = Timer.publish(every: 2.0, on: .main, in: .common).autoconnect()
+
+    private let popUpHistoryKey = "popUpHistory"
 
     var body: some View {
         GeometryReader { geometry in
@@ -34,8 +38,46 @@ struct FancyMetallicGlobeView: View {
                     .frame(width: geometry.size.width - 32, height: geometry.size.height - 32)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
+            .onTapGesture {
+                handleTap()
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func handleTap() {
+        let allTypes: [PopUpType] = [.tips_menu, .tips_theme, .tips_technical, .tips_window]
+        var history = getPopUpHistory()
+        var available = allTypes.filter { !history.contains($0) }
+        if available.isEmpty {
+            history = []
+            available = allTypes
+        }
+        if let chosen = available.randomElement() {
+            popUp.type = chosen
+            history.append(chosen)
+            setPopUpHistory(history)
+        }
+    }
+
+    private func getPopUpHistory() -> [PopUpType] {
+        guard let windowIndex = space.windows.firstIndex(where: { $0.id == windowId }),
+              let historyString = space.windows[windowIndex].data.saveData[popUpHistoryKey],
+              let data = historyString.data(using: .utf8),
+              let decoded = try? JSONDecoder().decode([PopUpType].self, from: data)
+        else {
+            return []
+        }
+        return decoded
+    }
+
+    private func setPopUpHistory(_ history: [PopUpType]) {
+        guard let windowIndex = space.windows.firstIndex(where: { $0.id == windowId }) else { return }
+        if let data = try? JSONEncoder().encode(history),
+           let jsonString = String(data: data, encoding: .utf8)
+        {
+            space.windows[windowIndex].data.saveData[popUpHistoryKey] = jsonString
+        }
     }
 
     private func generateUniqueHueRange() {

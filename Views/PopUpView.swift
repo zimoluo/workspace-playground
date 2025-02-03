@@ -57,47 +57,47 @@ struct PopUpView: View {
             )
         case .tips_menu:
             PopUpContent(
-                title: "Tips:\nKnowing the Tools",
+                title: "Well of Wisdom:\nKnowing the Tools",
                 items: [
                     PopUpItem(
-                        icon: "rectangle.3.group",
-                        title: "Organizing Windows",
-                        description: "Organize."
+                        icon: "rectangle.3.group.fill",
+                        title: "Organize Your Windows",
+                        description: "Lost in the vast Space? Reclaim windows with a tap. WorkSpace’s smart algorithm knows window sizes and positions them perfectly."
                     ),
                     PopUpItem(
-                        icon: "mappin.circle",
-                        title: "Using Markers",
-                        description: "Edit three accent colors with ease. WorkSpace adapts brightness and saturation to ensure your colors always look great!"
+                        icon: "mappin.circle.fill",
+                        title: "Use Markers",
+                        description: "Sometimes a Space can have different zones. Place a Marker to quickly travel between and preview different areas."
                     ),
                     PopUpItem(
-                        icon: "lock",
-                        title: "Locking the Frame",
-                        description: "Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s toolset makes it easy to create stunning gradients. Its smart color algorithm ensures beautiful results."
+                        icon: "lock.fill",
+                        title: "Lock the Frame",
+                        description: "Maximize your screen’s real estate. Lock the frame to keep your windows exactly where you want them."
                     )
                 ],
-                buttonText: "Got it!",
+                buttonText: "Good to know!",
                 buttonAction: {
                     popUp.type = .empty
                 }
             )
         case .tips_theme:
             PopUpContent(
-                title: "Tips:\nChanging Themes",
+                title: "Well of Wisdom:\nMaking Themes",
                 items: [
                     PopUpItem(
-                        icon: "rectangle.3.group",
-                        title: "Organizing Windows",
-                        description: "Organize."
+                        icon: "paintpalette.fill",
+                        title: "Changing Themes",
+                        description: "Try out different themes! WorkSpace offers four gorgeous themes to choose from. Each is great yet distinct."
                     ),
                     PopUpItem(
-                        icon: "mappin.circle",
-                        title: "Using Markers",
-                        description: "Edit three accent colors with ease. WorkSpace adapts brightness and saturation to ensure your colors always look great!"
+                        icon: "book.fill",
+                        title: "Learning the Basics",
+                        description: "A theme features three accent colors and a fully customizable backdrop gradient. They apply to every aspect of WorkSpace, from the color of windows to the appearance of menu."
                     ),
                     PopUpItem(
-                        icon: "lock",
-                        title: "Locking the Frame",
-                        description: "Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s toolset makes it easy to create stunning gradients. Its smart color algorithm ensures beautiful results."
+                        icon: "command",
+                        title: "Trying out the Theme Maker",
+                        description: "The Theme Maker is where you can fully express yourself by creating your own theme. It's intuitive, intelligent, and rewarding. Try it out!"
                     )
                 ],
                 buttonText: "Got it!",
@@ -107,22 +107,47 @@ struct PopUpView: View {
             )
         case .tips_technical:
             PopUpContent(
-                title: "Tips:\nTrivia",
+                title: "Well of Wisdom:\nDid you know?",
                 items: [
                     PopUpItem(
-                        icon: "rectangle.3.group",
-                        title: "Organizing Windows",
-                        description: "Organize."
+                        icon: "square.grid.3x3.square",
+                        title: "Dot Grid",
+                        description: "Did you know that the dot grid is rendered using Metal? It provides a great navigation experience while keeping the app running buttery smooth."
                     ),
                     PopUpItem(
-                        icon: "mappin.circle",
-                        title: "Using Markers",
-                        description: "Edit three accent colors with ease. WorkSpace adapts brightness and saturation to ensure your colors always look great!"
+                        icon: "line.3.crossed.swirl.circle.fill",
+                        title: "Mesh Gradient",
+                        description: "Did you know that the default theme uses a mesh gradient background? Try the mesh gradient in the Theme Maker! You can customize vertices, colors, and so much more. It's the best way to express your understanding of colors."
                     ),
                     PopUpItem(
-                        icon: "lock",
-                        title: "Locking the Frame",
-                        description: "Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s toolset makes it easy to create stunning gradients. Its smart color algorithm ensures beautiful results."
+                        icon: "infinity",
+                        title: "Edge of the Space",
+                        description: "Did you know that the boundary of the Space is one billion units away from the start? It takes half a year to scroll there without stopping, so don't try to reach it!"
+                    )
+                ],
+                buttonText: "Got it!",
+                buttonAction: {
+                    popUp.type = .empty
+                }
+            )
+        case .tips_window:
+            PopUpContent(
+                title: "Well of Wisdom:\nWindows Facts",
+                items: [
+                    PopUpItem(
+                        icon: "deskclock.fill",
+                        title: "The First Window",
+                        description: "The analog clock is the first window ever created in WorkSpace! It has a clean yet elegant design, and it looks even better in oval shapes!"
+                    ),
+                    PopUpItem(
+                        icon: "note.text",
+                        title: "Not Just Notes",
+                        description: "Notes is not just a text editor. You can change the text's color, size, and style, and even insert your favorite Stickers and Genmojis!"
+                    ),
+                    PopUpItem(
+                        icon: "stopwatch.fill",
+                        title: "Stopwatch Doesn't Stop",
+                        description: "If you leave a stopwatch running, it will continue even when you exit the Space or the entire app! It's always a big surprise to see the stopwatch running for days on end."
                     )
                 ],
                 buttonText: "Got it!",
