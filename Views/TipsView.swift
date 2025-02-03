@@ -11,16 +11,13 @@ struct TipsView: View {
             ZStack {
                 Color.clear.ignoresSafeArea()
 
-                Button(action: {
-                    popUp.type = .tips_menu
-                }) {
-                    Image(systemName: "lightbulb.max")
-                        .font(.system(size: shorterSide * 0.4))
-                        .frame(width: shorterSide * 0.55, height: shorterSide * 0.55)
-                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
-                }
-                .frame(width: shorterSide * 0.55, height: shorterSide * 0.55)
-                .gesture(DragGesture().onChanged { _ in })
+                Image(systemName: "lightbulb.max")
+                    .font(.system(size: shorterSide * 0.4))
+                    .frame(width: shorterSide * 0.55, height: shorterSide * 0.55)
+                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
+                    .onTapGesture {
+                        popUp.type = .tips_menu
+                    }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

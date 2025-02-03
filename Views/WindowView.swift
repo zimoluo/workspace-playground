@@ -58,9 +58,7 @@ struct WindowView: View {
                 }
             }
             .onTapGesture {
-                withAnimation(.spring(duration: 0.15)) {
-                    space.removeWindow(window)
-                }
+                space.removeWindow(window)
             }
             .gesture(
                 DragGesture(minimumDistance: 0)
