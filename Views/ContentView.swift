@@ -9,11 +9,10 @@ struct ContentView: View {
     @Environment(\.settings) private var settings
     @Environment(\.colorScheme) private var colorScheme
 
-    @State private var selectedScreen: Screen = .init(type: .space)
+    @State var selectedScreen: Screen = .init(type: .space)
 
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
 
-    private let columns: [GridItem] = Array(repeating: .init(.fixed(36), spacing: 16), count: 5)
     private let maxThemesGridHeight: CGFloat = 120
 
     var body: some View {
@@ -87,64 +86,13 @@ struct ContentView: View {
                         }
 
                         SectionView(header: "Themes") {
-                            ScrollView {
-                                LazyVGrid(columns: columns, spacing: 16) {
-                                    ForEach(themes.filter { $0.id != theme.id }) { eachTheme in
-                                        Button(action: {
-                                            withAnimation(.spring(duration: 0.2)) {
-                                                applyTheme(eachTheme.id)
-                                            }
-                                        }) {
-                                            Circle()
-                                                .fill(eachTheme.thumbnail)
-                                                .frame(width: 36, height: 36)
-                                                .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 4, y: 2)
-                                                .overlay(
-                                                    Circle()
-                                                        .stroke(themeColor(from: theme, for: .primary, in: .light, level: 5), lineWidth: 3)
-                                                        .frame(width: 33, height: 33)
-                                                )
-                                                .hoverEffect(.lift)
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
-                                        .scrollTransition { content, phase in
-                                            content
-                                                .opacity(phase.isIdentity ? 1 : 0)
-                                                .scaleEffect(phase.isIdentity ? 1 : 0.6)
-                                                .blur(radius: phase.isIdentity ? 0 : 10)
-                                        }
-                                    }
-                                    Button(action: {
-                                        withAnimation(.spring(duration: 0.2)) {
-                                            selectedScreen.type = .themeMaker
-                                        }
-                                    }) {
-                                        Circle()
-                                            .stroke(themeColor(from: theme, for: .primary, in: colorScheme, level: 1), style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [4, 6.2]))
-                                            .frame(width: 33, height: 33)
-                                            .contentShape(Circle())
-                                            .overlay(
-                                                Image(systemName: "plus")
-                                                    .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
-                                                    .fontWeight(.bold)
-                                            )
-                                            .scrollTransition { content, phase in
-                                                content
-                                                    .opacity(phase.isIdentity ? 1 : 0)
-                                                    .scaleEffect(phase.isIdentity ? 1 : 0.6)
-                                                    .blur(radius: phase.isIdentity ? 0 : 10)
-                                            }
-                                            .hoverEffect(.lift)
-                                    }
-                                }
-                                .padding(16)
-                            }
-                            .frame(height: themesGridHeight)
-                            .background(
-                                themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
-                            )
-                            .cornerRadius(16)
-                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
+                            ThemePicker(selectedScreen: $selectedScreen)
+                                .frame(height: themesGridHeight)
+                                .background(
+                                    themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
+                                )
+                                .cornerRadius(16)
+                                .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
                         }
 
                         Button(action: {
@@ -252,20 +200,6 @@ struct ContentView: View {
         let totalSpacing = CGFloat(Int(rows) + 1) * 16
         let requiredHeight = totalItemHeight + totalSpacing
         return min(requiredHeight, maxThemesGridHeight)
-    }
-
-    private func applyTheme(_ id: UUID?) {
-        guard let id = id,
-              let matchingTheme = themes.first(where: { $0.id == id })
-        else {
-            return
-        }
-        guard matchingTheme.id != theme.id else { return }
-        let copiedTheme = matchingTheme.deepCopy()
-        theme.primary = copiedTheme.primary
-        theme.secondary = copiedTheme.secondary
-        theme.tertiary = copiedTheme.tertiary
-        theme.mainGradient = copiedTheme.mainGradient
     }
 
     private func addSpace() {
@@ -459,6 +393,93 @@ struct SpaceCardView: View {
             let formatter = DateFormatter()
             formatter.dateStyle = .short
             return formatter.string(from: date)
+        }
+    }
+}
+
+struct ThemePicker: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Theme.dateModified, order: .reverse) var themes: [Theme]
+
+    @Environment(\.theme) private var theme
+    @Environment(\.settings) private var settings
+    @Environment(\.colorScheme) private var colorScheme
+
+    @Binding var selectedScreen: Screen
+
+    var hasThemeMakerButton: Bool = true
+
+    private let columns: [GridItem] = Array(repeating: .init(.fixed(36), spacing: 16), count: 5)
+
+    private func applyTheme(_ id: UUID?) {
+        guard let id = id,
+              let matchingTheme = themes.first(where: { $0.id == id })
+        else {
+            return
+        }
+        guard matchingTheme.id != theme.id else { return }
+        let copiedTheme = matchingTheme.deepCopy()
+        theme.primary = copiedTheme.primary
+        theme.secondary = copiedTheme.secondary
+        theme.tertiary = copiedTheme.tertiary
+        theme.mainGradient = copiedTheme.mainGradient
+    }
+
+    var body: some View {
+        return ScrollView {
+            LazyVGrid(columns: columns, spacing: 16) {
+                ForEach(themes.filter { $0.id != theme.id }) { eachTheme in
+                    Button(action: {
+                        withAnimation(.spring(duration: 0.2)) {
+                            applyTheme(eachTheme.id)
+                        }
+                    }) {
+                        Circle()
+                            .fill(eachTheme.thumbnail)
+                            .frame(width: 36, height: 36)
+                            .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 4, y: 2)
+                            .overlay(
+                                Circle()
+                                    .stroke(themeColor(from: theme, for: .primary, in: .light, level: 5), lineWidth: 3)
+                                    .frame(width: 33, height: 33)
+                            )
+                            .hoverEffect(.lift)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .scrollTransition { content, phase in
+                        content
+                            .opacity(phase.isIdentity ? 1 : 0)
+                            .scaleEffect(phase.isIdentity ? 1 : 0.6)
+                            .blur(radius: phase.isIdentity ? 0 : 10)
+                    }
+                }
+
+                if hasThemeMakerButton {
+                    Button(action: {
+                        withAnimation(.spring(duration: 0.2)) {
+                            selectedScreen.type = .themeMaker
+                        }
+                    }) {
+                        Circle()
+                            .stroke(themeColor(from: theme, for: .primary, in: colorScheme, level: 1), style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [4, 6.2]))
+                            .frame(width: 33, height: 33)
+                            .contentShape(Circle())
+                            .overlay(
+                                Image(systemName: "plus")
+                                    .foregroundStyle(themeColor(from: theme, for: .primary, in: colorScheme, level: 1))
+                                    .fontWeight(.bold)
+                            )
+                            .scrollTransition { content, phase in
+                                content
+                                    .opacity(phase.isIdentity ? 1 : 0)
+                                    .scaleEffect(phase.isIdentity ? 1 : 0.6)
+                                    .blur(radius: phase.isIdentity ? 0 : 10)
+                            }
+                            .hoverEffect(.lift)
+                    }
+                }
+            }
+            .padding(16)
         }
     }
 }

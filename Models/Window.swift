@@ -129,6 +129,11 @@ struct WindowData: Codable {
             updatedData.minWidth = 200
             updatedData.maxHeight = 360
             updatedData.minHeight = 360
+        case .themePicker:
+            updatedData.maxWidth = 280
+            updatedData.minWidth = 280
+            updatedData.maxHeight = 160
+            updatedData.minHeight = 108
         }
 
         return updatedData
@@ -139,6 +144,7 @@ enum WindowType: String, Codable, CaseIterable {
     case clock
     case stopwatch
     case digitalClock
+    case themePicker
     case calculator
     case toDoList
     case notes
@@ -159,6 +165,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .dashboard: return (250, 320)
         case .toDoList: return (210, 310)
         case .magicGlobe: return (210, 210)
+        case .themePicker: return (280, 108)
         }
     }
 
@@ -174,6 +181,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .toDoList: return WindowGlyph(mode: .system, key: "list.bullet.rectangle.portrait")
         case .magicGlobe: return WindowGlyph(mode: .system, key: "moon.stars.circle")
         case .calculator: return WindowGlyph(mode: .custom, key: "Calculator")
+        case .themePicker: return WindowGlyph(mode: .system, key: "paintpalette")
         }
     }
 
@@ -202,6 +210,11 @@ enum WindowType: String, Codable, CaseIterable {
             FancyMetallicGlobeView()
         case .calculator:
             CalculatorView()
+        case .themePicker:
+            ThemePicker(selectedScreen: .constant(Screen()), hasThemeMakerButton: false)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.vertical, 20)
+                .gesture(DragGesture().onChanged { _ in })
         }
     }
 }
