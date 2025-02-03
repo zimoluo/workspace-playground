@@ -28,14 +28,14 @@ struct CalculatorView: View {
                 VStack(alignment: .trailing, spacing: 8) {
                     if !data.previousExpression.isEmpty {
                         Text(data.previousExpression)
-                            .font(.system(size: 17, weight: .medium, design: .monospaced))
+                            .font(.system(size: 18, weight: .medium, design: .monospaced))
                             .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2))
                             .lineLimit(1)
                             .minimumScaleFactor(0.5)
                             .multilineTextAlignment(.trailing)
                     }
                     Text(data.currentDisplay)
-                        .font(.system(size: 24, weight: .medium, design: .monospaced))
+                        .font(.system(size: 28, weight: .medium, design: .monospaced))
                         .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)

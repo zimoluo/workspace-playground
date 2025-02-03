@@ -203,7 +203,7 @@ struct TodoItemRow: View {
             .accessibilityLabel("Complete Item")
             .frame(width: 30, height: 30)
             .contentShape(Rectangle())
-            .buttonStyle(.borderless)
+            .buttonStyle(.plain)
             .gesture(DragGesture().onChanged { _ in })
         }
         .padding(.vertical, 4)
