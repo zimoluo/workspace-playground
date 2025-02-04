@@ -14,7 +14,6 @@ class DailyQuoteViewModel: ObservableObject {
         Quote(text: "Stay hungry, stay foolish.", author: "Steve Jobs"),
         Quote(text: "Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work.", author: "Steve Jobs"),
         Quote(text: "Have the courage to follow your heart and intuition. They somehow already know what you truly want to become.", author: "Steve Jobs"),
-        Quote(text: "It's not about money. It's about the people you have, how you're led, and how much you get it.", author: "Steve Jobs"),
         Quote(text: "Things don't have to change the world to be important.", author: "Steve Jobs"),
         Quote(text: "I’m as proud of many of the things we haven’t done as the things we have done.", author: "Steve Jobs"),
         Quote(text: "We hire smart people so they can tell us what to do.", author: "Steve Jobs"),
