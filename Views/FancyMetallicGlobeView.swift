@@ -24,7 +24,7 @@ struct FancyMetallicGlobeView: View {
             ZStack {
                 Ellipse()
                     .fill(MeshGradient(width: 4, height: 4, points: meshPoints, colors: meshColors))
-                    .frame(width: geometry.size.width - 32, height: geometry.size.height - 32)
+                    .frame(width: geometry.size.width - 33, height: geometry.size.height - 33)
                     .onAppear {
                         generateUniqueHueRange()
                         meshColors = MeshGradientHelper.generateMeshColors(hueRange: hueRange, in: colorScheme)
