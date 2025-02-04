@@ -134,6 +134,13 @@ struct WindowData: Codable {
             updatedData.minWidth = 280
             updatedData.maxHeight = 160
             updatedData.minHeight = 108
+        case .quote:
+            updatedData.maxWidth = 440
+            updatedData.minWidth = 160
+            updatedData.maxHeight = 440
+            updatedData.minHeight = 160
+            updatedData.minAspectRatio = 0.8
+            updatedData.maxAspectRatio = 1.55
         }
 
         return updatedData
@@ -152,6 +159,7 @@ enum WindowType: String, Codable, CaseIterable {
     case dashboard
     case blank
     case themeMaker
+    case quote
 
     var defaultSize: (width: CGFloat, height: CGFloat) {
         switch self {
@@ -166,6 +174,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .toDoList: return (210, 310)
         case .magicGlobe: return (210, 210)
         case .themePicker: return (280, 108)
+        case .quote: return (280, 200)
         }
     }
 
@@ -182,6 +191,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .magicGlobe: return WindowGlyph(mode: .system, key: "moon.stars.circle")
         case .calculator: return WindowGlyph(mode: .custom, key: "Calculator")
         case .themePicker: return WindowGlyph(mode: .system, key: "paintpalette")
+        case .quote: return WindowGlyph(mode: .system, key: "text.quote")
         }
     }
 
@@ -215,6 +225,8 @@ enum WindowType: String, Codable, CaseIterable {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.vertical, 20)
                 .gesture(DragGesture().onChanged { _ in })
+        case .quote:
+            DailyQuoteView()
         }
     }
 }
