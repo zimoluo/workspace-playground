@@ -148,6 +148,11 @@ struct WindowData: Codable {
             updatedData.minHeight = 160
             updatedData.minAspectRatio = 0.8
             updatedData.maxAspectRatio = 1.65
+        case .pomodoroTimer:
+            updatedData.maxWidth = 440
+            updatedData.minWidth = 280
+            updatedData.maxHeight = 280
+            updatedData.minHeight = 220
         }
 
         return updatedData
@@ -157,6 +162,7 @@ struct WindowData: Codable {
 enum WindowType: String, Codable, CaseIterable {
     case clock
     case stopwatch
+    case pomodoroTimer
     case digitalClock
     case themePicker
     case calculator
@@ -184,6 +190,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .themePicker: return (280, 108)
         case .quote: return (280, 200)
         case .writingPrompt: return (280, 184)
+        case .pomodoroTimer: return (320, 220)
         }
     }
 
@@ -202,6 +209,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .themePicker: return WindowGlyph(mode: .system, key: "paintpalette")
         case .quote: return WindowGlyph(mode: .system, key: "text.quote")
         case .writingPrompt: return WindowGlyph(mode: .system, key: "pencil.line")
+        case .pomodoroTimer: return WindowGlyph(mode: .system, key: "timer")
         }
     }
 
@@ -239,6 +247,8 @@ enum WindowType: String, Codable, CaseIterable {
             DailyQuoteView()
         case .writingPrompt:
             DailyWritingPromptView()
+        case .pomodoroTimer:
+            PomodoroTimerView()
         }
     }
 }
