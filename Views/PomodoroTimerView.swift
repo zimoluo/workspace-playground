@@ -181,18 +181,14 @@ struct PomodoroTimerView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onReceive(timer) { _ in
             if pomodoroState == .running {
-                // Force SwiftUI to re-render
                 dummyTick.toggle()
 
-                // If we've completed the current segment (<= 0), auto-skip
                 if timeRemainingInSegment <= 0 {
                     skipSegment()
                 }
             }
         }
     }
-
-    // MARK: - Action Helpers
 
     private var mainButtonTitle: String {
         switch pomodoroState {
@@ -205,7 +201,6 @@ struct PomodoroTimerView: View {
     private func handleMainButtonTap() {
         switch pomodoroState {
         case .initial:
-            // Start from zero
             saveState(
                 PomodoroTimerStorage(
                     state: .running,
@@ -214,7 +209,6 @@ struct PomodoroTimerView: View {
                 )
             )
         case .running:
-            // Pause
             let newAccumulated = totalElapsedTime
             saveState(
                 PomodoroTimerStorage(
@@ -224,34 +218,29 @@ struct PomodoroTimerView: View {
                 )
             )
         case .paused:
-            // Resume
             saveState(
                 PomodoroTimerStorage(
                     state: .running,
                     startDate: Date(),
-                    accumulatedTime: accumulatedTime // keep whatever we've got so far
+                    accumulatedTime: accumulatedTime
                 )
             )
         }
     }
 
-    /// Skips the remainder of the current segment.
     private func skipSegment() {
-        // If we're in the middle of a segment, add the leftover so we jump to next.
         let leftover = timeRemainingInSegment
         let newAccumulated = totalElapsedTime + leftover
 
-        // Keep the same state (running or paused). If paused, we still jump segments but remain paused.
         switch pomodoroState {
         case .initial:
-            // If user taps 'Skip' in .initial for some reason, interpret as "start" then skip?
-            // Or do nothing. It's your choice; here's a no-op:
+            // this should never occur. but if it does it doesn't do anything.
             break
         case .running:
             saveState(
                 PomodoroTimerStorage(
                     state: .running,
-                    startDate: Date(), // new start now
+                    startDate: Date(),
                     accumulatedTime: newAccumulated
                 )
             )
@@ -267,7 +256,6 @@ struct PomodoroTimerView: View {
     }
 
     private func resetTimer() {
-        // Clears everything back to initial
         saveState(
             PomodoroTimerStorage(
                 state: .initial,
@@ -277,7 +265,6 @@ struct PomodoroTimerView: View {
         )
     }
 
-    /// Saves new pomodoro data back to the environment’s window `saveData`.
     private func saveState(_ newState: PomodoroTimerStorage) {
         guard let encoded = try? JSONEncoder().encode(newState),
               let jsonString = String(data: encoded, encoding: .utf8),
