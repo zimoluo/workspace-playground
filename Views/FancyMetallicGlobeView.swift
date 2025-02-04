@@ -153,11 +153,11 @@ struct MetallicBorder: View {
         ZStack {
             AngularGradient(
                 gradient: Gradient(stops: [
-                    .init(color: (colorScheme == .light ? Color.gray : Color(white: 0.15)).opacity(0.8), location: 0.0),
-                    .init(color: (colorScheme == .light ? Color.white : Color(white: 0.5)).opacity(0.9), location: 0.25),
-                    .init(color: (colorScheme == .light ? Color.gray : Color(white: 0.15)).opacity(0.8), location: 0.5),
-                    .init(color: (colorScheme == .light ? Color.white : Color(white: 0.5)).opacity(0.9), location: 0.75),
-                    .init(color: (colorScheme == .light ? Color.gray : Color(white: 0.15)).opacity(0.8), location: 1.0)
+                    .init(color: (colorScheme == .light ? Color.gray : Color(white: 0.12)).opacity(0.8), location: 0.0),
+                    .init(color: (colorScheme == .light ? Color.white : Color(white: 0.33)).opacity(0.9), location: 0.25),
+                    .init(color: (colorScheme == .light ? Color.gray : Color(white: 0.12)).opacity(0.8), location: 0.5),
+                    .init(color: (colorScheme == .light ? Color.white : Color(white: 0.33)).opacity(0.9), location: 0.75),
+                    .init(color: (colorScheme == .light ? Color.gray : Color(white: 0.12)).opacity(0.8), location: 1.0)
                 ]),
                 center: .center,
                 startAngle: .degrees(0),
@@ -166,9 +166,9 @@ struct MetallicBorder: View {
             .overlay(
                 LinearGradient(
                     gradient: Gradient(colors: [
-                        (colorScheme == .light ? Color.white : Color(white: 0.55)).opacity(0.3),
+                        (colorScheme == .light ? Color.white : Color(white: 0.36)).opacity(0.3),
                         Color.clear,
-                        (colorScheme == .light ? Color.white : Color(white: 0.55)).opacity(0.3)
+                        (colorScheme == .light ? Color.white : Color(white: 0.36)).opacity(0.3)
                     ]),
                     startPoint: .top,
                     endPoint: .bottom
