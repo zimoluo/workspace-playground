@@ -23,7 +23,6 @@ class DailyQuoteViewModel: ObservableObject {
         Quote(text: "The most important thing is a person. A person who incites your curiosity and feeds your ideas. And a person you want to learn from.", author: "Jony Ive"),
         Quote(text: "There is beauty when something works and it works intuitively.", author: "Jony Ive"),
 
-        Quote(text: "If something isn’t right, you can’t fix it later.", author: "Tim Cook"),
         Quote(text: "The sidelines are not where you want to live your life. The world needs you in the arena.", author: "Tim Cook"),
         Quote(text: "You want to be the pebble in the pond that creates the ripple for change.", author: "Tim Cook"),
         Quote(text: "We’re here to put a dent in the universe. Otherwise, why else even be here?", author: "Steve Jobs"),
