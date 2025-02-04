@@ -7,6 +7,8 @@ struct FancyMetallicGlobeView: View {
     @State private var meshColors: [Color] = []
     @State private var hueRange: (Double, Double) = (0, 0)
 
+    @Environment(\.colorScheme) private var colorScheme
+
     @EnvironmentObject private var popUp: PopUp
 
     @EnvironmentObject var space: Space
@@ -25,12 +27,12 @@ struct FancyMetallicGlobeView: View {
                     .frame(width: geometry.size.width - 32, height: geometry.size.height - 32)
                     .onAppear {
                         generateUniqueHueRange()
-                        meshColors = MeshGradientHelper.generateMeshColors(hueRange: hueRange)
+                        meshColors = MeshGradientHelper.generateMeshColors(hueRange: hueRange, in: colorScheme)
                     }
                     .onReceive(timer) { _ in
                         withAnimation(.linear(duration: animationDuration)) {
                             meshPoints = MeshGradientHelper.generateMeshPoints()
-                            meshColors = MeshGradientHelper.generateMeshColors(hueRange: hueRange)
+                            meshColors = MeshGradientHelper.generateMeshColors(hueRange: hueRange, in: colorScheme)
                         }
                     }
 
@@ -127,7 +129,7 @@ enum MeshGradientHelper {
         return points
     }
 
-    static func generateMeshColors(hueRange: (Double, Double)) -> [Color] {
+    static func generateMeshColors(hueRange: (Double, Double), in colorScheme: ColorScheme = .light) -> [Color] {
         var colors: [Color] = []
         let (hueStart, hueEnd) = hueRange
 
@@ -136,7 +138,7 @@ enum MeshGradientHelper {
                 ? Double.random(in: hueStart...hueEnd)
                 : Double.random(in: hueStart...1.0) + Double.random(in: 0.0...hueEnd)
             let saturation = Double.random(in: 0.5...0.85)
-            let brightness = Double.random(in: 0.65...1.0)
+            let brightness = Double.random(in: colorScheme == .light ? 0.65...1.0 : 0.4...0.75)
             colors.append(Color(hue: hue, saturation: saturation, brightness: brightness))
         }
         return colors
@@ -145,16 +147,17 @@ enum MeshGradientHelper {
 
 struct MetallicBorder: View {
     var lineWidth: CGFloat
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ZStack {
             AngularGradient(
                 gradient: Gradient(stops: [
-                    .init(color: Color.gray.opacity(0.8), location: 0.0),
-                    .init(color: Color.white.opacity(0.9), location: 0.25),
-                    .init(color: Color.gray.opacity(0.8), location: 0.5),
-                    .init(color: Color.white.opacity(0.9), location: 0.75),
-                    .init(color: Color.gray.opacity(0.8), location: 1.0)
+                    .init(color: (colorScheme == .light ? Color.gray : Color(white: 0.15)).opacity(0.8), location: 0.0),
+                    .init(color: (colorScheme == .light ? Color.white : Color(white: 0.5)).opacity(0.9), location: 0.25),
+                    .init(color: (colorScheme == .light ? Color.gray : Color(white: 0.15)).opacity(0.8), location: 0.5),
+                    .init(color: (colorScheme == .light ? Color.white : Color(white: 0.5)).opacity(0.9), location: 0.75),
+                    .init(color: (colorScheme == .light ? Color.gray : Color(white: 0.15)).opacity(0.8), location: 1.0)
                 ]),
                 center: .center,
                 startAngle: .degrees(0),
@@ -163,9 +166,9 @@ struct MetallicBorder: View {
             .overlay(
                 LinearGradient(
                     gradient: Gradient(colors: [
-                        Color.white.opacity(0.3),
+                        (colorScheme == .light ? Color.white : Color(white: 0.55)).opacity(0.3),
                         Color.clear,
-                        Color.white.opacity(0.3)
+                        (colorScheme == .light ? Color.white : Color(white: 0.55)).opacity(0.3)
                     ]),
                     startPoint: .top,
                     endPoint: .bottom
