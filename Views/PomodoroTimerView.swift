@@ -33,7 +33,7 @@ struct PomodoroTimerView: View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
                 Text(timerType.rawValue.uppercased())
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.system(size: 21, weight: .bold, design: .rounded))
                     .themedForeground(using: theme, in: colorScheme, level: 1, category: .secondary)
                     .id(timerType)
                     .transition(.asymmetric(insertion: .move(edge: .top).combined(with: .opacity),
@@ -42,7 +42,7 @@ struct PomodoroTimerView: View {
                 
                 Text(timeString(from: timeRemaining))
                     .font(.system(size: 64, weight: .bold, design: .monospaced))
-                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.33))
+                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.5))
                     .fixedSize()
                     .lineLimit(1)
                     .padding(.top, 20)
@@ -61,7 +61,7 @@ struct PomodoroTimerView: View {
                             }
                         }) {
                             Text("Reset")
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.system(size: 16, weight: .semibold))
                                 .frame(maxWidth: .infinity)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 10)
@@ -83,7 +83,7 @@ struct PomodoroTimerView: View {
                         }
                     }) {
                         Text(isRunning ? "Pause" : "Start")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 16, weight: .semibold))
                             .frame(maxWidth: .infinity)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 10)
@@ -99,7 +99,7 @@ struct PomodoroTimerView: View {
                             }
                         }) {
                             Text("Skip")
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.system(size: 16, weight: .semibold))
                                 .frame(maxWidth: .infinity)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 10)
