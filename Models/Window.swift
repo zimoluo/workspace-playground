@@ -147,7 +147,7 @@ struct WindowData: Codable {
             updatedData.maxHeight = 440
             updatedData.minHeight = 160
             updatedData.minAspectRatio = 0.8
-            updatedData.maxAspectRatio = 1.55
+            updatedData.maxAspectRatio = 1.65
         }
 
         return updatedData
@@ -183,7 +183,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .magicGlobe: return (210, 210)
         case .themePicker: return (280, 108)
         case .quote: return (280, 200)
-        case .writingPrompt: return (280, 200)
+        case .writingPrompt: return (280, 184)
         }
     }
 
