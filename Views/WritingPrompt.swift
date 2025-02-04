@@ -9,13 +9,13 @@ class DailyWritingPromptViewModel: ObservableObject {
     @Published var prompt: WritingPrompt
 
     private let prompts: [WritingPrompt] = [
-        WritingPrompt(text: "Describe a day in the life of someone who has just discovered a magical secret in their backyard."),
-        WritingPrompt(text: "Write about a character who finds a mysterious letter in an old book."),
-        WritingPrompt(text: "Imagine a world where time travel is as common as catching a bus—what could go wrong?"),
-        WritingPrompt(text: "Create a story where the main character can hear the thoughts of inanimate objects."),
-        WritingPrompt(text: "Write a narrative where a small decision changes the course of history."),
-        WritingPrompt(text: "Describe the landscape of a futuristic city that floats in the sky."),
-        WritingPrompt(text: "Invent a dialogue between a person and their future self.")
+        WritingPrompt(text: "Reflect on a moment of disappointment. What did you learn?"),
+        WritingPrompt(text: "Recall when you felt misunderstood. How did you respond?"),
+        WritingPrompt(text: "Think of a decision you later questioned. What did it reveal?"),
+        WritingPrompt(text: "Remember a time you stepped outside your comfort zone. What changed?"),
+        WritingPrompt(text: "Describe a moment of deep self-connection. How did it impact you?"),
+        WritingPrompt(text: "Reflect on an act of forgiveness—either given or received. What shifted?"),
+        WritingPrompt(text: "Consider a belief you once held. How has your perspective evolved?")
     ]
 
     private var timer: Timer?
@@ -85,10 +85,10 @@ struct DailyWritingPromptView: View {
                 Text(viewModel.prompt.text)
                     .font(.system(size: geometry.size.width * 0.075, weight: .semibold))
                     .multilineTextAlignment(.leading)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 12)
                     .themedForeground(using: theme, in: colorScheme, category: .secondary)
             }
-            .padding(.vertical, 16)
+            .padding(.vertical, 12)
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
     }
