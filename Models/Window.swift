@@ -183,7 +183,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .magicGlobe: return (210, 210)
         case .themePicker: return (280, 108)
         case .quote: return (280, 200)
-        case .writingPrompt: return (280, 280)
+        case .writingPrompt: return (280, 200)
         }
     }
 
