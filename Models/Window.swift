@@ -150,7 +150,7 @@ struct WindowData: Codable {
             updatedData.maxAspectRatio = 1.65
         case .pomodoroTimer:
             updatedData.maxWidth = 440
-            updatedData.minWidth = 280
+            updatedData.minWidth = 298
             updatedData.maxHeight = 280
             updatedData.minHeight = 220
         }

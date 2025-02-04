@@ -136,6 +136,7 @@ struct PomodoroTimerView: View {
                             .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2.5))
                             .cornerRadius(16)
                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                            .lineLimit(1)
                     }
                     .gesture(DragGesture().onChanged { _ in })
                 }
@@ -153,6 +154,7 @@ struct PomodoroTimerView: View {
                         .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2))
                         .cornerRadius(16)
                         .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                        .lineLimit(1)
                 }
                 .gesture(DragGesture().onChanged { _ in })
 
@@ -170,6 +172,7 @@ struct PomodoroTimerView: View {
                             .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2.5))
                             .cornerRadius(16)
                             .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
+                            .lineLimit(1)
                     }
                     .gesture(DragGesture().onChanged { _ in })
                 }
