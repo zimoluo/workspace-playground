@@ -36,6 +36,10 @@ struct FancyMetallicGlobeView: View {
 
                 MetallicBorder(lineWidth: min(geometry.size.width, geometry.size.height) * 0.066)
                     .frame(width: geometry.size.width - 32, height: geometry.size.height - 32)
+                    .contentShape(Ellipse())
+                    .onTapGesture {
+                        handleTap()
+                    }
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
             .onTapGesture {
