@@ -35,6 +35,10 @@ struct PomodoroTimerView: View {
                 Text(timerType.rawValue.uppercased())
                     .font(.system(size: 24, weight: .bold, design: .rounded))
                     .themedForeground(using: theme, in: colorScheme, level: 1, category: .secondary)
+                    .id(timerType)
+                    .transition(.asymmetric(insertion: .move(edge: .top).combined(with: .opacity),
+                                            removal: .move(edge: .bottom).combined(with: .opacity)))
+                    .animation(.snappy(duration: 0.4), value: timerType)
                 
                 Text(timeString(from: timeRemaining))
                     .font(.system(size: 64, weight: .bold, design: .monospaced))
@@ -43,6 +47,9 @@ struct PomodoroTimerView: View {
                     .lineLimit(1)
                     .padding(.top, 20)
                     .padding(.bottom, 8)
+                    .id(timerType)
+                    .transition(.scale.combined(with: .opacity))
+                    .animation(.snappy(duration: 0.4), value: timerType)
                 
                 Spacer()
                 
