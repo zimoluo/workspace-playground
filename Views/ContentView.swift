@@ -387,7 +387,11 @@ struct ThemePicker: View {
 
     var hasThemeMakerButton: Bool = true
 
-    private let columns: [GridItem] = Array(repeating: .init(.fixed(36), spacing: 16), count: 5)
+    var rowCount: Int = 5
+
+    private var columns: [GridItem] {
+        Array(repeating: .init(.fixed(36), spacing: 16), count: rowCount)
+    }
 
     private func applyTheme(_ id: UUID?) {
         guard let id = id,

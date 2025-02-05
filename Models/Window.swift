@@ -130,8 +130,8 @@ struct WindowData: Codable {
             updatedData.maxHeight = 360
             updatedData.minHeight = 360
         case .themePicker:
-            updatedData.maxWidth = 280
-            updatedData.minWidth = 280
+            updatedData.maxWidth = 228
+            updatedData.minWidth = 228
             updatedData.maxHeight = 160
             updatedData.minHeight = 108
         case .quote:
@@ -193,7 +193,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .dashboard: return (250, 320)
         case .toDoList: return (210, 310)
         case .magicGlobe: return (210, 210)
-        case .themePicker: return (280, 108)
+        case .themePicker: return (228, 108)
         case .quote: return (280, 200)
         case .writingPrompt: return (280, 184)
         case .pomodoroTimer: return (320, 220)
@@ -247,7 +247,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .calculator:
             CalculatorView()
         case .themePicker:
-            ThemePicker(selectedScreen: .constant(Screen()), hasThemeMakerButton: false)
+            ThemePicker(selectedScreen: .constant(Screen()), hasThemeMakerButton: false, rowCount: 4)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.vertical, 20)
                 .gesture(DragGesture().onChanged { _ in })
