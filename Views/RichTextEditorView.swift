@@ -132,6 +132,7 @@ struct RichTextEditorView: View {
                 space.updateDateModified()
             }
         ))
+        .padding(.top, 12)
         .padding(16)
         .background(.clear)
         .cornerRadius(16)
