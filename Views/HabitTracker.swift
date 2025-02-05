@@ -96,7 +96,7 @@ struct HabitRow: View {
 
     private var score: Int {
         if let index = settings.habits.firstIndex(where: { $0.id == habitId }) {
-            return max(0, settings.habits[index].timesKept.count - settings.habits[index].timesDisliked.count)
+            return min(99, max(0, settings.habits[index].timesKept.count - settings.habits[index].timesDisliked.count))
         }
 
         return 0
