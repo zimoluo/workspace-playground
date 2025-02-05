@@ -44,10 +44,19 @@ struct WindowView: View {
                 .environmentObject(space)
                 .environment(\.windowId, window.id)
 
-            Group {
+            ZStack {
                 Circle()
                     .fill(themeColor(from: theme, for: .secondary, in: colorScheme, level: 2).opacity(isCloseButtonActive ? 0.75 : 0.6))
                     .frame(width: isCloseButtonActive ? 18 : 12, height: isCloseButtonActive ? 18 : 12)
+                if isCloseButtonActive {
+                    Image(systemName: "multiply")
+                        .resizable()
+                        .fontWeight(.bold)
+                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 5).opacity(0.75))
+                        .frame(width: 9.2, height: 9.2)
+                        .transition(.scale.combined(with: .opacity))
+                        .animation(.snappy(duration: 0.15), value: isCloseButtonActive)
+                }
             }
             .frame(width: 30, height: 30)
             .contentShape(Circle())
