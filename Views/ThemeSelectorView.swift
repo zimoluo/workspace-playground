@@ -57,7 +57,7 @@ struct ThemeSelectorView: View {
                                 }
 
                                 Button {
-                                    let newTheme = theme.deepCopy()
+                                    let newTheme = theme.copy()
 
                                     withAnimation(.spring(duration: 0.15)) {
                                         modelContext.insert(newTheme)
@@ -137,7 +137,7 @@ struct ThemeSelectorView: View {
             selectedThemeId = matchingTheme.id
         }
 
-        let copiedTheme = matchingTheme.deepCopy()
+        let copiedTheme = matchingTheme.copy()
 
         withAnimation(.spring(duration: 0.15)) {
             currentTheme.primary = copiedTheme.primary
@@ -153,7 +153,7 @@ struct ThemeSelectorView: View {
             return
         }
 
-        let copiedTheme = currentTheme.deepCopy()
+        let copiedTheme = currentTheme.copy()
 
         matchingTheme.primary = copiedTheme.primary
         matchingTheme.secondary = copiedTheme.secondary
@@ -166,7 +166,7 @@ struct ThemeSelectorView: View {
     }
 
     private func createNewTheme() {
-        let newTheme = currentTheme.deepCopy()
+        let newTheme = currentTheme.copy()
 
         withAnimation(.spring(duration: 0.15)) {
             modelContext.insert(newTheme)

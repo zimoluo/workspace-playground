@@ -400,7 +400,7 @@ struct ThemePicker: View {
             return
         }
         guard matchingTheme.id != theme.id else { return }
-        let copiedTheme = matchingTheme.deepCopy()
+        let copiedTheme = matchingTheme.copy()
         theme.primary = copiedTheme.primary
         theme.secondary = copiedTheme.secondary
         theme.tertiary = copiedTheme.tertiary

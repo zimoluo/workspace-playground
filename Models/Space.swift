@@ -24,7 +24,7 @@ class Space: ObservableObject {
 
     var version: Int
 
-    init(windows: [Window] = [], name: String = "New Space", cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1, showMarkers: Bool = false, markers: [SpaceMarker] = [], disableDots: Bool = false, lockCamera: Bool = false) {
+    init(windows: [Window] = [], name: String = "New Space", cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1, showMarkers: Bool = true, markers: [SpaceMarker] = [], disableDots: Bool = false, lockCamera: Bool = false) {
         self.id = UUID()
         self.dateCreated = Date()
         self.dateModified = Date()
