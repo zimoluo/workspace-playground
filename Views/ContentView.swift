@@ -114,7 +114,7 @@ struct ContentView: View {
                             .padding(16)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(
-                                selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 1) : themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
+                                selectedScreen.type == .themeMaker ? themeColor(from: theme, for: .primary, in: colorScheme, level: 1.33) : themeColor(from: theme, for: .primary, in: colorScheme, level: 3)
                             )
                             .cornerRadius(16)
                             .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
@@ -373,28 +373,6 @@ struct SpaceCardView: View {
             }
         }
     }
-
-    private func formattedDateString(for date: Date, relativeTo referenceDate: Date = Date()) -> String {
-        let calendar = Calendar.current
-        let timeFormatter = DateFormatter()
-        timeFormatter.timeStyle = .short
-
-        if calendar.isDateInToday(date) {
-            return timeFormatter.string(from: date)
-        } else if calendar.isDateInYesterday(date) {
-            return "Yesterday"
-        } else if calendar.isDateInTomorrow(date) {
-            return "Tomorrow"
-        } else if calendar.isDate(date, equalTo: referenceDate, toGranularity: .weekOfYear) {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "EEEE"
-            return formatter.string(from: date)
-        } else {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .short
-            return formatter.string(from: date)
-        }
-    }
 }
 
 struct ThemePicker: View {
@@ -481,5 +459,27 @@ struct ThemePicker: View {
             }
             .padding(16)
         }
+    }
+}
+
+func formattedDateString(for date: Date, relativeTo referenceDate: Date = Date()) -> String {
+    let calendar = Calendar.current
+    let timeFormatter = DateFormatter()
+    timeFormatter.timeStyle = .short
+
+    if calendar.isDateInToday(date) {
+        return timeFormatter.string(from: date)
+    } else if calendar.isDateInYesterday(date) {
+        return "Yesterday"
+    } else if calendar.isDateInTomorrow(date) {
+        return "Tomorrow"
+    } else if calendar.isDate(date, equalTo: referenceDate, toGranularity: .weekOfYear) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        return formatter.string(from: date)
+    } else {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        return formatter.string(from: date)
     }
 }
