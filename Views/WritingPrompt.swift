@@ -85,7 +85,7 @@ struct DailyWritingPromptView: View {
                 Text(viewModel.prompt.text)
                     .font(.system(size: geometry.size.width * 0.075, weight: .semibold))
                     .multilineTextAlignment(.leading)
-                    .padding(.horizontal, 12)
+                    .padding(.horizontal, 16)
                     .themedForeground(using: theme, in: colorScheme, category: .secondary)
             }
             .padding(.vertical, 12)
