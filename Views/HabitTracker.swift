@@ -102,6 +102,14 @@ struct HabitRow: View {
         return 0
     }
 
+    private var showScore: Bool {
+        if let index = settings.habits.firstIndex(where: { $0.id == habitId }) {
+            return !(settings.habits[index].timesKept.isEmpty && settings.habits[index].timesDisliked.isEmpty)
+        }
+
+        return false
+    }
+
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 4) {
@@ -128,12 +136,12 @@ struct HabitRow: View {
             }
             Spacer()
 
-            if score > 0 {
+            if showScore {
                 Text("\(score)")
                     .font(.system(size: 20, weight: .medium, design: .monospaced))
                     .transition(.scale.combined(with: .opacity))
                     .id(score)
-                    .padding(4)
+                    .padding(.trailing, 4)
             }
 
             Button(action: {
