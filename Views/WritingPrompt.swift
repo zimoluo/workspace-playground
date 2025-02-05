@@ -1,3 +1,4 @@
+import CryptoKit
 import SwiftUI
 
 struct WritingPrompt: Identifiable {
@@ -40,8 +41,14 @@ class DailyWritingPromptViewModel: ObservableObject {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         let dateString = formatter.string(from: effectiveDate)
-        let hashValue = dateString.hashValue
-        let index = abs(hashValue) % prompts.count
+        let hashData = Data(dateString.utf8)
+        let digest = SHA256.hash(data: hashData)
+
+        let hashInt = digest.withUnsafeBytes { ptr -> UInt64 in
+            return ptr.load(as: UInt64.self)
+        }
+
+        let index = Int(hashInt % UInt64(prompts.count))
 
         return prompts[index]
     }
