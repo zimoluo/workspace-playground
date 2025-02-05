@@ -96,7 +96,7 @@ struct RichTextEditorView: View {
                 return attributedString
             } else {
                 let attributes: [NSAttributedString.Key: Any] = [
-                    .font: UIFont.systemFont(ofSize: 18),
+                    .font: UIFont.systemFont(ofSize: 20),
                     .foregroundColor: UIColor(themeColor(from: theme, for: .secondary, in: colorScheme)),
                     .isDefaultTextColor: true
                 ]
