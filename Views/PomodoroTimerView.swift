@@ -148,7 +148,7 @@ struct PomodoroTimerView: View {
                 }) {
                     Text(mainButtonTitle)
                         .font(.system(size: 16, weight: .semibold))
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: pomodoroState == .initial ? 160 : .infinity)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 10)
                         .background(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1.8))
