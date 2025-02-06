@@ -37,11 +37,7 @@ struct SpaceView: View {
 
     @State private var menuDragOffset: CGSize = .zero
 
-    @State private var isDragging: Bool = false
-    @State private var lastDragTranslation: CGSize = .zero
-    @State private var dragVelocity: CGSize = .zero
     @State private var currentZoom: CGFloat = 1.0
-
     @State private var initialPinchPoint: CGPoint = .zero
     @State private var initialCameraCenter: CGPoint = .zero
 
@@ -54,7 +50,7 @@ struct SpaceView: View {
         let maxMarkerX = space.markers.map { $0.x }.max() ?? 0
         let maxRightEdge = max(maxWindowRightEdge, maxMarkerX)
         let calculatedMax = max(maxRightEdge + 150, 300)
-        return min(calculatedMax, 1_000_000_000)
+        return ceil(min(calculatedMax, 1_000_000_000))
     }
 
     private var minCameraCenterX: CGFloat {
@@ -62,7 +58,7 @@ struct SpaceView: View {
         let minMarkerX = space.markers.map { $0.x }.min() ?? 0
         let minLeftEdge = min(minWindowLeftEdge, minMarkerX)
         let calculatedMin = min(minLeftEdge - 150, -300)
-        return max(calculatedMin, -1_000_000_000)
+        return floor(max(calculatedMin, -1_000_000_000))
     }
 
     private var maxCameraCenterY: CGFloat {
@@ -70,7 +66,7 @@ struct SpaceView: View {
         let maxMarkerY = space.markers.map { $0.y }.max() ?? 0
         let maxBottomEdge = max(maxWindowBottomEdge, maxMarkerY)
         let calculatedMax = max(maxBottomEdge + 150, 300)
-        return min(calculatedMax, 1_000_000_000)
+        return ceil(min(calculatedMax, 1_000_000_000))
     }
 
     private var minCameraCenterY: CGFloat {
@@ -78,7 +74,7 @@ struct SpaceView: View {
         let minMarkerY = space.markers.map { $0.y }.min() ?? 0
         let minTopEdge = min(minWindowTopEdge, minMarkerY)
         let calculatedMin = min(minTopEdge - 150, -300)
-        return max(calculatedMin, -1_000_000_000)
+        return floor(max(calculatedMin, -1_000_000_000))
     }
 
     var body: some View {
@@ -102,7 +98,48 @@ struct SpaceView: View {
                         newPoint in
                         space.cameraCenterX = newPoint.x
                         space.cameraCenterY = newPoint.y
-                    }), cameraZoom: Binding.constant(space.cameraZoom), parentSize: geometry.size, minCameraCenterX: minCameraCenterX, maxCameraCenterX: maxCameraCenterX, minCameraCenterY: minCameraCenterY, maxCameraCenterY: maxCameraCenterY)
+                    }), parentSize: geometry.size, minCameraCenterX: minCameraCenterX, maxCameraCenterX: maxCameraCenterX, minCameraCenterY: minCameraCenterY, maxCameraCenterY: maxCameraCenterY)
+                        .gesture(
+                            MagnifyGesture()
+                                .onChanged { value in
+                                    if space.lockCamera { return }
+
+                                    let zoomFactor = value.magnification
+
+                                    if initialPinchPoint == .zero {
+                                        initialPinchPoint = CGPoint(
+                                            x: value.startLocation.x - geometry.size.width / 2,
+                                            y: value.startLocation.y - geometry.size.height / 2
+                                        )
+                                        initialCameraCenter = CGPoint(
+                                            x: space.cameraCenterX,
+                                            y: space.cameraCenterY
+                                        )
+
+                                        currentZoom = space.cameraZoom
+                                    }
+
+                                    let newZoom = currentZoom * zoomFactor
+                                    let clampedZoom = newZoom.clamped(to: 0.75 ... 1.2)
+
+                                    let deltaX = initialPinchPoint.x / currentZoom - initialPinchPoint.x / clampedZoom
+                                    let deltaY = initialPinchPoint.y / currentZoom - initialPinchPoint.y / clampedZoom
+
+                                    let adjustedCenterX = initialCameraCenter.x + deltaX
+                                    let adjustedCenterY = initialCameraCenter.y + deltaY
+
+                                    space.cameraZoom = clampedZoom
+                                    space.cameraCenterX = adjustedCenterX.clamped(to: minCameraCenterX ... maxCameraCenterX)
+                                    space.cameraCenterY = adjustedCenterY.clamped(to: minCameraCenterY ... maxCameraCenterY)
+                                }
+                                .onEnded { _ in
+                                    if space.lockCamera { return }
+
+                                    currentZoom = space.cameraZoom
+                                    initialPinchPoint = .zero
+                                    space.updateDateModified()
+                                }
+                        )
 
                     WindowsOverlayView(
                         space: space,
@@ -119,8 +156,6 @@ struct SpaceView: View {
                     VStack {
                         HStack(spacing: 0) {
                             Spacer()
-
-                            Text("\(space.cameraCenterX) \(space.cameraCenterY) \(space.cameraZoom)")
 
                             TextField(
                                 "",
@@ -421,36 +456,6 @@ struct SpaceView: View {
         }
     }
 
-    private func applyMomentum() {
-        let deceleration: CGFloat = 0.905
-        let minVelocity: CGFloat = 0.1
-
-        var displayLink: CADisplayLink?
-
-        displayLink = CADisplayLink(target: BlockOperation {
-            guard !isDragging && !space.lockCamera else {
-                displayLink?.invalidate()
-                return
-            }
-
-            dragVelocity = CGSize(
-                width: dragVelocity.width * deceleration,
-                height: dragVelocity.height * deceleration
-            )
-
-            space.cameraCenterX = (space.cameraCenterX - dragVelocity.width)
-                .clamped(to: minCameraCenterX ... maxCameraCenterX)
-            space.cameraCenterY = (space.cameraCenterY - dragVelocity.height)
-                .clamped(to: minCameraCenterY ... maxCameraCenterY)
-
-            if abs(dragVelocity.width) <= minVelocity && abs(dragVelocity.height) <= minVelocity {
-                displayLink?.invalidate()
-            }
-        }, selector: #selector(Operation.main))
-
-        displayLink?.add(to: .current, forMode: .common)
-    }
-
     private func menuAnchorPosition(
         for position: WindowsMenuButtonPosition,
         in size: CGSize
@@ -658,7 +663,6 @@ struct WindowMenuView: View {
 
 struct CameraScrollView: UIViewRepresentable {
     @Binding var cameraCenter: CGPoint
-    @Binding var cameraZoom: CGFloat
 
     var parentSize: CGSize
 
