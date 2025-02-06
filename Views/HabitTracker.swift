@@ -139,8 +139,7 @@ struct HabitRow: View {
             if showScore {
                 Text("\(score)")
                     .font(.system(size: 20, weight: .medium, design: .monospaced))
-                    .transition(.scale.combined(with: .opacity))
-                    .id(score)
+                    .contentTransition(.numericText())
                     .padding(.trailing, 4)
             }
 
