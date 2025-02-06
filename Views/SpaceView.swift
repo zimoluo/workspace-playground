@@ -99,7 +99,7 @@ struct SpaceView: View {
                         space.cameraCenterX = newPoint.x
                         space.cameraCenterY = newPoint.y
                     }), lockCamera: space.lockCamera, parentSize: geometry.size, minCameraCenterX: minCameraCenterX, maxCameraCenterX: maxCameraCenterX, minCameraCenterY: minCameraCenterY, maxCameraCenterY: maxCameraCenterY)
-                        .gesture(
+                        .highPriorityGesture(
                             MagnifyGesture()
                                 .onChanged { value in
                                     if space.lockCamera { return }
