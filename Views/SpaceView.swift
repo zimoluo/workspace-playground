@@ -102,7 +102,7 @@ struct SpaceView: View {
                         newPoint in
                         space.cameraCenterX = newPoint.x
                         space.cameraCenterY = newPoint.y
-                    }), cameraZoom: Binding.constant(space.cameraZoom)) {}
+                    }), cameraZoom: Binding.constant(space.cameraZoom), parentSize: geometry.size, minCameraCenterX: minCameraCenterX, maxCameraCenterX: maxCameraCenterX, minCameraCenterY: minCameraCenterY, maxCameraCenterY: maxCameraCenterY)
 
                     WindowsOverlayView(
                         space: space,
@@ -654,55 +654,56 @@ struct WindowMenuView: View {
     }
 }
 
-struct CameraScrollView<Content: View>: UIViewRepresentable {
-    let content: Content
+struct CameraScrollView: UIViewRepresentable {
     @Binding var cameraCenter: CGPoint
     @Binding var cameraZoom: CGFloat
 
-    init(cameraCenter: Binding<CGPoint>, cameraZoom: Binding<CGFloat>, @ViewBuilder content: () -> Content) {
-        self._cameraCenter = cameraCenter
-        self._cameraZoom = cameraZoom
-        self.content = content()
+    let parentSize: CGSize
+
+    let minCameraCenterX: CGFloat
+    let maxCameraCenterX: CGFloat
+    let minCameraCenterY: CGFloat
+    let maxCameraCenterY: CGFloat
+
+    var width: CGFloat {
+        maxCameraCenterX - minCameraCenterX + parentSize.width
+    }
+
+    var height: CGFloat {
+        maxCameraCenterY - minCameraCenterY + parentSize.height
+    }
+
+    var offsetX: CGFloat {
+        (minCameraCenterX + maxCameraCenterX) / 2
+    }
+
+    var offsetY: CGFloat {
+        (minCameraCenterY + maxCameraCenterY) / 2
     }
 
     func makeUIView(context: Context) -> UIScrollView {
         let scrollView = UIScrollView()
         scrollView.delegate = context.coordinator
-        scrollView.decelerationRate = .normal // or .fast, as you prefer
-        scrollView.bounces = false
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.showsHorizontalScrollIndicator = false
-
-        // Create a UIHostingController to host your SwiftUI content.
-        let hostedView = context.coordinator.hostingController.view!
-        hostedView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(hostedView)
-
-        // Pin the hosted view to scrollView's content layout.
-        NSLayoutConstraint.activate([
-            hostedView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            hostedView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            hostedView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            hostedView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-
-            // Optionally set a fixed size if needed
-            hostedView.widthAnchor.constraint(equalToConstant: 2000),
-            hostedView.heightAnchor.constraint(equalToConstant: 2000)
-        ])
-
-        // Set the initial content offset based on your cameraCenter.
-        scrollView.contentOffset = CGPoint(x: cameraCenter.x, y: cameraCenter.y)
+        scrollView.decelerationRate = .init(rawValue: 0.993)
+        scrollView.bounces = true
+        scrollView.showsVerticalScrollIndicator = true
+        scrollView.showsHorizontalScrollIndicator = true
+        scrollView.contentSize = CGSize(width: width, height: height)
 
         return scrollView
     }
 
     func updateUIView(_ scrollView: UIScrollView, context: Context) {
-        // If you’re controlling the camera by changing cameraCenter externally,
-        // update the scroll view’s contentOffset.
+        // Update contentSize if bounds have changed
+        let newSize = CGSize(width: width, height: height)
+        if scrollView.contentSize != newSize {
+            scrollView.contentSize = newSize
+        }
+
+        // Sync content offset if cameraCenter was updated externally
         if scrollView.contentOffset != cameraCenter {
             scrollView.setContentOffset(cameraCenter, animated: false)
         }
-        context.coordinator.hostingController.rootView = content
     }
 
     func makeCoordinator() -> Coordinator {
@@ -711,20 +712,13 @@ struct CameraScrollView<Content: View>: UIViewRepresentable {
 
     class Coordinator: NSObject, UIScrollViewDelegate {
         var parent: CameraScrollView
-        let hostingController: UIHostingController<Content>
 
         init(parent: CameraScrollView) {
             self.parent = parent
-            self.hostingController = UIHostingController(rootView: parent.content)
-            // Make background transparent if needed:
-            hostingController.view.backgroundColor = .clear
         }
 
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
-            // Map the scroll view’s contentOffset to your camera center.
             parent.cameraCenter = scrollView.contentOffset
         }
-
-        // You can also handle zooming if you configure the scroll view for that.
     }
 }
