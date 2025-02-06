@@ -673,14 +673,6 @@ struct CameraScrollView: UIViewRepresentable {
         maxCameraCenterY - minCameraCenterY + parentSize.height
     }
 
-    var offsetX: CGFloat {
-        (minCameraCenterX + maxCameraCenterX) / 2
-    }
-
-    var offsetY: CGFloat {
-        (minCameraCenterY + maxCameraCenterY) / 2
-    }
-
     func makeUIView(context: Context) -> UIScrollView {
         let scrollView = UIScrollView()
         scrollView.delegate = context.coordinator
@@ -688,21 +680,32 @@ struct CameraScrollView: UIViewRepresentable {
         scrollView.bounces = true
         scrollView.showsVerticalScrollIndicator = true
         scrollView.showsHorizontalScrollIndicator = true
+        scrollView.contentInsetAdjustmentBehavior = .never
+
         scrollView.contentSize = CGSize(width: width, height: height)
+
+        let initialOffset = CGPoint(
+            x: cameraCenter.x - minCameraCenterX,
+            y: cameraCenter.y - minCameraCenterY
+        )
+        scrollView.contentOffset = initialOffset
 
         return scrollView
     }
 
     func updateUIView(_ scrollView: UIScrollView, context: Context) {
-        // Update contentSize if bounds have changed
         let newSize = CGSize(width: width, height: height)
         if scrollView.contentSize != newSize {
             scrollView.contentSize = newSize
         }
 
-        // Sync content offset if cameraCenter was updated externally
-        if scrollView.contentOffset != cameraCenter {
-            scrollView.setContentOffset(cameraCenter, animated: false)
+        let correctedOffset = CGPoint(
+            x: cameraCenter.x - minCameraCenterX,
+            y: cameraCenter.y - minCameraCenterY
+        )
+
+        if scrollView.contentOffset != correctedOffset {
+            scrollView.setContentOffset(correctedOffset, animated: false)
         }
     }
 
@@ -718,7 +721,11 @@ struct CameraScrollView: UIViewRepresentable {
         }
 
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
-            parent.cameraCenter = scrollView.contentOffset
+            // **Convert UIScrollView's offset back to camera space**
+            parent.cameraCenter = CGPoint(
+                x: scrollView.contentOffset.x + parent.minCameraCenterX,
+                y: scrollView.contentOffset.y + parent.minCameraCenterY
+            )
         }
     }
 }
