@@ -102,7 +102,7 @@ struct SpaceView: View {
                         newPoint in
                         space.cameraCenterX = newPoint.x
                         space.cameraCenterY = newPoint.y
-                    }), cameraZoom: Binding.constant(space.cameraZoom), parentSize: Binding.constant(geometry.size), minCameraCenterX: Binding.constant(minCameraCenterX), maxCameraCenterX: Binding.constant(maxCameraCenterX), minCameraCenterY: Binding.constant(minCameraCenterY), maxCameraCenterY: Binding.constant(maxCameraCenterY))
+                    }), cameraZoom: Binding.constant(space.cameraZoom), parentSize: geometry.size, minCameraCenterX: minCameraCenterX, maxCameraCenterX: maxCameraCenterX, minCameraCenterY: minCameraCenterY, maxCameraCenterY: maxCameraCenterY)
 
                     WindowsOverlayView(
                         space: space,
@@ -660,12 +660,12 @@ struct CameraScrollView: UIViewRepresentable {
     @Binding var cameraCenter: CGPoint
     @Binding var cameraZoom: CGFloat
 
-    @Binding var parentSize: CGSize
+    var parentSize: CGSize
 
-    @Binding var minCameraCenterX: CGFloat
-    @Binding var maxCameraCenterX: CGFloat
-    @Binding var minCameraCenterY: CGFloat
-    @Binding var maxCameraCenterY: CGFloat
+    var minCameraCenterX: CGFloat
+    var maxCameraCenterX: CGFloat
+    var minCameraCenterY: CGFloat
+    var maxCameraCenterY: CGFloat
 
     var width: CGFloat {
         maxCameraCenterX - minCameraCenterX + parentSize.width
