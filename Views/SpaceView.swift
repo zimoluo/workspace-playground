@@ -102,7 +102,7 @@ struct SpaceView: View {
                         newPoint in
                         space.cameraCenterX = newPoint.x
                         space.cameraCenterY = newPoint.y
-                    }), cameraZoom: Binding.constant(space.cameraZoom), parentSize: geometry.size, minCameraCenterX: minCameraCenterX, maxCameraCenterX: maxCameraCenterX, minCameraCenterY: minCameraCenterY, maxCameraCenterY: maxCameraCenterY)
+                    }), cameraZoom: Binding.constant(space.cameraZoom), parentSize: Binding.constant(geometry.size), minCameraCenterX: Binding.constant(minCameraCenterX), maxCameraCenterX: Binding.constant(maxCameraCenterX), minCameraCenterY: Binding.constant(minCameraCenterY), maxCameraCenterY: Binding.constant(maxCameraCenterY))
 
                     WindowsOverlayView(
                         space: space,
@@ -119,6 +119,8 @@ struct SpaceView: View {
                     VStack {
                         HStack(spacing: 0) {
                             Spacer()
+
+                            Text("\(space.cameraCenterX) \(space.cameraCenterY) \(space.cameraZoom)")
 
                             TextField(
                                 "",
@@ -658,12 +660,12 @@ struct CameraScrollView: UIViewRepresentable {
     @Binding var cameraCenter: CGPoint
     @Binding var cameraZoom: CGFloat
 
-    let parentSize: CGSize
+    @Binding var parentSize: CGSize
 
-    let minCameraCenterX: CGFloat
-    let maxCameraCenterX: CGFloat
-    let minCameraCenterY: CGFloat
-    let maxCameraCenterY: CGFloat
+    @Binding var minCameraCenterX: CGFloat
+    @Binding var maxCameraCenterX: CGFloat
+    @Binding var minCameraCenterY: CGFloat
+    @Binding var maxCameraCenterY: CGFloat
 
     var width: CGFloat {
         maxCameraCenterX - minCameraCenterX + parentSize.width
@@ -694,6 +696,8 @@ struct CameraScrollView: UIViewRepresentable {
     }
 
     func updateUIView(_ scrollView: UIScrollView, context: Context) {
+        context.coordinator.parent = self
+
         let newSize = CGSize(width: width, height: height)
         if scrollView.contentSize != newSize {
             scrollView.contentSize = newSize
@@ -705,7 +709,9 @@ struct CameraScrollView: UIViewRepresentable {
         )
 
         if scrollView.contentOffset != correctedOffset {
+            context.coordinator.ignoreScrollEvents = true
             scrollView.setContentOffset(correctedOffset, animated: false)
+            context.coordinator.ignoreScrollEvents = false
         }
     }
 
@@ -715,13 +721,15 @@ struct CameraScrollView: UIViewRepresentable {
 
     class Coordinator: NSObject, UIScrollViewDelegate {
         var parent: CameraScrollView
+        var ignoreScrollEvents = false
 
         init(parent: CameraScrollView) {
             self.parent = parent
         }
 
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
-            // **Convert UIScrollView's offset back to camera space**
+            if ignoreScrollEvents { return }
+
             parent.cameraCenter = CGPoint(
                 x: scrollView.contentOffset.x + parent.minCameraCenterX,
                 y: scrollView.contentOffset.y + parent.minCameraCenterY
