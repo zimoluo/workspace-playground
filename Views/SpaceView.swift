@@ -98,7 +98,7 @@ struct SpaceView: View {
                         newPoint in
                         space.cameraCenterX = newPoint.x
                         space.cameraCenterY = newPoint.y
-                    }), parentSize: geometry.size, minCameraCenterX: minCameraCenterX, maxCameraCenterX: maxCameraCenterX, minCameraCenterY: minCameraCenterY, maxCameraCenterY: maxCameraCenterY)
+                    }), lockCamera: space.lockCamera, parentSize: geometry.size, minCameraCenterX: minCameraCenterX, maxCameraCenterX: maxCameraCenterX, minCameraCenterY: minCameraCenterY, maxCameraCenterY: maxCameraCenterY)
                         .gesture(
                             MagnifyGesture()
                                 .onChanged { value in
@@ -664,6 +664,8 @@ struct WindowMenuView: View {
 struct CameraScrollView: UIViewRepresentable {
     @Binding var cameraCenter: CGPoint
 
+    var lockCamera: Bool
+
     var parentSize: CGSize
 
     var minCameraCenterX: CGFloat
@@ -690,6 +692,8 @@ struct CameraScrollView: UIViewRepresentable {
 
         scrollView.contentSize = CGSize(width: width, height: height)
 
+        scrollView.isScrollEnabled = !lockCamera
+
         let initialOffset = CGPoint(
             x: cameraCenter.x - minCameraCenterX,
             y: cameraCenter.y - minCameraCenterY
@@ -706,6 +710,8 @@ struct CameraScrollView: UIViewRepresentable {
         if scrollView.contentSize != newSize {
             scrollView.contentSize = newSize
         }
+
+        scrollView.isScrollEnabled = !lockCamera
 
         let correctedOffset = CGPoint(
             x: cameraCenter.x - minCameraCenterX,
