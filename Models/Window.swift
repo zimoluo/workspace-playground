@@ -163,6 +163,11 @@ struct WindowData: Codable {
             updatedData.maxWidth = 320
             updatedData.minHeight = 180
             updatedData.minWidth = 320
+        case .countdownTimer:
+            updatedData.maxHeight = 420
+            updatedData.maxWidth = 440
+            updatedData.minHeight = 380
+            updatedData.minWidth = 350
         }
 
         return updatedData
@@ -179,6 +184,7 @@ enum WindowType: String, Codable, CaseIterable {
     case habitTracker
     case toDoList
     case notes
+    case countdownTimer
     case magicGlobe
     case image
     case quote
@@ -205,6 +211,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .pomodoroTimer: return (320, 220)
         case .habitTracker: return (300, 320)
         case .image: return (320, 180)
+        case .countdownTimer: return (380, 380)
         }
     }
 
@@ -226,6 +233,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .pomodoroTimer: return WindowGlyph(mode: .system, key: "timer")
         case .habitTracker: return WindowGlyph(mode: .system, key: "widget.small")
         case .image: return WindowGlyph(mode: .system, key: "photo")
+        case .countdownTimer: return WindowGlyph(mode: .system, key: "minus.arrow.trianglehead.counterclockwise")
         }
     }
 
@@ -269,6 +277,8 @@ enum WindowType: String, Codable, CaseIterable {
             HabitTrackerView()
         case .image:
             ImagePickerView()
+        case .countdownTimer:
+            CountdownTimerView()
         }
     }
 }
