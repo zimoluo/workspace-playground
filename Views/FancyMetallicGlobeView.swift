@@ -125,7 +125,7 @@ struct AnimatedMeshBackground: View {
                 let randomSalt: Int = .random(in: 0 ... 2147483647)
 
                 if let windowIndex = space.windows.firstIndex(where: { $0.id == windowId }) {
-                    space.windows[windowIndex].data.saveData["animatedMeshBackgroundSalt"] = "\(salt)"
+                    space.windows[windowIndex].data.saveData["animatedMeshBackgroundSalt"] = "\(randomSalt.description)"
                 }
 
                 salt = randomSalt
