@@ -1,14 +1,24 @@
+import ImagePlayground
 import PhotosUI
 import SwiftData
 import SwiftUI
 
 struct ImagePickerView: View {
-    @Environment(\ .modelContext) private var modelContext
+    @Environment(\.modelContext) private var modelContext
     @Query private var storedImages: [StoredImage]
+
+    @Environment(\.supportsImagePlayground) private var supportsImagePlayground
+
+    @Environment(\.theme) private var theme
+    @Environment(\.colorScheme) private var colorScheme
+
+    @EnvironmentObject var space: Space
+    @Environment(\.windowId) var windowId: UUID
 
     @State private var selectedItem: PhotosPickerItem? = nil
     @State private var savedImageID: UUID?
     @State private var isShowingCamera: Bool = false
+    @State private var isShowingImagePlayground: Bool = false
 
     var body: some View {
         ZStack {
@@ -23,16 +33,18 @@ struct ImagePickerView: View {
                     .clipped()
             } else {
                 VStack {
-                    HStack(spacing: 32) {
+                    HStack(spacing: 8) {
                         PhotosPicker(selection: $selectedItem, matching: .images) {
                             VStack {
                                 Image(systemName: "photo.on.rectangle.angled")
                                     .font(.system(size: 32, weight: .medium))
                                     .frame(width: 36, height: 36)
                                 Text("Photos")
-                                    .font(.system(size: 18, weight: .medium))
+                                    .font(.system(size: 16, weight: .medium))
                             }
                         }
+                        .gesture(DragGesture().onChanged { _ in })
+                        .frame(width: 96)
 
                         Button(action: {
                             isShowingCamera = true
@@ -42,11 +54,30 @@ struct ImagePickerView: View {
                                     .font(.system(size: 32, weight: .medium))
                                     .frame(width: 36, height: 36)
                                 Text("Camera")
-                                    .font(.system(size: 18, weight: .medium))
+                                    .font(.system(size: 16, weight: .medium))
                             }
+                        }
+                        .gesture(DragGesture().onChanged { _ in })
+                        .frame(width: 96)
+
+                        if supportsImagePlayground {
+                            Button(action: {
+                                isShowingImagePlayground = true
+                            }) {
+                                VStack {
+                                    Image(systemName: "apple.image.playground")
+                                        .font(.system(size: 32, weight: .medium))
+                                        .frame(width: 36, height: 36)
+                                    Text("Playground")
+                                        .font(.system(size: 16, weight: .medium))
+                                }
+                            }
+                            .gesture(DragGesture().onChanged { _ in })
+                            .frame(width: 96)
                         }
                     }
                 }
+                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.75))
             }
         }
         .onChange(of: selectedItem) {
@@ -66,6 +97,21 @@ struct ImagePickerView: View {
                 isShowingCamera = false
             }
         }
+        .imagePlaygroundSheet(
+            isPresented: $isShowingImagePlayground,
+            concept: space.name,
+            sourceImage: nil,
+            onCompletion: { url in
+                if let data = try? Data(contentsOf: url),
+                   let uiImage = UIImage(data: data)
+                {
+                    saveImage(uiImage)
+                }
+            },
+            onCancellation: {
+                isShowingImagePlayground = false
+            }
+        )
         .onDisappear {
             removeSavedImage()
         }

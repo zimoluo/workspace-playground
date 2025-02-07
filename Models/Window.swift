@@ -161,8 +161,8 @@ struct WindowData: Codable {
         case .image:
             updatedData.maxHeight = 800
             updatedData.maxWidth = 800
-            updatedData.minHeight = 100
-            updatedData.minWidth = 100
+            updatedData.minHeight = 180
+            updatedData.minWidth = 320
         }
 
         return updatedData
@@ -204,7 +204,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .writingPrompt: return (280, 184)
         case .pomodoroTimer: return (320, 220)
         case .habitTracker: return (300, 320)
-        case .image: return (280, 280)
+        case .image: return (320, 180)
         }
     }
 
