@@ -145,6 +145,7 @@ struct SpaceView: View {
                                     isZooming = false
                                 }
                         )
+                        .id(space.id)
 
                     WindowsOverlayView(
                         space: space,
