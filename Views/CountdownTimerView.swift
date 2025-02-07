@@ -102,6 +102,7 @@ struct CountdownTimerView: View {
                     .padding(.horizontal)
                     .disabled(!isValidDate)
                     .opacity(isValidDate ? 1 : 0.5)
+                    .gesture(DragGesture().onChanged { _ in })
                 }
                 .safeAreaPadding(.vertical, 20)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
