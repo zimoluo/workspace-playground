@@ -46,12 +46,3 @@ struct Habit: Codable {
     var timesKept: [Date]
     var timesDisliked: [Date]
 }
-
-struct Mood: Codable {
-    var id: UUID
-    var dateCreated: Date
-    var dateModified: Date
-
-    var level: CGFloat
-    var salt: Int
-}
