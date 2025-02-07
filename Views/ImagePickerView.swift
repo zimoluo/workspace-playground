@@ -16,7 +16,6 @@ struct ImagePickerView: View {
     @Environment(\.windowId) var windowId: UUID
 
     @State private var selectedItem: PhotosPickerItem? = nil
-    @State private var isShowingCamera: Bool = false
     @State private var isShowingImagePlayground: Bool = false
 
     private var savedImageID: UUID? {
@@ -56,7 +55,7 @@ struct ImagePickerView: View {
                         .frame(width: 96)
 
                         Button(action: {
-                            isShowingCamera = true
+                            // camera is disabled in Swift Playgrounds so we'll just leave it here for fun.
                         }) {
                             VStack {
                                 Image(systemName: "camera")
@@ -68,6 +67,8 @@ struct ImagePickerView: View {
                         }
                         .gesture(DragGesture().onChanged { _ in })
                         .frame(width: 96)
+                        .opacity(0.5)
+                        .disabled(true)
 
                         if supportsImagePlayground {
                             Button(action: {
