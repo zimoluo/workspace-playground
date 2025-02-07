@@ -127,15 +127,17 @@ struct ImagePickerView: View {
             if let windowIndex = space.windows.firstIndex(where: { $0.id == windowId }) {
                 modelContext.insert(newImage)
                 let aspectRatio = max(resizedImage.size.width, 1) / max(resizedImage.size.height, 1)
-                space.windows[windowIndex].data.saveData["savedImageID"] = newImage.id.uuidString
-                space.windows[windowIndex].data.minWidth = 100
-                space.windows[windowIndex].data.minHeight = 100
-                space.windows[windowIndex].data.maxWidth = max(100, resizedImage.size.width)
-                space.windows[windowIndex].data.maxHeight = max(100, resizedImage.size.height)
-                space.windows[windowIndex].data.minAspectRatio = aspectRatio
-                space.windows[windowIndex].data.maxAspectRatio = aspectRatio
-                space.windows[windowIndex].state.width = max(100, min(100 * aspectRatio, resizedImage.size.width * 0.75), resizedImage.size.width * 0.75)
-                space.windows[windowIndex].state.height = max(100, min(100 / aspectRatio, resizedImage.size.height * 0.75), resizedImage.size.height * 0.75)
+                withAnimation(.snappy(duration: 0.4)) {
+                    space.windows[windowIndex].data.saveData["savedImageID"] = newImage.id.uuidString
+                    space.windows[windowIndex].data.minWidth = 100
+                    space.windows[windowIndex].data.minHeight = 100
+                    space.windows[windowIndex].data.maxWidth = max(100, resizedImage.size.width)
+                    space.windows[windowIndex].data.maxHeight = max(100, resizedImage.size.height)
+                    space.windows[windowIndex].data.minAspectRatio = aspectRatio
+                    space.windows[windowIndex].data.maxAspectRatio = aspectRatio
+                    space.windows[windowIndex].state.width = max(100, min(100 * aspectRatio, resizedImage.size.width * 0.75), resizedImage.size.width * 0.75)
+                    space.windows[windowIndex].state.height = max(100, min(100 / aspectRatio, resizedImage.size.height * 0.75), resizedImage.size.height * 0.75)
+                }
             }
         }
     }

@@ -128,7 +128,15 @@ struct CountdownTimerView: View {
         guard let target = calendar.date(from: components) else { return }
         
         if let index = space.windows.firstIndex(where: { $0.id == windowId }) {
-            space.windows[index].data.saveData["targetDate"] = Self.isoFormatter.string(from: target)
+            withAnimation(.snappy(duration: 0.4)) {
+                space.windows[index].data.saveData["targetDate"] = Self.isoFormatter.string(from: target)
+                space.windows[index].data.minWidth = 380
+                space.windows[index].data.maxWidth = 420
+                space.windows[index].data.minHeight = 230
+                space.windows[index].data.maxHeight = 280
+                space.windows[index].state.width = space.windows[index].state.width.clamped(to: 380 ... 420)
+                space.windows[index].state.height = 230
+            }
         }
     }
 }
