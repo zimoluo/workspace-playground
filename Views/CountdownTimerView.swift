@@ -3,16 +3,65 @@ import SwiftUI
 struct CountdownTimerView: View {
     @Environment(\.theme) var theme
     @Environment(\.colorScheme) var colorScheme
+
+    @EnvironmentObject var space: Space
+    @Environment(\.windowId) var windowId: UUID
+
+    private var eventName: String {
+        space.windows.first(where: { $0.id == windowId })?.data.saveData["eventName"] ?? ""
+    }
     
-    @State private var eventName: String = ""
-    @State private var selectedDate: Date = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
-    @State private var targetDate: Date? = nil
+    private var selectedDate: Date {
+        if let dateString = space.windows.first(where: { $0.id == windowId })?.data.saveData["selectedDate"],
+           let date = Self.isoFormatter.date(from: dateString)
+        {
+            return date
+        }
+        return Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+    }
+    
+    private var targetDate: Date? {
+        if let dateString = space.windows.first(where: { $0.id == windowId })?.data.saveData["targetDate"],
+           let date = Self.isoFormatter.date(from: dateString)
+        {
+            return date
+        }
+        return nil
+    }
+    
+    private var eventNameBinding: Binding<String> {
+        Binding<String>(
+            get: { self.eventName },
+            set: { newValue in
+                if let index = self.space.windows.firstIndex(where: { $0.id == self.windowId }) {
+                    self.space.windows[index].data.saveData["eventName"] = newValue
+                }
+            }
+        )
+    }
+    
+    private var selectedDateBinding: Binding<Date> {
+        Binding<Date>(
+            get: { self.selectedDate },
+            set: { newValue in
+                if let index = self.space.windows.firstIndex(where: { $0.id == self.windowId }) {
+                    self.space.windows[index].data.saveData["selectedDate"] = Self.isoFormatter.string(from: newValue)
+                }
+            }
+        )
+    }
+    
+    private static let isoFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter
+    }()
     
     var body: some View {
         VStack {
             if targetDate == nil {
                 VStack(spacing: 0) {
-                    TextField("", text: $eventName, prompt: Text("Event...")
+                    TextField("", text: eventNameBinding, prompt: Text("Event...")
                         .foregroundStyle(
                             themeColor(from: theme, for: .secondary, in: colorScheme, level: 1.4)
                                 .opacity(0.67)
@@ -25,13 +74,13 @@ struct CountdownTimerView: View {
                         .padding(.vertical, 20)
                     
                     if colorScheme == .light {
-                        DatePicker("Enter date", selection: $selectedDate, displayedComponents: .date)
+                        DatePicker("Enter date", selection: selectedDateBinding, displayedComponents: .date)
                             .datePickerStyle(.wheel)
                             .labelsHidden()
                             .colorInvert()
                             .colorMultiply(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
                     } else {
-                        DatePicker("Enter date", selection: $selectedDate, displayedComponents: .date)
+                        DatePicker("Enter date", selection: selectedDateBinding, displayedComponents: .date)
                             .datePickerStyle(.wheel)
                             .labelsHidden()
                             .colorMultiply(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
@@ -77,7 +126,10 @@ struct CountdownTimerView: View {
         components.minute = 0
         components.second = 0
         guard let target = calendar.date(from: components) else { return }
-        targetDate = target
+        
+        if let index = space.windows.firstIndex(where: { $0.id == windowId }) {
+            space.windows[index].data.saveData["targetDate"] = Self.isoFormatter.string(from: target)
+        }
     }
 }
 
