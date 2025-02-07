@@ -159,8 +159,8 @@ struct WindowData: Codable {
             updatedData.maxHeight = 600
             updatedData.minHeight = 260
         case .image:
-            updatedData.maxHeight = 800
-            updatedData.maxWidth = 800
+            updatedData.maxHeight = 320
+            updatedData.maxWidth = 320
             updatedData.minHeight = 180
             updatedData.minWidth = 320
         }

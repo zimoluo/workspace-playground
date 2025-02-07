@@ -6,9 +6,9 @@ import SwiftUI
 struct ImagePickerView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var storedImages: [StoredImage]
+    @Query private var spaces: [Space]
 
     @Environment(\.supportsImagePlayground) private var supportsImagePlayground
-
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
 
@@ -16,9 +16,17 @@ struct ImagePickerView: View {
     @Environment(\.windowId) var windowId: UUID
 
     @State private var selectedItem: PhotosPickerItem? = nil
-    @State private var savedImageID: UUID?
     @State private var isShowingCamera: Bool = false
     @State private var isShowingImagePlayground: Bool = false
+
+    private var savedImageID: UUID? {
+        if let idString = space.windows.first(where: { $0.id == windowId })?.data.saveData["savedImageID"],
+           let uuid = UUID(uuidString: idString)
+        {
+            return uuid
+        }
+        return nil
+    }
 
     var body: some View {
         ZStack {
@@ -89,14 +97,6 @@ struct ImagePickerView: View {
                 }
             }
         }
-        .sheet(isPresented: $isShowingCamera) {
-            CameraPicker { image in
-                if let image = image {
-                    saveImage(image)
-                }
-                isShowingCamera = false
-            }
-        }
         .imagePlaygroundSheet(
             isPresented: $isShowingImagePlayground,
             concept: space.name,
@@ -112,61 +112,36 @@ struct ImagePickerView: View {
                 isShowingImagePlayground = false
             }
         )
-        .onDisappear {
-            removeSavedImage()
-        }
     }
 
     private func saveImage(_ image: UIImage) {
+        cleanupUnusedImages()
+
         if let data = image.jpegData(compressionQuality: 0.8) {
             let newImage = StoredImage(data)
-            modelContext.insert(newImage)
-            savedImageID = newImage.id
+
+            if let windowIndex = space.windows.firstIndex(where: { $0.id == windowId }) {
+                modelContext.insert(newImage)
+                space.windows[windowIndex].data.saveData["savedImageID"] = newImage.id.uuidString
+                space.windows[windowIndex].data.minWidth = 100
+                space.windows[windowIndex].data.minHeight = 100
+                space.windows[windowIndex].data.maxWidth = 800
+                space.windows[windowIndex].data.maxHeight = 800
+            }
         }
     }
 
-    private func removeSavedImage() {
-        if let savedID = savedImageID,
-           let storedImage = storedImages.first(where: { $0.id == savedID })
-        {
-            modelContext.delete(storedImage)
-        }
-    }
-}
+    private func cleanupUnusedImages() {
+        let activeImageIDs = spaces
+            .flatMap { $0.windows }
+            .filter { $0.data.type == .image }
+            .compactMap { $0.data.saveData["savedImageID"] }
+            .compactMap(UUID.init)
 
-struct CameraPicker: UIViewControllerRepresentable {
-    var completion: (UIImage?) -> Void
+        let unusedImages = storedImages.filter { !activeImageIDs.contains($0.id) }
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(completion: completion)
-    }
-
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        picker.sourceType = .camera
-        picker.allowsEditing = false
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        var completion: (UIImage?) -> Void
-
-        init(completion: @escaping (UIImage?) -> Void) {
-            self.completion = completion
-        }
-
-        func imagePickerController(_ picker: UIImagePickerController,
-                                   didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any])
-        {
-            let image = info[.originalImage] as? UIImage
-            completion(image)
-        }
-
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            completion(nil)
+        for image in unusedImages {
+            modelContext.delete(image)
         }
     }
 }
