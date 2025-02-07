@@ -39,6 +39,7 @@ struct ImagePickerView: View {
                     .scaledToFill()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .clipped()
+                    .allowsHitTesting(false)
             } else {
                 VStack {
                     HStack(spacing: 8) {
