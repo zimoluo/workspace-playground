@@ -3,9 +3,7 @@ import CoreImage.CIFilterBuiltins
 import SwiftUI
 
 struct FancyMetallicGlobeView: View {
-    @State private var meshPoints: [SIMD2<Float>] = MeshGradientHelper.generateMeshPoints()
-    @State private var meshColors: [Color] = []
-    @State private var hueRange: (Double, Double) = (0, 0)
+    @State private var hue: CGFloat = 0
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -14,26 +12,16 @@ struct FancyMetallicGlobeView: View {
     @EnvironmentObject var space: Space
     @Environment(\.windowId) var windowId: UUID
 
-    private let animationDuration: Double = 2.0
-    private let timer = Timer.publish(every: 2.0, on: .main, in: .common).autoconnect()
-
     private let popUpHistoryKey = "popUpHistory"
 
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Ellipse()
-                    .fill(MeshGradient(width: 4, height: 4, points: meshPoints, colors: meshColors))
+                AnimatedMeshBackground(baseHue: hue)
                     .frame(width: geometry.size.width - 33, height: geometry.size.height - 33)
+                    .clipShape(Ellipse())
                     .onAppear {
-                        generateUniqueHueRange()
-                        meshColors = MeshGradientHelper.generateMeshColors(hueRange: hueRange, in: colorScheme)
-                    }
-                    .onReceive(timer) { _ in
-                        withAnimation(.linear(duration: animationDuration)) {
-                            meshPoints = MeshGradientHelper.generateMeshPoints()
-                            meshColors = MeshGradientHelper.generateMeshColors(hueRange: hueRange, in: colorScheme)
-                        }
+                        generateUniqueHue()
                     }
 
                 MetallicBorder(lineWidth: min(geometry.size.width, geometry.size.height) * 0.066)
@@ -86,62 +74,134 @@ struct FancyMetallicGlobeView: View {
         }
     }
 
-    private func generateUniqueHueRange() {
+    private func generateUniqueHue() {
         if let window = space.windows.first(where: { $0.id == windowId }),
-           let hueRangeString = window.data.saveData["hueRange"],
-           let decodedHueRange = decodeHueRange(from: hueRangeString)
+           let hueString = window.data.saveData["hue"]
         {
-            hueRange = decodedHueRange
+            hue = Double(hueString) ?? 0
         } else {
-            let hueStart = Double.random(in: 0...0.8)
-            let hueEnd = (hueStart + 0.2).truncatingRemainder(dividingBy: 1.0)
-            hueRange = (hueStart, hueEnd)
+            let randomHue: Double = .random(in: 0 ... 1)
 
             if let windowIndex = space.windows.firstIndex(where: { $0.id == windowId }) {
-                space.windows[windowIndex].data.saveData["hueRange"] = encodeHueRange(hueRange)
+                space.windows[windowIndex].data.saveData["hue"] = "\(randomHue)"
+            }
+
+            hue = randomHue
+        }
+    }
+}
+
+struct AnimatedMeshBackground: View {
+    @EnvironmentObject var space: Space
+    @Environment(\.windowId) var windowId: UUID
+
+    let baseHue: CGFloat
+
+    @State var salt: Int = 0
+
+    let cycleDuration: TimeInterval = 2.13
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        TimelineView(.animation) { timeline in
+            let currentTime = timeline.date.timeIntervalSinceReferenceDate
+            let points = computeMeshPoints(time: currentTime)
+            let colors: [Color] = (0..<16).map { i in
+                let variation = computeColorVariation(for: i, time: currentTime)
+                let newHue = (baseHue + variation.hueOffset).truncatingRemainder(dividingBy: 1.0)
+                let newBrightness = colorScheme == .light ? variation.brightness : (0.8857 * variation.brightness - 0.1957)
+                return Color(hue: Double(newHue), saturation: Double(variation.saturation), brightness: Double(newBrightness))
+            }
+            MeshGradient(width: 4, height: 4, points: points, colors: colors)
+        }
+        .ignoresSafeArea()
+        .onAppear {
+            if let window = space.windows.first(where: { $0.id == windowId }),
+               let saltString = window.data.saveData["animatedMeshBackgroundSalt"]
+            {
+                salt = Int(saltString) ?? .random(in: 0 ... 2147483647)
+            } else {
+                let randomSalt: Int = .random(in: 0 ... 2147483647)
+
+                if let windowIndex = space.windows.firstIndex(where: { $0.id == windowId }) {
+                    space.windows[windowIndex].data.saveData["animatedMeshBackgroundSalt"] = "\(salt)"
+                }
+
+                salt = randomSalt
             }
         }
     }
 
-    private func encodeHueRange(_ hueRange: (Double, Double)) -> String {
-        return "\(hueRange.0),\(hueRange.1)"
-    }
-
-    private func decodeHueRange(from string: String) -> (Double, Double)? {
-        let components = string.split(separator: ",").compactMap { Double($0) }
-        guard components.count == 2 else { return nil }
-        return (components[0], components[1])
-    }
-}
-
-enum MeshGradientHelper {
-    private static let basePositions: [Float] = [0.0, 0.333, 0.667, 1.0]
-
-    static func generateMeshPoints() -> [SIMD2<Float>] {
+    func computeMeshPoints(time: TimeInterval) -> [SIMD2<Float>] {
+        let currentPeriod = Int(time / cycleDuration)
+        let fraction = Float((time.truncatingRemainder(dividingBy: cycleDuration)) / cycleDuration)
         var points: [SIMD2<Float>] = []
-        for y in basePositions {
-            for x in basePositions {
-                let newX = (x == 0.0 || x == 1.0) ? x : min(max(x + Float.random(in: -0.12...0.12), 0.0), 1.0)
-                let newY = (y == 0.0 || y == 1.0) ? y : min(max(y + Float.random(in: -0.12...0.12), 0.0), 1.0)
-                points.append(SIMD2<Float>(newX, newY))
+        for row in 0..<4 {
+            for col in 0..<4 {
+                let baseX = Float(col) / 3.0
+                let baseY = Float(row) / 3.0
+                if row == 0 || row == 3 || col == 0 || col == 3 {
+                    points.append(SIMD2<Float>(baseX, baseY))
+                } else {
+                    let offsetCurrent = randomOffset(row: row, col: col, period: currentPeriod)
+                    let offsetNext = randomOffset(row: row, col: col, period: currentPeriod + 1)
+                    let interpOffset = offsetCurrent + (offsetNext - offsetCurrent) * fraction
+                    let perturbedX = baseX + interpOffset.x
+                    let perturbedY = baseY + interpOffset.y
+                    points.append(SIMD2<Float>(min(max(perturbedX, 0), 1), min(max(perturbedY, 0), 1)))
+                }
             }
         }
         return points
     }
 
-    static func generateMeshColors(hueRange: (Double, Double), in colorScheme: ColorScheme = .light) -> [Color] {
-        var colors: [Color] = []
-        let (hueStart, hueEnd) = hueRange
+    func randomOffset(row: Int, col: Int, period: Int) -> SIMD2<Float> {
+        let baseSeed = salt + period * 1000 + row * 100 + col * 10
+        let randomX = pseudoRandom(seed: baseSeed + 1)
+        let randomY = pseudoRandom(seed: baseSeed + 2)
+        let amplitude: Float = 0.12
+        let offsetX = Float(randomX) * 2 * amplitude - amplitude
+        let offsetY = Float(randomY) * 2 * amplitude - amplitude
+        return SIMD2<Float>(offsetX, offsetY)
+    }
 
-        for _ in 0 ..< 16 {
-            let hue = hueStart < hueEnd
-                ? Double.random(in: hueStart...hueEnd)
-                : Double.random(in: hueStart...1.0) + Double.random(in: 0.0...hueEnd)
-            let saturation = Double.random(in: 0.5...0.85)
-            let brightness = Double.random(in: colorScheme == .light ? 0.65...1.0 : 0.4...0.75)
-            colors.append(Color(hue: hue, saturation: saturation, brightness: brightness))
-        }
-        return colors
+    func computeColorVariation(for cell: Int, time: TimeInterval) -> ColorVariation {
+        let currentPeriod = Int(time / cycleDuration)
+        let fraction = CGFloat((time.truncatingRemainder(dividingBy: cycleDuration)) / cycleDuration)
+        let currentVar = randomColorVariation(for: cell, period: currentPeriod)
+        let nextVar = randomColorVariation(for: cell, period: currentPeriod + 1)
+        let interpHueOffset = currentVar.hueOffset + (nextVar.hueOffset - currentVar.hueOffset) * fraction
+        let interpSaturation = currentVar.saturation + (nextVar.saturation - currentVar.saturation) * fraction
+        let interpBrightness = currentVar.brightness + (nextVar.brightness - currentVar.brightness) * fraction
+        return ColorVariation(hueOffset: interpHueOffset, saturation: interpSaturation, brightness: interpBrightness)
+    }
+
+    func randomColorVariation(for cell: Int, period: Int) -> ColorVariation {
+        let baseSeed = salt + period * 1000 + cell * 100
+        let randomHue = pseudoRandom(seed: baseSeed + 1)
+        let randomSat = pseudoRandom(seed: baseSeed + 2)
+        let randomBri = pseudoRandom(seed: baseSeed + 3)
+        let hueOffset = CGFloat(randomHue) * 0.2 - 0.1
+        let saturation = 0.5 + (0.85 - 0.5) * CGFloat(randomSat)
+        let brightness = 0.65 + (1.0 - 0.65) * CGFloat(randomBri)
+        return ColorVariation(hueOffset: hueOffset, saturation: saturation, brightness: brightness)
+    }
+
+    func pseudoRandom(seed: Int) -> Double {
+        var value = seed
+        value = (value ^ 61) ^ (value >> 16)
+        value = value &* 9
+        value = value ^ (value >> 4)
+        value = value &* 0x27d4eb2d
+        value = value ^ (value >> 15)
+        return Double(value & 0x7fffffff) / Double(0x7fffffff)
+    }
+
+    struct ColorVariation {
+        var hueOffset: CGFloat
+        var saturation: CGFloat
+        var brightness: CGFloat
     }
 }
 
