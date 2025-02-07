@@ -105,7 +105,7 @@ struct DailyQuoteView: View {
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.6)
                     .padding(.horizontal, 12)
-                    .themedForeground(using: theme, in: colorScheme, category: .secondary)
+                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.5))
 
                 Spacer()
                     .frame(maxHeight: 24)
@@ -113,7 +113,7 @@ struct DailyQuoteView: View {
                 Text("- \(viewModel.quote.author)")
                     .font(.system(size: geometry.size.width * 0.05, weight: .medium))
                     .multilineTextAlignment(.center)
-                    .themedForeground(using: theme, in: colorScheme, category: .secondary)
+                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.5))
             }
             .padding(.vertical, 16)
             .frame(width: geometry.size.width, height: geometry.size.height)

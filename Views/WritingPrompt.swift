@@ -32,7 +32,6 @@ class DailyWritingPromptViewModel: ObservableObject {
         let hour = components.hour ?? 0
         let minute = components.minute ?? 0
 
-        // Use the previous day's prompt if it's before 3:30 AM
         var effectiveDate = date
         if hour < 3 || (hour == 3 && minute < 30) {
             effectiveDate = calendar.date(byAdding: .day, value: -1, to: date)!
@@ -93,7 +92,7 @@ struct DailyWritingPromptView: View {
                     .font(.system(size: geometry.size.width * 0.075, weight: .semibold))
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 16)
-                    .themedForeground(using: theme, in: colorScheme, category: .secondary)
+                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.5))
             }
             .padding(.vertical, 12)
             .frame(width: geometry.size.width, height: geometry.size.height)
