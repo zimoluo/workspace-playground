@@ -131,6 +131,8 @@ struct ImagePickerView: View {
                 space.windows[windowIndex].data.minHeight = 100
                 space.windows[windowIndex].data.maxWidth = max(100, resizedImage.size.width)
                 space.windows[windowIndex].data.maxHeight = max(100, resizedImage.size.height)
+                space.windows[windowIndex].state.width = max(100, resizedImage.size.width * 0.75)
+                space.windows[windowIndex].state.height = max(100, resizedImage.size.height * 0.75)
             }
         }
     }
