@@ -13,7 +13,7 @@ struct HabitTrackerView: View {
                 Text("Habits")
                     .padding(.leading, 8)
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
+                    .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.75))
 
                 Spacer()
 
@@ -28,6 +28,7 @@ struct HabitTrackerView: View {
                 }
                 .accessibilityLabel("Add Item")
                 .gesture(DragGesture().onChanged { _ in })
+                .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.75))
             }
             .padding(.top, 8)
             .padding(8)
