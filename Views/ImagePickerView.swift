@@ -119,7 +119,9 @@ struct ImagePickerView: View {
     private func saveImage(_ image: UIImage) {
         cleanupUnusedImages()
 
-        if let data = image.jpegData(compressionQuality: 0.8) {
+        let resizedImage = resizeImageIfNeeded(image, maxSideLength: 800)
+
+        if let data = resizedImage.jpegData(compressionQuality: 0.8) {
             let newImage = StoredImage(data)
 
             if let windowIndex = space.windows.firstIndex(where: { $0.id == windowId }) {
@@ -127,10 +129,28 @@ struct ImagePickerView: View {
                 space.windows[windowIndex].data.saveData["savedImageID"] = newImage.id.uuidString
                 space.windows[windowIndex].data.minWidth = 100
                 space.windows[windowIndex].data.minHeight = 100
-                space.windows[windowIndex].data.maxWidth = 800
-                space.windows[windowIndex].data.maxHeight = 800
+                space.windows[windowIndex].data.maxWidth = max(100, resizedImage.size.width)
+                space.windows[windowIndex].data.maxHeight = max(100, resizedImage.size.height)
             }
         }
+    }
+
+    private func resizeImageIfNeeded(_ image: UIImage, maxSideLength: CGFloat) -> UIImage {
+        let width = image.size.width
+        let height = image.size.height
+        let maxDimension = max(width, height)
+
+        guard maxDimension > maxSideLength else { return image }
+
+        let scaleFactor = maxSideLength / maxDimension
+        let newSize = CGSize(width: width * scaleFactor, height: height * scaleFactor)
+
+        UIGraphicsBeginImageContextWithOptions(newSize, false, image.scale)
+        image.draw(in: CGRect(origin: .zero, size: newSize))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return resizedImage ?? image
     }
 
     private func cleanupUnusedImages() {
