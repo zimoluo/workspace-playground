@@ -41,6 +41,8 @@ struct SpaceView: View {
     @State private var initialPinchPoint: CGPoint = .zero
     @State private var initialCameraCenter: CGPoint = .zero
 
+    @State private var isZooming: Bool = false
+
     @State private var showMarkerPopover: Bool = false
 
     @State private var listID = UUID()
@@ -98,11 +100,13 @@ struct SpaceView: View {
                         newPoint in
                         space.cameraCenterX = newPoint.x
                         space.cameraCenterY = newPoint.y
-                    }), lockCamera: space.lockCamera, parentSize: geometry.size, minCameraCenterX: minCameraCenterX, maxCameraCenterX: maxCameraCenterX, minCameraCenterY: minCameraCenterY, maxCameraCenterY: maxCameraCenterY)
+                    }), isZooming: isZooming, lockCamera: space.lockCamera, parentSize: geometry.size, minCameraCenterX: minCameraCenterX, maxCameraCenterX: maxCameraCenterX, minCameraCenterY: minCameraCenterY, maxCameraCenterY: maxCameraCenterY)
                         .highPriorityGesture(
                             MagnifyGesture()
                                 .onChanged { value in
                                     if space.lockCamera { return }
+
+                                    isZooming = true
 
                                     let zoomFactor = value.magnification
 
@@ -138,6 +142,7 @@ struct SpaceView: View {
                                     currentZoom = space.cameraZoom
                                     initialPinchPoint = .zero
                                     space.updateDateModified()
+                                    isZooming = false
                                 }
                         )
 
@@ -664,7 +669,12 @@ struct WindowMenuView: View {
 struct CameraScrollView: UIViewRepresentable {
     @Binding var cameraCenter: CGPoint
 
+    var isZooming: Bool
     var lockCamera: Bool
+
+    var canScroll: Bool {
+        !isZooming && !lockCamera
+    }
 
     var parentSize: CGSize
 
@@ -692,7 +702,7 @@ struct CameraScrollView: UIViewRepresentable {
 
         scrollView.contentSize = CGSize(width: width, height: height)
 
-        scrollView.isScrollEnabled = !lockCamera
+        scrollView.isScrollEnabled = canScroll
 
         let initialOffset = CGPoint(
             x: cameraCenter.x - minCameraCenterX,
@@ -711,7 +721,7 @@ struct CameraScrollView: UIViewRepresentable {
             scrollView.contentSize = newSize
         }
 
-        scrollView.isScrollEnabled = !lockCamera
+        scrollView.isScrollEnabled = canScroll
 
         let correctedOffset = CGPoint(
             x: cameraCenter.x - minCameraCenterX,
