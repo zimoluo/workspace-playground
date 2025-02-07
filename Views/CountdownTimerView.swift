@@ -134,7 +134,7 @@ struct CountdownTimerView: View {
                 space.windows[index].data.maxWidth = 420
                 space.windows[index].data.minHeight = 230
                 space.windows[index].data.maxHeight = 280
-                space.windows[index].state.width = space.windows[index].state.width.clamped(to: 380 ... 420)
+                space.windows[index].state.width = 396
                 space.windows[index].state.height = 230
             }
         }
