@@ -119,7 +119,7 @@ struct ImagePickerView: View {
     private func saveImage(_ image: UIImage) {
         cleanupUnusedImages()
 
-        let resizedImage = resizeImageIfNeeded(image, maxSideLength: 800)
+        let resizedImage = resizeImageIfNeeded(image, maxSideLength: 640)
 
         if let data = resizedImage.jpegData(compressionQuality: 0.8) {
             let newImage = StoredImage(data)
