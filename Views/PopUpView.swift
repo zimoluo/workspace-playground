@@ -67,7 +67,7 @@ struct PopUpView: View {
                     PopUpItem(
                         icon: "mappin.circle.fill",
                         title: "Placing Markers",
-                        description: "Sometimes a Space can have different zones. Place a Marker to quickly travel between and preview different areas."
+                        description: "Sometimes a Space can have different zones. Place a marker to quickly travel between and preview different areas."
                     ),
                     PopUpItem(
                         icon: "lock.fill",
@@ -97,7 +97,7 @@ struct PopUpView: View {
                     PopUpItem(
                         icon: "command",
                         title: "Trying out the Theme Maker",
-                        description: "The Theme Maker is where you can fully express yourself by creating your own theme. It's intuitive, intelligent, and rewarding. Try it out!"
+                        description: "The Theme Maker is where you can fully express yourself by creating your own theme. It’s intuitive, intelligent, and rewarding. Try it out!"
                     )
                 ],
                 buttonText: "Good to know!",
@@ -117,12 +117,12 @@ struct PopUpView: View {
                     PopUpItem(
                         icon: "line.3.crossed.swirl.circle.fill",
                         title: "Mesh Gradient",
-                        description: "Did you know that the default theme uses a mesh gradient background? Try the mesh gradient in the Theme Maker! You can customize vertices, colors, and so much more. It's the best way to express your understanding of colors."
+                        description: "Did you know that the default theme uses a mesh gradient background? Try the mesh gradient in the Theme Maker! You can customize vertices, colors, and so much more. It’s the best way to express your understanding of colors."
                     ),
                     PopUpItem(
                         icon: "infinity",
                         title: "Edge of the Space",
-                        description: "Did you know that the boundary of the Space is one billion units away from the start? It takes half a year to scroll there without stopping, so don't try to reach it!"
+                        description: "Did you know that the boundary of the Space is one billion units away from the start? It takes half a year to scroll there without stopping, so don’t try to reach it!"
                     )
                 ],
                 buttonText: "Good to know!",
@@ -142,15 +142,40 @@ struct PopUpView: View {
                     PopUpItem(
                         icon: "note.text",
                         title: "Not Just Notes",
-                        description: "Notes is not just a text editor. You can change the text's color, size, and style, and even insert your favorite Stickers and Genmojis!"
+                        description: "Notes is not just a text editor. You can change the text’s color, size, and style, and even insert your favorite Stickers and Genmojis!"
                     ),
                     PopUpItem(
                         icon: "stopwatch.fill",
-                        title: "Stopwatch Doesn't Stop",
-                        description: "If you leave a stopwatch running, it will continue even when you exit the Space or the entire app! It's always a big surprise to see the stopwatch running for days on end."
+                        title: "Stopwatch Doesn’t Stop",
+                        description: "If you leave a stopwatch running, it will continue even when you exit the Space or the entire app! It’s always a big surprise to see the stopwatch running for days on end."
                     )
                 ],
                 buttonText: "Good to know!",
+                buttonAction: {
+                    popUp.type = .empty
+                }
+            )
+        case .welcome:
+            PopUpContent(
+                title: "Welcome to WorkSpace",
+                items: [
+                    PopUpItem(
+                        icon: "rectangle.on.rectangle",
+                        title: "Spaces and Windows",
+                        description: "Welcome to WorkSpace! Let your imagination flow as you explore a Space. Each Space offers windows you can easily move and resize."
+                    ),
+                    PopUpItem(
+                        icon: "theatermasks",
+                        title: "Express Yourself",
+                        description: "WorkSpace celebrates your style. In an endless Space, arrange windows wherever you like to create a layout with notes, timers, clocks, and more."
+                    ),
+                    PopUpItem(
+                        icon: "paintpalette",
+                        title: "Customizing Themes",
+                        description: "WorkSpace isn’t defined by a single look. Simply tap a theme to match your taste. Each theme even adapts for Dark Mode, so try it out too! For even more options, check out the Theme\u{00A0}Maker and unleash your creativity!"
+                    )
+                ],
+                buttonText: "Let’s begin!",
                 buttonAction: {
                     popUp.type = .empty
                 }

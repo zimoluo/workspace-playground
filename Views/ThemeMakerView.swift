@@ -19,7 +19,9 @@ struct ThemeMakerView: View {
         .padding(.horizontal, 32)
         .padding(.vertical, 0)
         .ignoresSafeArea()
-        .task { showGuideFirstTime() }
+        .task {
+            showGuideFirstTime()
+        }
     }
 
     private func showGuideFirstTime() {

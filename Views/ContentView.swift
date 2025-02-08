@@ -8,6 +8,7 @@ struct ContentView: View {
     @Environment(\.theme) private var theme
     @Environment(\.settings) private var settings
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var popUp: PopUp
 
     @State var selectedScreen: Screen = .init(type: .space)
 
@@ -190,6 +191,21 @@ struct ContentView: View {
 
             PopUpView().ignoresSafeArea()
         }
+        .task {
+            showWelcomeFirstTime()
+        }
+    }
+
+    private func showWelcomeFirstTime() {
+        let hasSeenWelcomeText = UserDefaults.standard.bool(forKey: "HasSeenWelcomeText")
+
+        guard !hasSeenWelcomeText else {
+            return
+        }
+
+        popUp.type = .welcome
+
+        UserDefaults.standard.set(true, forKey: "HasSeenWelcomeText")
     }
 
     private var themesGridHeight: CGFloat {

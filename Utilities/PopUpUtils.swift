@@ -7,6 +7,7 @@ enum PopUpType: String, Codable {
     case tips_theme
     case tips_technical
     case tips_window
+    case welcome
 }
 
 class PopUp: ObservableObject {
