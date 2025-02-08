@@ -47,7 +47,7 @@ struct PopUpView: View {
                     PopUpItem(
                         icon: "line.3.crossed.swirl.circle.fill",
                         title: "Playing with Gradients",
-                        description: "Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s toolset makes it easy to create stunning gradients. Its smart color algorithm ensures beautiful results."
+                        description: "Create stunning backgrounds with linear, radial, conic, or mesh gradients. WorkSpace’s toolset makes it easy to create vibrant gradients. Its smart color algorithm ensures beautiful results."
                     )
                 ],
                 buttonText: "Got it!",
