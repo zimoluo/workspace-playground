@@ -206,15 +206,13 @@ struct ImportantDatesView: View {
                     .cornerRadius(16)
                     .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 12, y: 8)
             }
-            .disabled(newDayName.isEmpty)
             .gesture(DragGesture().onChanged { _ in })
-            .opacity(newDayName.isEmpty ? 0.5 : 1)
         }
         .safeAreaPadding(.bottom, 20)
     }
 
     private func saveNewImportantDay() {
-        let newDay = ImportantDay(id: UUID(), name: newDayName, date: newDayDate)
+        let newDay = ImportantDay(id: UUID(), name: newDayName.isEmpty ? "Milestone" : newDayName, date: newDayDate)
         settings.importantDays.append(newDay)
         viewStateBinding.wrappedValue = .list
     }
