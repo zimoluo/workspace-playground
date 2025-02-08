@@ -55,7 +55,7 @@ struct RichTextEditor: UIViewRepresentable {
             guard !isUpdating else { return }
             isUpdating = true
 
-            let themeUIColor = UIColor(themeColor(from: parent.theme, for: .secondary, in: parent.colorScheme))
+            let themeUIColor = UIColor(themeColor(from: parent.theme, for: .secondary, in: parent.colorScheme, level: 0.75))
             let mutableAttributedText = NSMutableAttributedString(attributedString: textView.attributedText)
 
             mutableAttributedText.enumerateAttribute(.foregroundColor, in: NSRange(location: 0, length: mutableAttributedText.length), options: []) { value, range, _ in
@@ -97,7 +97,7 @@ struct RichTextEditorView: View {
             } else {
                 let attributes: [NSAttributedString.Key: Any] = [
                     .font: UIFont.systemFont(ofSize: 20),
-                    .foregroundColor: UIColor(themeColor(from: theme, for: .secondary, in: colorScheme)),
+                    .foregroundColor: UIColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.75)),
                     .isDefaultTextColor: true
                 ]
                 return NSAttributedString(string: "Notes...", attributes: attributes)
@@ -110,7 +110,7 @@ struct RichTextEditorView: View {
             },
             set: { newValue in
                 let mutableAttributedString = NSMutableAttributedString(attributedString: newValue)
-                let themeUIColor = UIColor(themeColor(from: theme, for: .secondary, in: colorScheme))
+                let themeUIColor = UIColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.75))
 
                 mutableAttributedString.enumerateAttribute(.foregroundColor, in: NSRange(location: 0, length: mutableAttributedString.length), options: []) { value, range, _ in
                     if let color = value as? UIColor, color == themeUIColor {
