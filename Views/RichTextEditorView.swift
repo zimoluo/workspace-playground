@@ -23,7 +23,7 @@ struct RichTextEditor: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UITextView, context: Context) {
-        let themeUIColor = UIColor(themeColor(from: theme, for: .secondary, in: colorScheme))
+        let themeUIColor = UIColor(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.75))
         let mutableAttributedText = NSMutableAttributedString(attributedString: text)
 
         mutableAttributedText.enumerateAttribute(.isDefaultTextColor, in: NSRange(location: 0, length: mutableAttributedText.length), options: []) { value, range, _ in
