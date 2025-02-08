@@ -5,16 +5,86 @@ struct ImportantDatesView: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
 
+    @EnvironmentObject var space: Space
+    @Environment(\.windowId) var windowId: UUID
+
     enum ViewState: Codable {
         case add
         case list
         case display(ImportantDay)
     }
 
-    @State private var viewState: ViewState = .add
+    private static let isoFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter
+    }()
 
-    @State private var newDayName: String = ""
-    @State private var newDayDate: Date = .init()
+    private var viewStateBinding: Binding<ViewState> {
+        Binding<ViewState>(
+            get: {
+                if let window = space.windows.first(where: { $0.id == windowId }),
+                   let jsonString = window.data.saveData["viewState"],
+                   let data = jsonString.data(using: .utf8),
+                   let state = try? JSONDecoder().decode(ViewState.self, from: data)
+                {
+                    return state
+                }
+                return .list
+            },
+            set: { newState in
+                if let index = space.windows.firstIndex(where: { $0.id == windowId }),
+                   let data = try? JSONEncoder().encode(newState),
+                   let jsonString = String(data: data, encoding: .utf8)
+                {
+                    space.windows[index].data.saveData["viewState"] = jsonString
+                }
+            }
+        )
+    }
+
+    private var newDayNameBinding: Binding<String> {
+        Binding<String>(
+            get: {
+                space.windows.first(where: { $0.id == windowId })?.data.saveData["newDayName"] ?? ""
+            },
+            set: { newValue in
+                if let index = space.windows.firstIndex(where: { $0.id == windowId }) {
+                    space.windows[index].data.saveData["newDayName"] = newValue
+                }
+            }
+        )
+    }
+
+    private var newDayDateBinding: Binding<Date> {
+        Binding<Date>(
+            get: {
+                if let dateString = space.windows.first(where: { $0.id == windowId })?.data.saveData["newDayDate"],
+                   let date = Self.isoFormatter.date(from: dateString)
+                {
+                    return date
+                }
+                return Date()
+            },
+            set: { newValue in
+                if let index = space.windows.firstIndex(where: { $0.id == windowId }) {
+                    space.windows[index].data.saveData["newDayDate"] = Self.isoFormatter.string(from: newValue)
+                }
+            }
+        )
+    }
+
+    private var viewState: ViewState {
+        viewStateBinding.wrappedValue
+    }
+
+    private var newDayName: String {
+        newDayNameBinding.wrappedValue
+    }
+
+    private var newDayDate: Date {
+        newDayDateBinding.wrappedValue
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -33,9 +103,9 @@ struct ImportantDatesView: View {
                 if case .list = viewState {
                     Button(action: {
                         withAnimation(.snappy(duration: 0.4)) {
-                            newDayName = ""
-                            newDayDate = Date()
-                            viewState = .add
+                            newDayNameBinding.wrappedValue = ""
+                            newDayDateBinding.wrappedValue = Date()
+                            viewStateBinding.wrappedValue = .add
                         }
                     }) {
                         Image(systemName: "plus")
@@ -45,7 +115,7 @@ struct ImportantDatesView: View {
                 } else if shouldShowBackButton {
                     Button(action: {
                         withAnimation(.snappy(duration: 0.4)) {
-                            viewState = .list
+                            viewStateBinding.wrappedValue = .list
                         }
                     }) {
                         Image(systemName: "list.bullet")
@@ -96,7 +166,7 @@ struct ImportantDatesView: View {
 
     private var addView: some View {
         VStack(spacing: 0) {
-            TextField("", text: $newDayName, prompt: Text("Milestone...")
+            TextField("", text: newDayNameBinding, prompt: Text("Milestone...")
                 .foregroundStyle(
                     themeColor(from: theme, for: .secondary, in: colorScheme, level: 1.4)
                         .opacity(0.67)
@@ -109,13 +179,13 @@ struct ImportantDatesView: View {
                 .padding(.bottom, 20)
                 .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.75))
             if colorScheme == .light {
-                DatePicker("Enter date", selection: $newDayDate, displayedComponents: .date)
+                DatePicker("Enter date", selection: newDayDateBinding, displayedComponents: .date)
                     .datePickerStyle(.wheel)
                     .labelsHidden()
                     .colorInvert()
                     .colorMultiply(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
             } else {
-                DatePicker("Enter date", selection: $newDayDate, displayedComponents: .date)
+                DatePicker("Enter date", selection: newDayDateBinding, displayedComponents: .date)
                     .datePickerStyle(.wheel)
                     .labelsHidden()
                     .colorMultiply(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
@@ -146,7 +216,7 @@ struct ImportantDatesView: View {
     private func saveNewImportantDay() {
         let newDay = ImportantDay(id: UUID(), name: newDayName, date: newDayDate)
         settings.importantDays.append(newDay)
-        viewState = .list
+        viewStateBinding.wrappedValue = .list
     }
 
     private var listView: some View {
@@ -155,7 +225,7 @@ struct ImportantDatesView: View {
                 ForEach(settings.importantDays) { day in
                     Button(action: {
                         withAnimation(.snappy(duration: 0.4)) {
-                            viewState = .display(day)
+                            viewStateBinding.wrappedValue = .display(day)
                         }
                     }) {
                         HStack(spacing: 16) {
@@ -193,7 +263,7 @@ struct ImportantDatesView: View {
                     }
                 }
             }
-            .animation(.spring(duration: 0.5), value: settings.importantDays)
+            .animation(.spring(duration: 0.4), value: settings.importantDays)
             .safeAreaPadding(.vertical, 12)
             .safeAreaPadding(.horizontal, 20)
         }
