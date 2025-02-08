@@ -27,6 +27,7 @@ struct ImportantDatesView: View {
         ZStack {
             Text(headerTitle)
                 .font(.system(size: 18, weight: .bold))
+                .contentTransition(.numericText(countsDown: true))
             HStack {
                 Spacer()
                 if case .list = viewState {
