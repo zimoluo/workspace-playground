@@ -163,7 +163,7 @@ struct ImportantDatesView: View {
                                 .font(.system(size: 16, weight: .semibold))
                                 .lineLimit(1)
                             Spacer()
-                            Text(daysDisplay(for: day))
+                            Text(daysDisplay(for: day, true))
                                 .font(.system(size: 14, weight: .semibold))
                                 .lineLimit(1)
                         }
@@ -199,32 +199,32 @@ struct ImportantDatesView: View {
         }
     }
 
-    private func daysDisplay(for day: ImportantDay) -> String {
+    private func daysDisplay(for day: ImportantDay, _ isList: Bool = false) -> String {
         let calendar = Calendar.current
         let now = calendar.startOfDay(for: Date())
         let target = calendar.startOfDay(for: day.date)
         let diff = calendar.dateComponents([.day], from: now, to: target).day ?? 0
         if diff > 0 {
-            return "\(diff) days until"
+            return "\(isList ? "In " : "")\(diff) days\(isList ? "" : " until")"
         } else if diff < 0 {
-            return "\(-diff) days since"
+            return "\(-diff) days \(isList ? "ago" : "since")"
         } else {
             return "Today"
         }
     }
 
     private func displayView(for day: ImportantDay) -> some View {
-        VStack(spacing: 20) {
-            Text(daysDisplay(for: day))
-                .font(.system(size: 34, weight: .semibold))
+        VStack(spacing: 14) {
+            Text(daysDisplay(for: day).uppercased())
+                .font(.system(size: 24, weight: .semibold))
                 .lineLimit(1)
             Text(day.name)
-                .font(.system(size: 44, weight: .bold))
+                .font(.system(size: 48, weight: .bold))
                 .lineLimit(2)
         }
         .padding(16)
         .frame(maxHeight: .infinity)
-        .padding(.bottom, 32)
+        .padding(.bottom, 48)
         .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.8))
     }
 }
