@@ -11,7 +11,7 @@ struct SettingsProvider<Content: View>: View {
         Group {
             if let currentSettings = settings.first {
                 content(currentSettings.theme, currentSettings).task {
-                    await initializeDefaultThemesIfNeeded()
+                    await initializeDefaultsIfNeeded()
                 }
             } else {
                 ProgressView("Loading settings...")
@@ -28,10 +28,10 @@ struct SettingsProvider<Content: View>: View {
         }
     }
 
-    private func initializeDefaultThemesIfNeeded() async {
-        let hasInitializedThemeDefaults = UserDefaults.standard.bool(forKey: "HasInitializedThemeDefaults")
+    private func initializeDefaultsIfNeeded() async {
+        let hasInitializedDefaults = UserDefaults.standard.bool(forKey: "HasInitializedDefaults")
 
-        guard !hasInitializedThemeDefaults else {
+        guard !hasInitializedDefaults else {
             return
         }
 
@@ -48,7 +48,7 @@ struct SettingsProvider<Content: View>: View {
 
         do {
             try modelContext.save()
-            UserDefaults.standard.set(true, forKey: "HasInitializedThemeDefaults")
+            UserDefaults.standard.set(true, forKey: "HasInitializedDefaults")
         } catch {
             print("Error initializing default data: \(error)")
         }
