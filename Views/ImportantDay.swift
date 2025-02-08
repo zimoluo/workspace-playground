@@ -220,7 +220,7 @@ struct ImportantDatesView: View {
     private var listView: some View {
         ScrollView {
             LazyVStack(spacing: 18) {
-                ForEach(settings.importantDays) { day in
+                ForEach(settings.importantDays.sorted { $0.date > $1.date }) { day in
                     Button(action: {
                         withAnimation(.snappy(duration: 0.4)) {
                             viewStateBinding.wrappedValue = .display(day)
