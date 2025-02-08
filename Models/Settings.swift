@@ -8,13 +8,15 @@ class Settings: ObservableObject {
     var windowsMenuButtonsPosition: WindowsMenuButtonPosition
     var isWindowsMenuButtonExpanded: Bool
     var habits: [Habit]
+    var importantDays: [ImportantDay]
 
-    init(theme: Theme = BuiltinThemes.whim, windowsMenuButtonsPosition: WindowsMenuButtonPosition = .bottomTrailing, isWindowsMenuButtonExpanded: Bool = false, habits: [Habit] = []) {
+    init(theme: Theme = BuiltinThemes.whim, windowsMenuButtonsPosition: WindowsMenuButtonPosition = .bottomTrailing, isWindowsMenuButtonExpanded: Bool = false, habits: [Habit] = [], importantDays: [ImportantDay] = []) {
         self.theme = theme
         self.selectedSpaceId = UUID()
         self.windowsMenuButtonsPosition = windowsMenuButtonsPosition
         self.isWindowsMenuButtonExpanded = isWindowsMenuButtonExpanded
         self.habits = habits
+        self.importantDays = importantDays
     }
 }
 
@@ -45,4 +47,10 @@ struct Habit: Codable {
 
     var timesKept: [Date]
     var timesDisliked: [Date]
+}
+
+struct ImportantDay: Codable, Identifiable, Equatable {
+    var id: UUID
+    var name: String
+    var date: Date
 }
