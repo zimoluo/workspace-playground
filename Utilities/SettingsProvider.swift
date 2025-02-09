@@ -47,10 +47,13 @@ struct SettingsProvider<Content: View>: View {
             modelContext.insert(theme)
         }
 
-        let doodleSpace = BuiltinSpaces.doodle
+        let firstSpace = BuiltinSpaces.productivity
 
         let defaultSpaces: [Space] = [
-            doodleSpace,
+            BuiltinSpaces.doodle,
+            BuiltinSpaces.personal,
+            BuiltinSpaces.writing,
+            firstSpace,
         ]
 
         for space in defaultSpaces {
@@ -60,7 +63,7 @@ struct SettingsProvider<Content: View>: View {
         do {
             try modelContext.save()
             UserDefaults.standard.set(true, forKey: "HasInitializedDefaults")
-            currentSettings.selectedSpaceId = doodleSpace.id
+            currentSettings.selectedSpaceId = firstSpace.id
         } catch {
             print("Error initializing default data: \(error)")
         }
