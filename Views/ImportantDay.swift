@@ -290,6 +290,7 @@ struct ImportantDatesView: View {
                 .font(.system(size: 48, weight: .bold))
                 .lineLimit(2)
         }
+        .contentShape(Rectangle())
         .onTapGesture {
             withAnimation(.snappy(duration: 0.4)) {
                 viewStateBinding.wrappedValue = .list
