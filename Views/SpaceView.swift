@@ -371,6 +371,32 @@ struct SpaceView: View {
                                 withAnimation(.spring(duration: 0.5)) {
                                     space.disableDots.toggle()
                                     space.updateDateModified()
+                                    
+                                    do {
+                                        let encoder = JSONEncoder()
+                                        // Optional: format the JSON for easier reading
+                                        encoder.outputFormatting = .prettyPrinted
+                                        
+                                        let jsonData = try encoder.encode(space.windows)
+                                        if let jsonString = String(data: jsonData, encoding: .utf8) {
+                                            print("space.windows JSON:\n\(jsonString)")
+                                        }
+                                    } catch {
+                                        print("Error encoding space.windows: \(error)")
+                                    }
+                                    
+                                    do {
+                                        let encoder = JSONEncoder()
+                                        // Optional: format the JSON for easier reading
+                                        encoder.outputFormatting = .prettyPrinted
+                                        
+                                        let jsonData = try encoder.encode(space.markers)
+                                        if let jsonString = String(data: jsonData, encoding: .utf8) {
+                                            print("space.markers JSON:\n\(jsonString)")
+                                        }
+                                    } catch {
+                                        print("Error encoding space.windows: \(error)")
+                                    }
                                 }
                             }) {
                                 ZStack {

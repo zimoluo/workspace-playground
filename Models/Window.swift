@@ -9,11 +9,18 @@ struct Window: Codable {
 
     init(
         state: WindowState = .init(),
-        data: WindowData = .init()
+        data: WindowData = .init(),
+        _ applyDefaults: Bool = true
     ) {
         self.id = UUID()
-        self.data = WindowData.applyDefaults(baseData: data)
-        self.state = WindowState.applyDefaults(type: data.type, baseState: state)
+
+        if applyDefaults {
+            self.data = WindowData.applyDefaults(baseData: data)
+            self.state = WindowState.applyDefaults(type: data.type, baseState: state)
+        } else {
+            self.data = data
+            self.state = state
+        }
     }
 }
 
