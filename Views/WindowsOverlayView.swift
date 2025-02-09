@@ -3,7 +3,7 @@ import SwiftUI
 struct WindowsOverlayView: View {
     @ObservedObject var space: Space
     let parentSize: CGSize
-    let cullingBuffer: CGFloat = 30
+    let cullingBuffer: CGFloat = 16
 
     var body: some View {
         let totalOffset = CGPoint(x: -space.cameraCenterX, y: -space.cameraCenterY)
