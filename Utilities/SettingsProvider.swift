@@ -10,9 +10,10 @@ struct SettingsProvider<Content: View>: View {
     var body: some View {
         Group {
             if let currentSettings = settings.first {
-                content(currentSettings.theme, currentSettings).task {
-                    await initializeDefaultsIfNeeded()
-                }
+                content(currentSettings.theme, currentSettings)
+                    .task {
+                        await initializeDefaultsIfNeeded(currentSettings)
+                    }
             } else {
                 ProgressView("Loading settings...")
                     .onAppear(perform: ensureSettingsExist)
@@ -28,7 +29,7 @@ struct SettingsProvider<Content: View>: View {
         }
     }
 
-    private func initializeDefaultsIfNeeded() async {
+    private func initializeDefaultsIfNeeded(_ currentSettings: Settings) async {
         let hasInitializedDefaults = UserDefaults.standard.bool(forKey: "HasInitializedDefaults")
 
         guard !hasInitializedDefaults else {
@@ -39,16 +40,27 @@ struct SettingsProvider<Content: View>: View {
             BuiltinThemes.cold,
             BuiltinThemes.cherry,
             BuiltinThemes.warm,
-            BuiltinThemes.whim
+            BuiltinThemes.whim,
         ]
 
         for theme in defaultThemes {
             modelContext.insert(theme)
         }
 
+        let doodleSpace = BuiltinSpaces.doodle
+
+        let defaultSpaces: [Space] = [
+            doodleSpace,
+        ]
+
+        for space in defaultSpaces {
+            modelContext.insert(space)
+        }
+
         do {
             try modelContext.save()
             UserDefaults.standard.set(true, forKey: "HasInitializedDefaults")
+            currentSettings.selectedSpaceId = doodleSpace.id
         } catch {
             print("Error initializing default data: \(error)")
         }
