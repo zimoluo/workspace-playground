@@ -326,12 +326,14 @@ struct SpaceCardView: View {
             .cornerRadius(16)
             .shadow(color: theme.primary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
             .contextMenu {
-                Button {
-                    withAnimation(.spring(duration: 0.5)) {
-                        space.clusterWindows()
+                if !space.disableOrganizeWindows {
+                    Button {
+                        withAnimation(.spring(duration: 0.5)) {
+                            space.clusterWindows()
+                        }
+                    } label: {
+                        Label("Organize windows", systemImage: "rectangle.3.group")
                     }
-                } label: {
-                    Label("Organize windows", systemImage: "rectangle.3.group")
                 }
 
                 Button {

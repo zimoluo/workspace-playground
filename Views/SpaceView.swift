@@ -389,19 +389,21 @@ struct SpaceView: View {
                             }
                             .hoverEffect(.lift)
 
-                            Button(action: {
-                                withAnimation(.spring(duration: 0.5)) {
-                                    space.clusterWindows()
+                            if !space.disableOrganizeWindows {
+                                Button(action: {
+                                    withAnimation(.spring(duration: 0.5)) {
+                                        space.clusterWindows()
+                                    }
+                                }) {
+                                    Image(systemName: "rectangle.3.group")
+                                        .font(.title2)
+                                        .themedForeground(using: theme, in: colorScheme, category: .tertiary)
+                                        .shadow(color: theme.tertiary.toShadow(), radius: 4)
+                                        .safeAreaPadding(.horizontal, 12)
+                                        .safeAreaPadding(.vertical, 12)
                                 }
-                            }) {
-                                Image(systemName: "rectangle.3.group")
-                                    .font(.title2)
-                                    .themedForeground(using: theme, in: colorScheme, category: .tertiary)
-                                    .shadow(color: theme.tertiary.toShadow(), radius: 4)
-                                    .safeAreaPadding(.horizontal, 12)
-                                    .safeAreaPadding(.vertical, 12)
+                                .hoverEffect(.lift)
                             }
-                            .hoverEffect(.lift)
 
                             Button(action: {
                                 withAnimation(.spring(duration: 0.2)) {

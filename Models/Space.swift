@@ -22,9 +22,11 @@ class Space: ObservableObject {
     var disableDots: Bool
     var lockCamera: Bool
 
+    var disableOrganizeWindows: Bool
+
     var version: Int
 
-    init(windows: [Window] = [], name: String = "New Space", cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1, showMarkers: Bool = true, markers: [SpaceMarker] = [], disableDots: Bool = false, lockCamera: Bool = false) {
+    init(windows: [Window] = [], name: String = "New Space", cameraCenterX: CGFloat = 0, cameraCenterY: CGFloat = 0, cameraZoom: CGFloat = 1, showMarkers: Bool = true, markers: [SpaceMarker] = [], disableDots: Bool = false, lockCamera: Bool = false, disableOrganizeWindows: Bool = false) {
         self.id = UUID()
         self.dateCreated = Date()
         self.dateModified = Date()
@@ -39,6 +41,7 @@ class Space: ObservableObject {
         self.markers = markers
         self.disableDots = disableDots
         self.lockCamera = lockCamera
+        self.disableOrganizeWindows = disableOrganizeWindows
     }
 
     func renderDots(viewSize: CGSize, color: Color) -> some View {
@@ -64,7 +67,7 @@ class Space: ObservableObject {
             return newMarker
         }
 
-        return Space(windows: copiedWindows, name: name, cameraCenterX: cameraCenterX, cameraCenterY: cameraCenterY, cameraZoom: cameraZoom, showMarkers: showMarkers, markers: copiedMarkers, disableDots: disableDots, lockCamera: lockCamera)
+        return Space(windows: copiedWindows, name: name, cameraCenterX: cameraCenterX, cameraCenterY: cameraCenterY, cameraZoom: cameraZoom, showMarkers: showMarkers, markers: copiedMarkers, disableDots: disableDots, lockCamera: lockCamera, disableOrganizeWindows: disableOrganizeWindows)
     }
 
     func updateDateModified() {
@@ -161,6 +164,8 @@ class Space: ObservableObject {
     }
 
     func clusterWindows() {
+        if disableOrganizeWindows { return }
+
         let minGap: CGFloat = 12.0
         let angleIncrement: CGFloat = 0.08
         let spiralSpacing: CGFloat = minGap / 1.5
