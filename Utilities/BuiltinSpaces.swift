@@ -7,7 +7,7 @@ enum BuiltinSpaces {
             cameraCenterY: -2796,
             cameraZoom: 0.75,
             showMarkers: true,
-            markers: [SpaceMarker(x: 2829.5, y: 3759.5, zoom: 0.75), SpaceMarker(x: -2072.833333333333, y: 4689.166666666667, zoom: 0.85), SpaceMarker(x: -1244.5, y: -2332.5, zoom: 0.75), SpaceMarker(x: 1, y: 225.5, zoom: 0.75), SpaceMarker(x: 3084, y: -2796, zoom: 0.75)],
+            markers: [SpaceMarker(x: 2829.5, y: 3759.5, zoom: 0.75), SpaceMarker(x: -2072.833333333333, y: 4689.166666666667, zoom: 0.85), SpaceMarker(x: -1244.5, y: -2332.5, zoom: 0.75), SpaceMarker(x: 0, y: 225.5, zoom: 0.75), SpaceMarker(x: 3084, y: -2796, zoom: 0.75)],
             disableDots: true,
             lockCamera: false,
             disableOrganizeWindows: true
