@@ -1345,6 +1345,12 @@ enum BuiltinSpaces {
                         minHeight: 380, minWidth: 350, maxHeight: 420, maxWidth: 440,
                         minAspectRatio: 0, maxAspectRatio: 1000000000, layer: 0), false),
                 Window(
+                    state: WindowState(x: -472.8525491562421, y: -496, width: 242.70509831248424, height: 150),
+                    data: WindowData(
+                        type: .clock, saveData: [:],
+                        minHeight: 150, minWidth: 150, maxHeight: 450, maxWidth: 450,
+                        minAspectRatio: 0.6180339887498949, maxAspectRatio: 1.618033988749895, layer: 0), false),
+                Window(
                     state: WindowState(x: 212.5, y: -268.5, width: 380, height: 230),
                     data: WindowData(
                         type: .countdownTimer,
