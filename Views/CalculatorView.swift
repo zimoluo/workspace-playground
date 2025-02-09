@@ -36,7 +36,7 @@ struct CalculatorView: View {
                     }
                     Text(data.currentDisplay)
                         .font(.system(size: 28, weight: .medium, design: .monospaced))
-                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0))
+                        .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 0.6))
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                         .multilineTextAlignment(.trailing)
