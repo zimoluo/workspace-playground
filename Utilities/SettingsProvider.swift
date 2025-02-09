@@ -47,7 +47,10 @@ struct SettingsProvider<Content: View>: View {
             modelContext.insert(theme)
         }
 
-        let firstSpace = BuiltinSpaces.productivity
+        var firstSpace = BuiltinSpaces.productivity
+        var personalSpace = BuiltinSpaces.personal
+        var writingSpace = BuiltinSpaces.writing
+        var doodleSpace = BuiltinSpaces.doodle
 
         let defaultSpaces: [Space] = [
             BuiltinSpaces.doodle,
