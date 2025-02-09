@@ -58,10 +58,8 @@ enum BuiltinThemes {
                     GradientStop(color: RGBAColor(red: 0.525, green: 0.310, blue: 0.996, alpha: 1.0), position: 0.0),
                     GradientStop(color: RGBAColor(red: 0.220, green: 0.341, blue: 0.102, alpha: 1.0), position: 1.0)
                 ],
-                linearAttributes: LinearGradientAttributes(
-                    startPoint: CodableUnitPoint(x: 0.6666666666666666, y: 1.0),
-                    endPoint: CodableUnitPoint(x: 0.3333333333333333, y: 0.0)
-                )
+                angularAttributes: AngularGradientAttributes(center: CodableUnitPoint(x: 0.5, y: 0.5),
+                                                             angle: CodableAngle(from: .degrees(-90)))
             )
         )
     }
