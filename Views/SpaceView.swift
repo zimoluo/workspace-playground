@@ -141,7 +141,6 @@ struct SpaceView: View {
 
                                     currentZoom = space.cameraZoom
                                     initialPinchPoint = .zero
-                                    space.updateDateModified()
                                     isZooming = false
                                 }
                         )
@@ -702,16 +701,21 @@ struct CameraScrollView: UIViewRepresentable {
         scrollView.showsVerticalScrollIndicator = true
         scrollView.showsHorizontalScrollIndicator = true
         scrollView.contentInsetAdjustmentBehavior = .never
-
         scrollView.contentSize = CGSize(width: width, height: height)
-
         scrollView.isScrollEnabled = canScroll
 
-        let initialOffset = CGPoint(
-            x: cameraCenter.x - minCameraCenterX,
-            y: cameraCenter.y - minCameraCenterY
-        )
-        scrollView.contentOffset = initialOffset
+        context.coordinator.isInitialized = false
+
+        DispatchQueue.main.async {
+            if context.coordinator.isInitialized { return }
+            context.coordinator.isInitialized = true
+
+            let initialOffset = CGPoint(
+                x: cameraCenter.x - minCameraCenterX,
+                y: cameraCenter.y - minCameraCenterY
+            )
+            scrollView.setContentOffset(initialOffset, animated: false)
+        }
 
         return scrollView
     }
@@ -731,7 +735,14 @@ struct CameraScrollView: UIViewRepresentable {
             y: cameraCenter.y - minCameraCenterY
         )
 
-        if scrollView.contentOffset != correctedOffset {
+        if !context.coordinator.isInitialized {
+            context.coordinator.isInitialized = true
+            DispatchQueue.main.async {
+                context.coordinator.ignoreScrollEvents = true
+                scrollView.setContentOffset(correctedOffset, animated: false)
+                context.coordinator.ignoreScrollEvents = false
+            }
+        } else if scrollView.contentOffset != correctedOffset {
             context.coordinator.ignoreScrollEvents = true
             scrollView.setContentOffset(correctedOffset, animated: false)
             context.coordinator.ignoreScrollEvents = false
@@ -745,6 +756,7 @@ struct CameraScrollView: UIViewRepresentable {
     class Coordinator: NSObject, UIScrollViewDelegate {
         var parent: CameraScrollView
         var ignoreScrollEvents = false
+        var isInitialized = false
 
         init(parent: CameraScrollView) {
             self.parent = parent

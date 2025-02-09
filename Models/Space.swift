@@ -159,8 +159,6 @@ class Space: ObservableObject {
         cameraCenterX = marker.x
         cameraCenterY = marker.y
         cameraZoom = marker.zoom
-
-        updateDateModified()
     }
 
     func clusterWindows() {
