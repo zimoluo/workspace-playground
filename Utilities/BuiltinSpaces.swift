@@ -1490,7 +1490,7 @@ enum BuiltinSpaces {
             ],
             disableDots: false,
             lockCamera: false,
-            disableOrganizeWindows: false)
+            disableOrganizeWindows: true)
     }
     
     static var productivity: Space {
