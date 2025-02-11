@@ -188,22 +188,22 @@ struct WindowData: Codable {
 
 enum WindowType: String, Codable, CaseIterable {
     case clock
-    case stopwatch
-    case pomodoroTimer
     case digitalClock
-    case themePicker
-    case calculator
-    case habitTracker
     case toDoList
     case notes
     case importantDays
-    case countdownTimer
-    case magicGlobe
     case image
+    case pomodoroTimer
+    case countdownTimer
+    case stopwatch
+    case habitTracker
+    case calculator
+    case themePicker
     case quote
     case writingPrompt
-    case dashboard
+    case magicGlobe
     case blank
+    case dashboard
     case themeMaker
 
     var defaultSize: (width: CGFloat, height: CGFloat) {
@@ -247,7 +247,7 @@ enum WindowType: String, Codable, CaseIterable {
         case .pomodoroTimer: return WindowGlyph(mode: .system, key: "timer")
         case .habitTracker: return WindowGlyph(mode: .system, key: "widget.small")
         case .image: return WindowGlyph(mode: .system, key: "photo")
-        case .countdownTimer: return WindowGlyph(mode: .system, key: "minus.arrow.trianglehead.counterclockwise")
+        case .countdownTimer: return WindowGlyph(mode: .system, key: "hourglass")
         case .importantDays: return WindowGlyph(mode: .system, key: "calendar")
         }
     }
