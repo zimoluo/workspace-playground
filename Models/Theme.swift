@@ -1,10 +1,3 @@
-//
-//  Theme.swift
-//  workspace-playground
-//
-//  Created by Zimo Luo on 1/8/25.
-//
-
 import SwiftData
 import SwiftUI
 
