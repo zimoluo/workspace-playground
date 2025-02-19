@@ -42,7 +42,9 @@ struct MeshGradientEditorView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     HStack(spacing: 12) {
                         VStack(spacing: 8) {
-                            Text("ROW").fontWeight(.bold).themedForeground(using: theme, in: colorScheme, level: 1, category: .secondary)
+                            Text("ROW")
+                                .themedForeground(using: theme, in: colorScheme, level: 1, category: .secondary)
+                                .font(.system(size: 17, weight: .bold))
 
                             VerticalSlider(
                                 value: Binding(
@@ -56,7 +58,9 @@ struct MeshGradientEditorView: View {
                         }
 
                         VStack(spacing: 8) {
-                            Text("COL").fontWeight(.bold).themedForeground(using: theme, in: colorScheme, level: 1, category: .secondary)
+                            Text("COL")
+                                .themedForeground(using: theme, in: colorScheme, level: 1, category: .secondary)
+                                .font(.system(size: 17, weight: .bold))
 
                             VerticalSlider(
                                 value: Binding(

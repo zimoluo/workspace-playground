@@ -118,7 +118,7 @@ struct ThemeMaker: View {
                 .cornerRadius(16)
                 .shadow(color: theme.secondary.toShadow(), radius: 12, y: 8)
 
-                VStack(spacing: 8) {
+                VStack(spacing: 12) {
                     Button(action: {
                         let primaryColor = RGBAColor.randomBright()
                         theme.primary = primaryColor
@@ -126,7 +126,7 @@ struct ThemeMaker: View {
                         theme.tertiary = primaryColor.tertiaryColor()
                     }) {
                         Image(systemName: "wand.and.sparkles")
-                            .font(.title)
+                            .font(.system(size: 28))
                             .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                     }
                     Button(action: {
@@ -135,7 +135,7 @@ struct ThemeMaker: View {
                         theme.tertiary = RGBAColor.randomBright()
                     }) {
                         Image(systemName: "dice")
-                            .font(.title)
+                            .font(.system(size: 28))
                             .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                     }
                     Spacer()

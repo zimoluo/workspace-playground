@@ -35,9 +35,8 @@ struct VerticalSlider: View {
                         .frame(width: geo.size.width * 0.8, height: geo.size.width * 0.8)
                         .shadow(color: theme.secondary.toShadow(opacityMultiplier: 0.8), radius: 8, y: 6)
                     Text("\(value)")
-                        .fontWeight(.bold)
                         .foregroundStyle(themeColor(from: theme, for: .secondary, in: .light, level: 1))
-                        .font(.title3)
+                        .font(.system(size: 20, weight: .bold))
                 }
                 .frame(width: geo.size.width, height: geo.size.width)
                 .offset(y: thumbOffset(in: geo.size.height - geo.size.width))

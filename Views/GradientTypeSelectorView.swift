@@ -30,9 +30,8 @@ struct GradientTypeSelectorView: View {
                             
                         if isSelected {
                             Text(gradientType.title)
-                                .font(.headline)
                                 .transition(.opacity)
-                                .fontWeight(.bold)
+                                .font(.system(size: 17, weight: .bold))
                         }
                     }
                     .frame(height: itemHeight)
