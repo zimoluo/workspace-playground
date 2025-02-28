@@ -4,8 +4,7 @@ struct ClockWidget: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
 
-    @State private var currentTime = Date()
-    private let timer = Timer.publish(every: 1 / 60, on: .main, in: .common).autoconnect()
+    private let currentTime = Calendar.current.date(from: DateComponents(hour: 10, minute: 10, second: 30))!
 
     var body: some View {
         GeometryReader { geometry in
@@ -62,9 +61,6 @@ struct ClockWidget: View {
 
                     Spacer()
                 }
-            }
-            .onReceive(timer) { _ in
-                currentTime = Date()
             }
         }
     }

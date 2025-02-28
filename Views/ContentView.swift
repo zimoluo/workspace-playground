@@ -186,6 +186,8 @@ struct ContentView: View {
                     .foregroundStyle(columnVisibility == .detailOnly ? (selectedScreen.type == .space ? themeColor(from: theme, for: .tertiary, in: colorScheme, level: 0) : themeColor(from: theme, for: .secondary, in: colorScheme, level: 0)) : themeColor(from: theme, for: .primary, in: colorScheme, level: 0))
                     .hoverEffect(.lift)
                     .shadow(color: columnVisibility == .detailOnly ? (selectedScreen.type == .space ? theme.tertiary.toShadow() : theme.secondary.toShadow()) : theme.primary.toShadow(), radius: 4)
+                    .opacity(0)
+                    .contentShape(Rectangle())
             }
             .position(x: columnVisibility == .detailOnly ? 36 : 32, y: 26)
 

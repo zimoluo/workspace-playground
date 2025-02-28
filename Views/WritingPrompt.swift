@@ -10,13 +10,7 @@ class DailyWritingPromptViewModel: ObservableObject {
     @Published var prompt: WritingPrompt
 
     private let prompts: [WritingPrompt] = [
-        WritingPrompt(text: "Reflect on a moment of disappointment. What did you learn?"),
-        WritingPrompt(text: "Recall when you felt misunderstood. How did you respond?"),
-        WritingPrompt(text: "Think of a decision you later questioned. What did it reveal?"),
-        WritingPrompt(text: "Remember a time you stepped outside your comfort zone. What changed?"),
-        WritingPrompt(text: "Describe a moment of deep self-connection. How did it impact you?"),
-        WritingPrompt(text: "Reflect on an act of forgiveness—either given or received. What shifted?"),
-        WritingPrompt(text: "Consider a belief you once held. How has your perspective evolved?")
+        WritingPrompt(text: "Remember a time you stepped outside your comfort zone. What changed?")
     ]
 
     private var timer: Timer?

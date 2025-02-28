@@ -4,8 +4,7 @@ struct DigitalClock: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
     
-    @State private var time = Date()
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    private let time = Calendar.current.date(from: DateComponents(hour: 10, minute: 10, second: 30))!
     
     var body: some View {
         GeometryReader { geometry in
@@ -27,11 +26,6 @@ struct DigitalClock: View {
                 }
                 .foregroundStyle(themeColor(from: theme, for: .secondary, in: colorScheme, level: 1))
                 .frame(width: shorterSide)
-                .onReceive(timer) { input in
-                    withAnimation {
-                        time = input
-                    }
-                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }

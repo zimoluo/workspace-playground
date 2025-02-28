@@ -85,15 +85,6 @@ struct SpaceView: View {
         } else {
             GeometryReader { geometry in
                 ZStack {
-                    if !space.disableDots {
-                        space.renderDots(
-                            viewSize: geometry.size,
-                            color: colorScheme == .light
-                                ? theme.secondary.shadeMap(numShades: 19).shadeMap[12].color.opacity(0.925)
-                                : theme.secondary.shadeMap(numShades: 19).shadeMap[5].color.opacity(0.67)
-                        )
-                    }
-
                     CameraScrollView(cameraCenter: Binding(get: {
                         CGPoint(x: space.cameraCenterX, y: space.cameraCenterY)
                     }, set: {
@@ -420,43 +411,12 @@ struct SpaceView: View {
                             }
                             .hoverEffect(.lift)
                         }
+                        .opacity(0)
                         .safeAreaPadding(.horizontal, 8)
                         .safeAreaPadding(.vertical, 24)
 
                         Spacer()
                     }
-
-                    let anchor = menuAnchorPosition(
-                        for: settings.windowsMenuButtonsPosition,
-                        in: geometry.size
-                    )
-
-                    WindowMenuView(
-                        space: space
-                    )
-                    .position(x: anchor.x + menuDragOffset.width, y: anchor.y + menuDragOffset.height)
-                    .gesture(
-                        DragGesture()
-                            .onChanged { value in
-                                menuDragOffset = value.translation
-                            }
-                            .onEnded { value in
-                                let predictedTranslation = value.predictedEndTranslation
-                                let predictedX = anchor.x + predictedTranslation.width
-                                let predictedY = anchor.y + predictedTranslation.height
-                                let predictedPosition = CGPoint(x: predictedX, y: predictedY)
-
-                                let newPosition = nearestMenuPosition(
-                                    for: predictedPosition,
-                                    in: geometry.size
-                                )
-
-                                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                                    menuDragOffset = .zero
-                                    settings.windowsMenuButtonsPosition = newPosition
-                                }
-                            }
-                    )
                 }
             }
             .ignoresSafeArea()

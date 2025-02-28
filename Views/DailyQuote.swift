@@ -11,22 +11,7 @@ class DailyQuoteViewModel: ObservableObject {
     @Published var quote: Quote
 
     private let quotes: [Quote] = [
-        Quote(text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs"),
-        Quote(text: "Stay hungry, stay foolish.", author: "Steve Jobs"),
-        Quote(text: "Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work.", author: "Steve Jobs"),
-        Quote(text: "Have the courage to follow your heart and intuition. They somehow already know what you truly want to become.", author: "Steve Jobs"),
-        Quote(text: "Things don't have to change the world to be important.", author: "Steve Jobs"),
-        Quote(text: "I’m as proud of many of the things we haven’t done as the things we have done.", author: "Steve Jobs"),
-        Quote(text: "We hire smart people so they can tell us what to do.", author: "Steve Jobs"),
-        Quote(text: "People don’t know what they want until you show it to them.", author: "Steve Jobs"),
-        Quote(text: "I would rather gamble on our vision than make a 'me too' product.", author: "Steve Jobs"),
-
-        Quote(text: "The most important thing is a person. A person who incites your curiosity and feeds your ideas. And a person you want to learn from.", author: "Jony Ive"),
-        Quote(text: "There is beauty when something works and it works intuitively.", author: "Jony Ive"),
-
-        Quote(text: "The sidelines are not where you want to live your life. The world needs you in the arena.", author: "Tim Cook"),
-        Quote(text: "You want to be the pebble in the pond that creates the ripple for change.", author: "Tim Cook"),
-        Quote(text: "We’re here to put a dent in the universe. Otherwise, why else even be here?", author: "Steve Jobs"),
+        Quote(text: "Have the courage to follow your heart and intuition. They somehow already know what you truly want to become.", author: "Steve Jobs")
     ]
 
     private var timer: Timer?

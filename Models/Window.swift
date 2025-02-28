@@ -256,7 +256,12 @@ enum WindowType: String, Codable, CaseIterable {
     var view: some View {
         switch self {
         case .blank:
-            Color.clear
+            ZStack {
+                Circle()
+                    .fill(.red)
+                    .frame(width: 21, height: 21)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .notes:
             RichTextEditorView()
         case .clock:
