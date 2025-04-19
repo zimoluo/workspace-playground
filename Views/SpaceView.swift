@@ -41,6 +41,9 @@ struct SpaceView: View {
     @State private var initialPinchPoint: CGPoint = .zero
     @State private var initialCameraCenter: CGPoint = .zero
 
+    @State private var isDragging: Bool = false
+    @State private var lastDragTranslation: CGSize = .zero
+    @State private var dragVelocity: CGSize = .zero
     @State private var isZooming: Bool = false
 
     @State private var showMarkerPopover: Bool = false
@@ -94,17 +97,49 @@ struct SpaceView: View {
                         )
                     }
 
-                    CameraScrollView(cameraCenter: Binding(get: {
-                        CGPoint(x: space.cameraCenterX, y: space.cameraCenterY)
-                    }, set: {
-                        newPoint in
-                        space.cameraCenterX = newPoint.x
-                        space.cameraCenterY = newPoint.y
-                    }), isZooming: isZooming, lockCamera: space.lockCamera, parentSize: geometry.size, minCameraCenterX: minCameraCenterX, maxCameraCenterX: maxCameraCenterX, minCameraCenterY: minCameraCenterY, maxCameraCenterY: maxCameraCenterY)
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    if space.lockCamera { return }
+
+                                    if !isDragging {
+                                        isDragging = true
+                                    }
+
+                                    let incrementalTranslation = CGSize(
+                                        width: value.translation.width - lastDragTranslation.width,
+                                        height: value.translation.height - lastDragTranslation.height
+                                    )
+                                    lastDragTranslation = value.translation
+
+                                    let zoomFactor = 1.0 / space.cameraZoom
+                                    let newCenterX = space.cameraCenterX - incrementalTranslation.width * zoomFactor
+                                    let newCenterY = space.cameraCenterY - incrementalTranslation.height * zoomFactor
+
+                                    space.cameraCenterX = newCenterX.clamped(to: minCameraCenterX ... maxCameraCenterX)
+                                    space.cameraCenterY = newCenterY.clamped(to: minCameraCenterY ... maxCameraCenterY)
+
+                                    dragVelocity = incrementalTranslation
+                                }
+                                .onEnded { _ in
+                                    if space.lockCamera { return }
+
+                                    lastDragTranslation = .zero
+                                    isDragging = false
+                                    applyMomentum()
+                                    space.updateDateModified()
+                                }
+                        )
                         .highPriorityGesture(
                             MagnifyGesture()
                                 .onChanged { value in
                                     if space.lockCamera { return }
+
+                                    if dragVelocity != .zero {
+                                        dragVelocity = .zero
+                                    }
 
                                     isZooming = true
 
@@ -463,6 +498,36 @@ struct SpaceView: View {
         }
     }
 
+    private func applyMomentum() {
+        let deceleration: CGFloat = 0.905
+        let minVelocity: CGFloat = 0.1
+
+        var displayLink: CADisplayLink?
+
+        displayLink = CADisplayLink(target: BlockOperation {
+            guard !isDragging && !space.lockCamera && !isZooming else {
+                displayLink?.invalidate()
+                return
+            }
+
+            dragVelocity = CGSize(
+                width: dragVelocity.width * deceleration,
+                height: dragVelocity.height * deceleration
+            )
+
+            space.cameraCenterX = (space.cameraCenterX - dragVelocity.width)
+                .clamped(to: minCameraCenterX ... maxCameraCenterX)
+            space.cameraCenterY = (space.cameraCenterY - dragVelocity.height)
+                .clamped(to: minCameraCenterY ... maxCameraCenterY)
+
+            if abs(dragVelocity.width) <= minVelocity && abs(dragVelocity.height) <= minVelocity {
+                displayLink?.invalidate()
+            }
+        }, selector: #selector(Operation.main))
+
+        displayLink?.add(to: .current, forMode: .common)
+    }
+
     private func menuAnchorPosition(
         for position: WindowsMenuButtonPosition,
         in size: CGSize
@@ -664,111 +729,6 @@ struct WindowMenuView: View {
                 }
             }
             .hoverEffect(.lift)
-        }
-    }
-}
-
-struct CameraScrollView: UIViewRepresentable {
-    @Binding var cameraCenter: CGPoint
-
-    var isZooming: Bool
-    var lockCamera: Bool
-
-    var canScroll: Bool {
-        !isZooming && !lockCamera
-    }
-
-    var parentSize: CGSize
-
-    var minCameraCenterX: CGFloat
-    var maxCameraCenterX: CGFloat
-    var minCameraCenterY: CGFloat
-    var maxCameraCenterY: CGFloat
-
-    var width: CGFloat {
-        maxCameraCenterX - minCameraCenterX + parentSize.width
-    }
-
-    var height: CGFloat {
-        maxCameraCenterY - minCameraCenterY + parentSize.height
-    }
-
-    func makeUIView(context: Context) -> UIScrollView {
-        let scrollView = UIScrollView()
-        scrollView.delegate = context.coordinator
-        scrollView.decelerationRate = .init(rawValue: 0.993)
-        scrollView.bounces = true
-        scrollView.showsVerticalScrollIndicator = true
-        scrollView.showsHorizontalScrollIndicator = true
-        scrollView.contentInsetAdjustmentBehavior = .never
-        scrollView.contentSize = CGSize(width: width, height: height)
-        scrollView.isScrollEnabled = canScroll
-
-        context.coordinator.isInitialized = false
-
-        DispatchQueue.main.async {
-            if context.coordinator.isInitialized { return }
-            context.coordinator.isInitialized = true
-
-            let initialOffset = CGPoint(
-                x: cameraCenter.x - minCameraCenterX,
-                y: cameraCenter.y - minCameraCenterY
-            )
-            scrollView.setContentOffset(initialOffset, animated: false)
-        }
-
-        return scrollView
-    }
-
-    func updateUIView(_ scrollView: UIScrollView, context: Context) {
-        context.coordinator.parent = self
-
-        let newSize = CGSize(width: width, height: height)
-        if scrollView.contentSize != newSize {
-            scrollView.contentSize = newSize
-        }
-
-        scrollView.isScrollEnabled = canScroll
-
-        let correctedOffset = CGPoint(
-            x: cameraCenter.x - minCameraCenterX,
-            y: cameraCenter.y - minCameraCenterY
-        )
-
-        if !context.coordinator.isInitialized {
-            context.coordinator.isInitialized = true
-            DispatchQueue.main.async {
-                context.coordinator.ignoreScrollEvents = true
-                scrollView.setContentOffset(correctedOffset, animated: false)
-                context.coordinator.ignoreScrollEvents = false
-            }
-        } else if scrollView.contentOffset != correctedOffset {
-            context.coordinator.ignoreScrollEvents = true
-            scrollView.setContentOffset(correctedOffset, animated: false)
-            context.coordinator.ignoreScrollEvents = false
-        }
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
-    }
-
-    class Coordinator: NSObject, UIScrollViewDelegate {
-        var parent: CameraScrollView
-        var ignoreScrollEvents = false
-        var isInitialized = false
-
-        init(parent: CameraScrollView) {
-            self.parent = parent
-        }
-
-        func scrollViewDidScroll(_ scrollView: UIScrollView) {
-            if ignoreScrollEvents { return }
-
-            parent.cameraCenter = CGPoint(
-                x: scrollView.contentOffset.x + parent.minCameraCenterX,
-                y: scrollView.contentOffset.y + parent.minCameraCenterY
-            )
         }
     }
 }
