@@ -132,7 +132,7 @@ struct SpaceView: View {
                                     space.updateDateModified()
                                 }
                         )
-                        .highPriorityGesture(
+                        .gesture(
                             MagnifyGesture()
                                 .onChanged { value in
                                     if space.lockCamera { return }
